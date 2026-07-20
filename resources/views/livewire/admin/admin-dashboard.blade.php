@@ -285,10 +285,13 @@
                                     <div class="text-[10px] text-slate-500 font-sans truncate max-w-[140px]">{{ $contrat->client->first_name ?? '' }} {{ $contrat->client->last_name ?? '' }}</div>
                                     <div class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Agent: {{ $contrat->employe->nom_complet ?? 'N/A' }}</div>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right flex flex-col items-end gap-1.5">
                                     <span class="inline-flex items-center px-2 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wide {{ $daysLeft <= 7 ? 'bg-rose-50 text-rose-700 border border-rose-250/60' : 'bg-amber-50 text-amber-700 border border-amber-250/60' }}">
                                         -{{ $daysLeft }} J
                                     </span>
+                                    <button wire:click="$dispatch('triggerWhatsAppReminder', { contractId: {{ $contrat->id }} })" class="inline-flex items-center px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold transition-all">
+                                        WhatsApp
+                                    </button>
                                 </div>
                             </div>
                         @empty
@@ -298,9 +301,56 @@
                         @endforelse
                     </div>
                 </div>
+
+                <!-- Contracts by Insurer -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                        <h2 class="font-bold text-slate-800 text-sm">Contrats par Compagnie</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        @forelse($contractsByCompany as $item)
+                            <div>
+                                <div class="flex justify-between items-center text-xs font-bold text-slate-755 mb-1.5">
+                                    <span>{{ $item['label'] }}</span>
+                                    <span class="font-mono">{{ $item['value'] }} contrats</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-emerald-500 h-full rounded-full" style="width: {{ $activeContractsCount > 0 ? ($item['value'] / $activeContractsCount) * 100 : 0 }}%"></div>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-xs text-slate-400 text-center py-4">Aucune donnée disponible.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Contracts by Type -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                        <h2 class="font-bold text-slate-800 text-sm">Contrats par Produit</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        @forelse($contractsByType as $item)
+                            <div>
+                                <div class="flex justify-between items-center text-xs font-bold text-slate-755 mb-1.5">
+                                    <span>{{ $item['label'] }}</span>
+                                    <span class="font-mono">{{ $item['value'] }} contrats</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-500 h-full rounded-full" style="width: {{ $activeContractsCount > 0 ? ($item['value'] / $activeContractsCount) * 100 : 0 }}%"></div>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-xs text-slate-400 text-center py-4">Aucune donnée disponible.</p>
+                        @endforelse
+                    </div>
+                </div>
             </div>
 
         </div>
 
     </div>
+
+    <!-- WhatsApp Reminder Modal -->
+    <livewire:admin.send-whatsapp-reminder />
 </div>

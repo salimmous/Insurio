@@ -16,12 +16,10 @@ class TenantSeeder extends Seeder
             // Reset cached roles and permissions
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-            // 1. Create Roles
-            $adminRole = Role::firstOrCreate(['name' => 'agency-admin', 'guard_name' => 'web']);
-            $responsableRole = Role::firstOrCreate(['name' => 'responsable-succursale', 'guard_name' => 'web']);
-            $commercialRole = Role::firstOrCreate(['name' => 'agent-commercial', 'guard_name' => 'web']);
-            $comptableRole = Role::firstOrCreate(['name' => 'comptable', 'guard_name' => 'web']);
-            $consultationRole = Role::firstOrCreate(['name' => 'consultation', 'guard_name' => 'web']);
+            // 1. Create Roles and Permissions
+            $this->call(PermissionSeeder::class);
+            $adminRole = Role::where('name', 'agency-admin')->first();
+            $commercialRole = Role::where('name', 'agent-commercial')->first();
 
             // 2. Create a default Branch
             $branch = AgenceBranch::firstOrCreate(

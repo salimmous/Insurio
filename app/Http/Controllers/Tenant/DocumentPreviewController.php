@@ -13,6 +13,19 @@ class DocumentPreviewController extends Controller
     {
         $document = Document::findOrFail($id);
 
+        $user = auth()->user();
+        if (!$user) {
+            abort(403);
+        }
+
+        // Branch boundary checks for Agent and non-owner roles
+        if (!$user->hasRole('Super Admin') && !$user->hasRole('agency-admin') && !$user->hasRole('Agency Owner')) {
+            $client = $document->client;
+            if ($client && $user->branch_id && $client->succursale_id !== $user->branch_id) {
+                abort(403, 'Accès non autorisé à ce document (succursale différente).');
+            }
+        }
+
         if (!Storage::disk('local')->exists($document->file_path)) {
             abort(404, 'Fichier introuvable.');
         }

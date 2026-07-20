@@ -45,22 +45,26 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('settings', \App\Livewire\Admin\GestionAgence::class)->name('settings');
         
         // Automobile Register routes
-        Route::get('/automobile', ListeContrats::class)->name('automobile.index');
-        Route::get('/automobile/creer', FormulaireContrat::class)->name('automobile.create');
-        Route::get('/automobile/modifier/{contratId}', FormulaireContrat::class)->name('automobile.edit');
+        Route::get('/automobile', ListeContrats::class)->name('automobile.index')->middleware('can:contracts.view');
+        Route::get('/automobile/creer', FormulaireContrat::class)->name('automobile.create')->middleware('can:contracts.create');
+        Route::get('/automobile/modifier/{contratId}', FormulaireContrat::class)->name('automobile.edit')->middleware('can:contracts.edit');
 
-        Route::get('/admin/succursales', \App\Livewire\Admin\GestionSuccursales::class)->name('admin.succursales');
-        Route::get('/admin/employes', \App\Livewire\Admin\GestionEmployes::class)->name('admin.employes');
-        Route::get('/admin/commissions', \App\Livewire\Admin\GestionCommissions::class)->name('admin.commissions');
-        Route::get('/admin/charges', \App\Livewire\Admin\GestionCharges::class)->name('admin.charges');
-        Route::get('/admin/clients', \App\Livewire\Admin\GestionClients::class)->name('admin.clients');
-        Route::get('/admin/clients/{clientId}', \App\Livewire\Admin\ClientProfile::class)->name('admin.clients.profile');
-        Route::get('/admin/tasks', \App\Livewire\Admin\TaskManager::class)->name('admin.tasks');
-        Route::get('/admin/entreprises', \App\Livewire\Admin\GestionEntreprises::class)->name('admin.entreprises');
-        Route::get('/admin/produits', \App\Livewire\Admin\GestionProducts::class)->name('admin.products');
+        Route::get('/admin/succursales', \App\Livewire\Admin\GestionSuccursales::class)->name('admin.succursales')->middleware('can:expenses.view');
+        Route::get('/admin/employes', \App\Livewire\Admin\GestionEmployes::class)->name('admin.employes')->middleware('can:expenses.view');
+        Route::get('/admin/commissions', \App\Livewire\Admin\GestionCommissions::class)->name('admin.commissions')->middleware('can:commissions.view');
+        Route::get('/admin/charges', \App\Livewire\Admin\GestionCharges::class)->name('admin.charges')->middleware('can:expenses.view');
+        Route::get('/admin/clients', \App\Livewire\Admin\GestionClients::class)->name('admin.clients')->middleware('can:clients.view');
+        Route::get('/admin/clients/{clientId}', \App\Livewire\Admin\ClientProfile::class)->name('admin.clients.profile')->middleware('can:clients.view');
+        Route::get('/admin/tasks', \App\Livewire\Admin\TaskManager::class)->name('admin.tasks')->middleware('can:clients.view');
+        Route::get('/admin/entreprises', \App\Livewire\Admin\GestionEntreprises::class)->name('admin.entreprises')->middleware('can:clients.view');
+        Route::get('/admin/produits', \App\Livewire\Admin\GestionProducts::class)->name('admin.products')->middleware('can:contracts.view');
+        Route::get('/admin/activity-timeline', \App\Livewire\Admin\ActivityTimeline::class)->name('admin.activity-timeline')->middleware('can:clients.view');
+        Route::get('/admin/import-manager', \App\Livewire\Admin\ImportManager::class)->name('admin.import-manager')->middleware('can:clients.create');
+        Route::get('/admin/compagnies', \App\Livewire\Admin\GestionInsurers::class)->name('admin.compagnies')->middleware('can:contracts.view');
+        Route::get('/admin/payments', \App\Livewire\Admin\PaymentManager::class)->name('admin.payments')->middleware('can:payments.manage');
 
         // Agent routes
-        Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions');
+        Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions')->middleware('can:commissions.view');
 
         // PDF Generation route
         Route::get('/automobile/pdf/{contratId}/{type}', [\App\Http\Controllers\Tenant\PDFController::class, 'generate'])->name('automobile.pdf');

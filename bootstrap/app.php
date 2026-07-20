@@ -21,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->redirectGuestsTo(fn ($request) => $request->is('super-admin*') ? route('platform.login') : route('login'));
     })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule): void {
+        $schedule->command('contracts:check-expiry')->daily();
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),

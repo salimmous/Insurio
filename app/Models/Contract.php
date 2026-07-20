@@ -432,7 +432,12 @@ class Contract extends Model
 
     public function getSoldeAttribute(): float
     {
-        $reglementsSum = $this->reglements()->sum('montant');
-        return (float)$this->prime_totale - $reglementsSum;
+        // Use in-memory collection when reglements are already eager-loaded (avoids N+1)
+        if ($this->relationLoaded('reglements')) {
+            $reglementsSum = $this->reglements->sum('montant');
+        } else {
+            $reglementsSum = $this->reglements()->sum('montant');
+        }
+        return (float)$this->prime_totale - (float)$reglementsSum;
     }
 }

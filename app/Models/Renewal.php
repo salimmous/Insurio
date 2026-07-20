@@ -11,17 +11,18 @@ class Renewal extends Model
 
     protected $fillable = [
         'contract_id',
+        'client_id',
         'reminder_date',
-        'days_before_expiry',
-        'status',
-    ];
-
-    protected $casts = [
-        'reminder_date' => 'date',
+        'status', // pending, contacted, renewed, lost
     ];
 
     public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class, 'contract_id');
+    }
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class, 'client_id');
     }
 }

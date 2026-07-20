@@ -10,6 +10,7 @@ use App\Models\CommissionEmploye;
 use App\Models\AgencyExpense;
 use App\Models\Client;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class AdminDashboard extends Component
 {
@@ -21,6 +22,8 @@ class AdminDashboard extends Component
     public $branchRankings = [];
     public $agentRankings = [];
     public $expiringContracts = [];
+    public $contractsByCompany = [];
+    public $contractsByType = [];
 
     // Expiring buckets
     public $expiring30Count = 0;
@@ -83,6 +86,51 @@ class AdminDashboard extends Component
 
     public function loadKPIs()
     {
+        $cacheKey = 'dashboard_kpis_' . tenant('id') . '_branch_' . ($this->selectedBranch ?: 'all');
+        $ttl = 600; // 10 minutes
+
+        $cached = Cache::remember($cacheKey, $ttl, function () {
+            return $this->computeKPIs();
+        });
+
+        $this->totalProduction        = $cached['totalProduction'];
+        $this->totalCommissions       = $cached['totalCommissions'];
+        $this->activeContractsCount   = $cached['activeContractsCount'];
+        $this->totalImpayes           = $cached['totalImpayes'];
+        $this->clientsCount           = $cached['clientsCount'];
+        $this->expenseLoyer           = $cached['expenseLoyer'];
+        $this->expenseElectricite     = $cached['expenseElectricite'];
+        $this->expenseEau             = $cached['expenseEau'];
+        $this->expenseSalaire         = $cached['expenseSalaire'];
+        $this->expenseAutre           = $cached['expenseAutre'];
+        $this->totalExpenses          = $cached['totalExpenses'];
+        $this->netCashflow            = $cached['netCashflow'];
+        $this->netProfit              = $cached['netProfit'];
+        $this->latestContracts        = $cached['latestContracts'];
+        $this->expiring30Count        = $cached['expiring30Count'];
+        $this->expiring15Count        = $cached['expiring15Count'];
+        $this->expiring7Count         = $cached['expiring7Count'];
+        $this->expiringContracts      = $cached['expiringContracts'];
+        $this->branchRankings         = $cached['branchRankings'];
+        $this->agentRankings          = $cached['agentRankings'];
+        $this->chartLabels            = $cached['chartLabels'];
+        $this->chartProductionData    = $cached['chartProductionData'];
+        $this->chartCommissionsData   = $cached['chartCommissionsData'];
+        $this->contractsByCompany     = $cached['contractsByCompany'];
+        $this->contractsByType        = $cached['contractsByType'];
+    }
+
+    public function refreshDashboard()
+    {
+        // Allow manual cache bust (e.g. after creating a contract)
+        $cacheKey = 'dashboard_kpis_' . tenant('id') . '_branch_' . ($this->selectedBranch ?: 'all');
+        Cache::forget($cacheKey);
+        $this->loadKPIs();
+        $this->dispatch('swal:success', ['message' => 'Tableau de bord actualisé.']);
+    }
+
+    private function computeKPIs(): array
+    {
         // 1. Base queries
         $contractsQuery = Contract::where('status', 'active');
         $commissionsQuery = CommissionEmploye::where('statut', 'payee');
@@ -91,62 +139,67 @@ class AdminDashboard extends Component
         // 2. Filter by branch if selected
         if ($this->selectedBranch) {
             $contractsQuery->where('succursale_id', $this->selectedBranch);
-            $commissionsQuery->whereHas('employe', function($q) {
+            $commissionsQuery->whereHas('employe', function ($q) {
                 $q->where('succursale_id', $this->selectedBranch);
             });
             $expensesQuery->where('succursale_id', $this->selectedBranch);
         }
 
-        // 3. Core KPIs
-        $this->totalProduction = (float)$contractsQuery->sum('premium_amount');
-        $this->totalCommissions = (float)$contractsQuery->sum('commission_amount');
-        $this->activeContractsCount = $contractsQuery->count();
+        // 3. Core KPIs (aggregation queries — no collection load)
+        $totalProduction      = (float) $contractsQuery->sum('premium_amount');
+        $totalCommissions     = (float) $contractsQuery->sum('commission_amount');
+        $activeContractsCount = $contractsQuery->count();
 
-        // Solde à recouvrer (unpaid balance)
-        $activeContracts = $contractsQuery->with('reglements')->get();
-        $this->totalImpayes = $activeContracts->sum(function($c) {
-            return $c->solde;
-        });
-
-        // 4. Clients Count
+        // 4. Impayes — single SQL subquery (replaces loading all contracts + reglements)
+        $driver = DB::getDriverName();
+        if ($driver === 'sqlite') {
+            $impayesQuery = Contract::where('statut', 'actif')
+                ->selectRaw('SUM(COALESCE(prime_totale, 0) - COALESCE((SELECT SUM(r.montant) FROM reglements r WHERE r.contrat_id = contracts.id), 0)) as total_impayes');
+        } else {
+            $impayesQuery = Contract::where('statut', 'actif')
+                ->selectRaw('SUM(COALESCE(premium_amount, 0) - COALESCE((SELECT SUM(r.montant) FROM reglements r WHERE r.contrat_id = contracts.id), 0)) as total_impayes');
+        }
         if ($this->selectedBranch) {
-            $this->clientsCount = Client::whereHas('contracts', function($q) {
+            $impayesQuery->where('succursale_id', $this->selectedBranch);
+        }
+        $totalImpayes = (float) ($impayesQuery->value('total_impayes') ?? 0);
+
+        // 5. Clients count
+        if ($this->selectedBranch) {
+            $clientsCount = Client::whereHas('contracts', function ($q) {
                 $q->where('succursale_id', $this->selectedBranch)->where('status', 'active');
             })->count();
         } else {
-            $this->clientsCount = Client::count();
+            $clientsCount = Client::count();
         }
 
-        // 5. Calculate Expenses/Charges
-        $this->expenseLoyer = (float)$expensesQuery->clone()->where('category', 'loyer')->sum('amount');
-        $this->expenseElectricite = (float)$expensesQuery->clone()->where('category', 'electricite')->sum('amount');
-        $this->expenseEau = (float)$expensesQuery->clone()->where('category', 'eau')->sum('amount');
-        $this->expenseSalaire = (float)$expensesQuery->clone()->where('category', 'salaire')->sum('amount');
-        $this->expenseAutre = (float)$expensesQuery->clone()->where('category', 'autre')->sum('amount');
+        // 6. Expenses by category
+        $expenseLoyer       = (float) (clone $expensesQuery)->where('category', 'loyer')->sum('amount');
+        $expenseElectricite = (float) (clone $expensesQuery)->where('category', 'electricite')->sum('amount');
+        $expenseEau         = (float) (clone $expensesQuery)->where('category', 'eau')->sum('amount');
+        $expenseSalaire     = (float) (clone $expensesQuery)->where('category', 'salaire')->sum('amount');
+        $expenseAutre       = (float) (clone $expensesQuery)->where('category', 'autre')->sum('amount');
 
-        // Total expenses = sum of all categories + paid internal commissions
-        $totalDirectExpenses = $this->expenseLoyer + $this->expenseElectricite + $this->expenseEau + $this->expenseSalaire + $this->expenseAutre;
-        $totalEmployeeCommsPaid = (float)$commissionsQuery->sum('montant_commission');
-        $this->totalExpenses = $totalDirectExpenses + $totalEmployeeCommsPaid;
+        $totalDirectExpenses    = $expenseLoyer + $expenseElectricite + $expenseEau + $expenseSalaire + $expenseAutre;
+        $totalEmployeeCommsPaid = (float) $commissionsQuery->sum('montant_commission');
+        $totalExpenses          = $totalDirectExpenses + $totalEmployeeCommsPaid;
 
-        // Cashflow & Profits
-        $this->netCashflow = $this->totalProduction - $this->totalExpenses;
-        $this->netProfit = ($this->totalCommissions > 0 ? $this->totalCommissions : $this->totalProduction) - $this->totalExpenses;
+        $netCashflow = $totalProduction - $totalExpenses;
+        $netProfit   = ($totalCommissions > 0 ? $totalCommissions : $totalProduction) - $totalExpenses;
 
-        // 6. Latest Contracts
+        // 7. Latest contracts (5 rows, eager loaded)
         $latestQuery = Contract::with(['client', 'succursale'])->latest();
         if ($this->selectedBranch) {
             $latestQuery->where('succursale_id', $this->selectedBranch);
         }
-        $this->latestContracts = $latestQuery->limit(5)->get();
+        $latestContracts = $latestQuery->limit(5)->get();
 
-        // 7. Expiring Contracts Buckets
-        $expiring30Query = Contract::where('status', 'active')
-            ->whereBetween('end_date', [now()->toDateString(), now()->addDays(30)->toDateString()]);
-        $expiring15Query = Contract::where('status', 'active')
-            ->whereBetween('end_date', [now()->toDateString(), now()->addDays(15)->toDateString()]);
-            $expiring7Query = Contract::where('status', 'active')
-            ->whereBetween('end_date', [now()->toDateString(), now()->addDays(7)->toDateString()]);
+        // 8. Expiring buckets (3 count-only queries)
+        $baseExpiring = fn() => Contract::where('status', 'active');
+
+        $expiring30Query = $baseExpiring()->whereBetween('end_date', [now()->toDateString(), now()->addDays(30)->toDateString()]);
+        $expiring15Query = $baseExpiring()->whereBetween('end_date', [now()->toDateString(), now()->addDays(15)->toDateString()]);
+        $expiring7Query  = $baseExpiring()->whereBetween('end_date', [now()->toDateString(), now()->addDays(7)->toDateString()]);
 
         if ($this->selectedBranch) {
             $expiring30Query->where('succursale_id', $this->selectedBranch);
@@ -154,11 +207,11 @@ class AdminDashboard extends Component
             $expiring7Query->where('succursale_id', $this->selectedBranch);
         }
 
-        $this->expiring30Count = $expiring30Query->count();
-        $this->expiring15Count = $expiring15Query->count();
-        $this->expiring7Count = $expiring7Query->count();
+        $expiring30Count = $expiring30Query->count();
+        $expiring15Count = $expiring15Query->count();
+        $expiring7Count  = $expiring7Query->count();
 
-        // 7b. Expiring Contracts List (Top 5)
+        // 9. Expiring contracts list
         $expiringQuery = Contract::where('status', 'active')
             ->whereBetween('end_date', [now()->toDateString(), now()->addDays(30)->toDateString()])
             ->with(['client', 'employe'])
@@ -166,10 +219,10 @@ class AdminDashboard extends Component
         if ($this->selectedBranch) {
             $expiringQuery->where('succursale_id', $this->selectedBranch);
         }
-        $this->expiringContracts = $expiringQuery->limit(5)->get();
+        $expiringContracts = $expiringQuery->limit(5)->get();
 
-        // 8. Branch Performance
-        $this->branchRankings = Contract::select('succursale_id', DB::raw('sum(premium_amount) as total_prod'))
+        // 10. Branch performance
+        $branchRankings = Contract::select('succursale_id', DB::raw('sum(premium_amount) as total_prod'))
             ->where('status', 'active')
             ->whereNotNull('succursale_id')
             ->groupBy('succursale_id')
@@ -178,7 +231,7 @@ class AdminDashboard extends Component
             ->limit(5)
             ->get();
 
-        // 9. Agent Performance
+        // 11. Agent performance
         $agentQuery = Contract::select('employe_id', DB::raw('sum(premium_amount) as total_prod'))
             ->where('status', 'active')
             ->whereNotNull('employe_id')
@@ -188,10 +241,10 @@ class AdminDashboard extends Component
         if ($this->selectedBranch) {
             $agentQuery->where('succursale_id', $this->selectedBranch);
         }
-        $this->agentRankings = $agentQuery->limit(5)->get();
+        $agentRankings = $agentQuery->limit(5)->get();
 
-        // 10. Generate dynamic chart data for current year
-        $monthExpr = DB::connection()->getDriverName() === 'sqlite'
+        // 12. Monthly chart
+        $monthExpr = DB::getDriverName() === 'sqlite'
             ? 'CAST(strftime("%m", start_date) AS INTEGER)'
             : 'MONTH(start_date)';
 
@@ -200,27 +253,63 @@ class AdminDashboard extends Component
             DB::raw('SUM(premium_amount) as total_prod'),
             DB::raw('SUM(commission_amount) as total_comm')
         )
-        ->whereYear('start_date', now()->year)
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+            ->whereYear('start_date', now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
 
-        $labels = [];
-        $prodData = [];
-        $commData = [];
-        $months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
-
+        $months    = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+        $labels    = $months;
+        $prodData  = [];
+        $commData  = [];
         for ($i = 1; $i <= 12; $i++) {
-            $labels[] = $months[$i - 1];
-            $stat = $monthlyStats->firstWhere('month', $i);
-            $prodData[] = $stat ? (float)$stat->total_prod : 0;
-            $commData[] = $stat ? (float)$stat->total_comm : 0;
+            $stat       = $monthlyStats->firstWhere('month', $i);
+            $prodData[] = $stat ? (float) $stat->total_prod : 0;
+            $commData[] = $stat ? (float) $stat->total_comm : 0;
         }
 
-        $this->chartLabels = $labels;
-        $this->chartProductionData = $prodData;
-        $this->chartCommissionsData = $commData;
+        // 13. Contracts by company
+        $contractsByCompany = Contract::select('insurance_company_id', DB::raw('count(*) as count'))
+            ->where('status', 'active')
+            ->whereNotNull('insurance_company_id')
+            ->groupBy('insurance_company_id')
+            ->with('compagnie')
+            ->get()
+            ->map(fn($item) => [
+                'label' => $item->compagnie ? $item->compagnie->nom : 'Autre',
+                'value' => $item->count,
+            ])
+            ->toArray();
+
+        // 14. Contracts by type
+        $contractsByType = Contract::select('insurance_type_id', DB::raw('count(*) as count'))
+            ->where('status', 'active')
+            ->whereNotNull('insurance_type_id')
+            ->groupBy('insurance_type_id')
+            ->with('product')
+            ->get()
+            ->map(fn($item) => [
+                'label' => $item->product ? $item->product->name : 'Autre',
+                'value' => $item->count,
+            ])
+            ->toArray();
+
+        return compact(
+            'totalProduction', 'totalCommissions', 'activeContractsCount', 'totalImpayes',
+            'clientsCount', 'expenseLoyer', 'expenseElectricite', 'expenseEau',
+            'expenseSalaire', 'expenseAutre', 'totalExpenses', 'netCashflow', 'netProfit',
+            'latestContracts', 'expiring30Count', 'expiring15Count', 'expiring7Count',
+            'expiringContracts', 'branchRankings', 'agentRankings', 'labels',
+            'prodData', 'commData', 'contractsByCompany', 'contractsByType'
+        ) + [
+            'chartLabels'         => $labels,
+            'chartProductionData' => $prodData,
+            'chartCommissionsData' => $commData,
+        ];
     }
+
+
+
 
     public function render()
     {

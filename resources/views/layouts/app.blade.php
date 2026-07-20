@@ -135,6 +135,46 @@
                         Tâches Kanban
                     </a>
 
+                    <!-- Journal d'activité -->
+                    @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner') || auth()->user()->hasRole('Super Admin'))
+                        <a href="{{ Route::has('admin.activity-timeline') ? route('admin.activity-timeline') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.activity-timeline') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Journal d'activité
+                        </a>
+                    @endif
+
+                    <!-- Importation Excel -->
+                    @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner') || auth()->user()->hasRole('Super Admin'))
+                        <a href="{{ Route::has('admin.import-manager') ? route('admin.import-manager') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.import-manager') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            Importation Excel
+                        </a>
+                    @endif
+
+                    <!-- Assureurs -->
+                    @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner') || auth()->user()->hasRole('Super Admin'))
+                        <a href="{{ Route::has('admin.compagnies') ? route('admin.compagnies') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.compagnies') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1" />
+                            </svg>
+                            Assureurs
+                        </a>
+                    @endif
+
+                    <!-- Suivi Règlements -->
+                    @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner') || auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('comptable') || auth()->user()->hasRole('Accountant'))
+                        <a href="{{ Route::has('admin.payments') ? route('admin.payments') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.payments') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Suivi Règlements
+                        </a>
+                    @endif
+
                     <!-- Succursales -->
                     @if(in_array('succursales', $enabledPages) && auth()->user()->hasRole('agency-admin'))
                         <a href="{{ Route::has('admin.succursales') ? route('admin.succursales') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.succursales') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
@@ -274,12 +314,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
-                        <!-- Search Box (Shopify style) -->
-                        <div class="hidden md:flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 w-80">
-                            <svg class="h-4 w-4 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            <input type="text" placeholder="Rechercher contrat, client, matricule..." class="bg-transparent border-none outline-none text-xs w-full text-slate-700 placeholder-slate-400 p-0 focus:ring-0">
+                        <!-- Search Box — Phase 3 Global Search -->
+                        <div class="hidden md:flex items-center w-80">
+                            <livewire:admin.global-search />
                         </div>
                     </div>
 
@@ -290,16 +327,11 @@
                             {{ tenant('name') ?? 'Agence Connectée' }}
                         </div>
 
-                        <!-- Notification bell -->
-                        <div class="relative">
-                            <button class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                            </button>
-                        </div>
+                        <!-- Notification Bell — Phase 3 Notification Center -->
+                        <livewire:admin.notification-center />
                     </div>
                 </header>
+
 
                 <!-- Page Content container -->
                 <main class="flex-1 overflow-y-auto bg-[#F5F6F8]">
