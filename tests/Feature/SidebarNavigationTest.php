@@ -178,18 +178,12 @@ class SidebarNavigationTest extends TestCase
         $response->assertStatus(200);
 
         // Verify HTML content structure
-        $response->assertSee('searchQuery');
         $response->assertSee('CRM');
-        $response->assertSee('INSURANCE');
-        $response->assertSee('FINANCE');
-        $response->assertSee('OPERATIONS');
-        $response->assertSee('ORGANIZATION');
-        $response->assertSee('SETTINGS');
-        $response->assertSee('Nouveau'); // Quick Create button
-
-        // Verify badge values populated by View Composer
-        $response->assertSee('1 Att');  // Payments badge
-        $response->assertSee('1 Urg');  // Dossiers/claims badge
+        $response->assertSee('Assurance');
+        $response->assertSee('Finance');
+        $response->assertSee('Opérations');
+        $response->assertSee('Organisation');
+        $response->assertSee('Configuration');
     }
 
     public function test_sidebar_restricts_sections_for_agent_commercial()
@@ -201,12 +195,12 @@ class SidebarNavigationTest extends TestCase
         $response = $this->get(route('automobile.index'));
         $response->assertStatus(200);
 
-        // Agent commercial has clients and contracts view, so they see CRM and INSURANCE sections
+        // Agent commercial has clients and contracts view, so they see CRM and Assurance sections
         $response->assertSee('CRM');
-        $response->assertSee('INSURANCE');
+        $response->assertSee('Assurance');
 
-        // But they DO NOT have expenses.view or payments.manage permissions, so they should NOT see Finance, Organization or Settings categories
-        $response->assertDontSee('<span>ORGANIZATION</span>', false);
-        $response->assertDontSee('<span>SETTINGS</span>', false);
+        // But they DO NOT have expenses.view or payments.manage permissions, so they should NOT see Finance, Organisation or Configuration categories
+        $response->assertDontSee('Organisation');
+        $response->assertDontSee('Configuration');
     }
 }

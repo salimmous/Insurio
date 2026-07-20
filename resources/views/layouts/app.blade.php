@@ -38,7 +38,7 @@
             </div>
         @endif
         <div class="flex h-screen overflow-hidden">            <!-- LEFT SIDEBAR: Premium Dark Slate Theme (like ShopifyManager) -->
-            <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-[#0F172A] border-r border-[#1E293B] flex-shrink-0 text-slate-350">
+            <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-[#0F172A] border-r border-[#1E293B] flex-shrink-0 text-slate-300">
                 @include('layouts.partials.sidebar-content')
             </aside>
 
