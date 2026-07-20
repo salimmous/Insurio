@@ -100,7 +100,7 @@
                     <a href="{{ route('platform.dashboard') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Console Centrale</a>
                     <a href="{{ route('platform.tenants.create') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Nouvelle Agence</a>
                     <a href="{{ route('platform.expenses.index') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Comptabilité / Charges</a>
-                </nav>>
+                </nav>
             </aside>
 
             <!-- MAIN CONTENT AREA -->
