@@ -28,4 +28,7 @@ Thumbs.db
 /database/*tenant*
 *.sqlite
 /storage/tenantaxatest/
+.corbell/
+corbell.db
+corbell-data/
 
