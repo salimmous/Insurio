@@ -72,6 +72,7 @@ Route::middleware($tenantMiddleware)->group(function () {
 
     // Impersonation route
     Route::get('/impersonate/{token}', function ($token) {
+        session(['impersonated_by_landlord' => true]);
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
     })->name('tenant.impersonate');
 

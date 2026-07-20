@@ -26,6 +26,17 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-[#F5F6F8] text-slate-800" x-data="{ sidebarOpen: false }">
+        @if(session('impersonated_by_landlord'))
+            <div class="bg-indigo-650 text-white text-xs font-semibold py-2 px-6 flex items-center justify-between shadow-sm relative z-50">
+                <div class="flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+                    <span>Vous êtes connecté en tant que <strong>{{ auth()->user()->name }}</strong> via la console Super Admin (Impersonation).</span>
+                </div>
+                <a href="http://{{ config('tenancy.central_domains.2') ?? 'sc7mosa1422.universe.wf' }}/super-admin/dashboard" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-md text-[10px] transition-all font-bold">
+                    Retour console centrale
+                </a>
+            </div>
+        @endif
         <div class="flex h-screen overflow-hidden">
 
             <!-- LEFT SIDEBAR: Premium Dark Slate Theme (like ShopifyManager) -->
