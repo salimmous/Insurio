@@ -13,6 +13,7 @@ class Communication extends Model
 
     protected $fillable = [
         'client_id',
+        'dossier_id',
         'type',
         'message',
         'user_id',
@@ -26,6 +27,11 @@ class Communication extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public function dossier(): BelongsTo
+    {
+        return $this->belongsTo(Dossier::class, 'dossier_id');
     }
 
     public function user(): BelongsTo

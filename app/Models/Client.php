@@ -85,6 +85,11 @@ class Client extends Model
         return $this->hasMany(Contract::class, 'client_id');
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'client_id');
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(Document::class, 'client_id');
@@ -98,6 +103,11 @@ class Client extends Model
     public function communications(): HasMany
     {
         return $this->hasMany(Communication::class, 'client_id');
+    }
+
+    public function dossiers(): HasMany
+    {
+        return $this->hasMany(Dossier::class, 'client_id');
     }
 
     public function entreprise(): BelongsTo

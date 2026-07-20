@@ -182,7 +182,9 @@ class TenancyServiceProvider extends ServiceProvider
                         str_contains($step['class'], 'GestionClientsTest') || 
                         str_contains($step['class'], 'GestionProductsTest') ||
                         str_contains($step['class'], 'CrmTest') ||
-                        str_contains($step['class'], 'AdministrationTest')
+                        str_contains($step['class'], 'GestionDossiersTest') ||
+                        str_contains($step['class'], 'AdministrationTest') ||
+                        str_contains($step['class'], 'PaymentCenterTest')
                     )) {
                         $isAutomobileTest = true;
                         break;

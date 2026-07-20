@@ -121,20 +121,68 @@ Ce document détaille toutes les tâches, nouvelles fonctionnalités et amélior
 
 ---
 
+## 7. Centre de Gestion des Dossiers & Sinistres (Case Management System)
+
+### A. Structure des Données des Dossiers & Accidents
+*   **Migrations** :
+    -   `2026_07_21_000000_create_dossiers_tables.php`
+    -   `2026_07_21_000001_add_dossier_id_to_existing_tables.php`
+*   **Description** : Implémentation du système complet de dossiers incluant :
+    -   `dossiers` — Registre principal avec type (sinistre, réclamation, modification, cheque rejeté), statut, priorité, urgence, progression, checklist (SLA).
+    -   `dossier_involved_parties` — Tiers impliqués dans les accidents (conducteurs, véhicules, assurances).
+    -   `dossier_accident_details` — Données d'accident (circonstances, date/heure, constat, dégâts).
+    -   `dossier_expert_details` — Suivi d'expertise (expert, honoraires, rapport, date).
+    -   `dossier_garage_details` — Suivi garage (nom, devis, réparations, date de sortie).
+    -   `dossier_cheque_details` — Détails de chèques rejetés liés à un incident.
+    -   `dossier_follow_ups` — Timeline d'étapes métier et relances.
+*   **Modèles Eloquent** : `Dossier`, `DossierInvolvedParty`, `DossierAccidentDetail`, `DossierExpertDetail`, `DossierGarageDetail`, `DossierChequeDetail`, `DossierFollowUp`.
+
+### B. Workspace Salesforce-style & Automatisation
+*   **Fichiers concernés** : `GestionDossiers.php`, `DossierWorkspace.php`, `DossierAutomationService.php`, views associés.
+*   **Description** : Console de gestion de dossiers :
+    -   Filtres avancés par type, priorité, urgence, succursale.
+    -   Workspace dynamique avec progression de phases (Déclaration → Expertise → Réparation → Indemnisation → Clôture).
+    -   SLA et checklists interactives.
+    -   `DossierAutomationService` générant automatiquement les tâches et les notifications WhatsApp lors de l'ouverture et des transitions de dossiers.
+
+---
+
+## 8. Centre de Règlements & Opérations Financières (Payment Center)
+
+### A. Structure Financière Avancée
+*   **Migration** : `2026_07_21_100000_update_payments_and_create_financial_tables.php`
+*   **Description** : Upgrade de la table `payments` et création de tables financières :
+    -   `payments` — Numéro séquentiel unique (`PM-YYYY-XXXXXX`), UUID, montants payés/restants, remises, taxes, banque, compte, numéro de chèque, dates de dépôt et de compensation.
+    -   `payment_installments` — Échéanciers de paiement fragmentés.
+    -   `bank_reconciliations` — Rapprochement bancaire manuel et automatique avec suivi des écarts.
+    -   `payment_follow_ups` — Relances de recouvrement amiable.
+    -   `payment_audit_logs` — Journal d'audit de conformité réglementaire de toutes les transactions financières.
+*   **Modèles Eloquent** : `Payment` (upgradé), `PaymentInstallment`, `BankReconciliation`, `PaymentFollowUp`, `PaymentAuditLog`.
+
+### B. Dashboard Stripe-style & Workflow de Chèques Rejetés
+*   **Fichiers concernés** : `PaymentCenter.php`, `PaymentWorkspace.php`, `PaymentAutomationService.php`, views associés.
+*   **Description** : Console financière centralisant :
+    -   **KPIs en direct** : Revenus du jour, Espèces du jour, Transferts bancaires, Chèques encaissés, Encours total client.
+    -   **Cheque Center** : Gestion de dépôts, encaissements, et rejets.
+    -   **Returned Cheque Workflow** : En cas de rejet de chèque, le système génère automatiquement une tâche de recouvrement pour l'agent, un dossier de type `payment_issue` dans le Case Management, et une alerte pour le manager.
+    -   **Rapprochement Bancaire** : Interface interactive pour matcher les dépôts bancaires.
+
+---
+
 ## Résumé Technique
 
 | Métrique                         | Valeur                           |
 |----------------------------------|----------------------------------|
-| Fichiers créés                   | 22                               |
-| Fichiers modifiés                | 10                               |
-| Lignes ajoutées                  | ~2 475                           |
-| Tests unitaires/intégration      | 71 passés (274 assertions)       |
-| Modèles Eloquent ajoutés        | 8 (Landlord) + 1 (Tenant)       |
-| Composants Livewire ajoutés     | 3                                |
-| Services métier ajoutés         | 2 (AutomationService, AiCopilotService) |
-| Événements Laravel ajoutés      | 1 (ContractExpiringEvent)        |
-| Commandes Artisan ajoutées      | 1 (platform:check-expirations)   |
+| Fichiers créés                   | 49                               |
+| Fichiers modifiés                | 23                               |
+| Lignes ajoutées                  | ~5 950                           |
+| Tests unitaires/intégration      | 81 passés (323 assertions)       |
+| Modèles Eloquent ajoutés        | 8 (Landlord) + 12 (Tenant)       |
+| Composants Livewire ajoutés     | 7                                |
+| Services métier ajoutés         | 4                                |
+| Événements Laravel ajoutés      | 1                                |
+| Commandes Artisan ajoutées      | 2                                |
 
 ---
 
-*Toutes les modifications listées ci-dessus ont été testées localement avec un taux de succès de 100%, poussées sur la branche principale (`main`) du dépôt Git, et déployées en production sur le serveur cloud. Commit : `af26ede`.*
+*Toutes les modifications listées ci-dessus ont été testées localement avec un taux de succès de 100%, poussées sur la branche principale (`main`) du dépôt Git, et déployées en production sur le serveur cloud.*

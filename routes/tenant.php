@@ -56,6 +56,8 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/automation', \App\Livewire\Admin\AutomationControl::class)->name('admin.automation')->middleware('can:expenses.view');
         Route::get('/admin/clients', \App\Livewire\Admin\GestionClients::class)->name('admin.clients')->middleware('can:clients.view');
         Route::get('/admin/clients/{clientId}', \App\Livewire\Admin\ClientProfile::class)->name('admin.clients.profile')->middleware('can:clients.view');
+        Route::get('/admin/dossiers', \App\Livewire\Admin\GestionDossiers::class)->name('admin.dossiers')->middleware('can:clients.view');
+        Route::get('/admin/dossiers/{id}', \App\Livewire\Admin\DossierWorkspace::class)->name('admin.dossiers.workspace')->middleware('can:clients.view');
         Route::get('/admin/tasks', \App\Livewire\Admin\TaskManager::class)->name('admin.tasks')->middleware('can:clients.view');
         Route::get('/admin/entreprises', \App\Livewire\Admin\GestionEntreprises::class)->name('admin.entreprises')->middleware('can:clients.view');
         Route::get('/admin/produits', \App\Livewire\Admin\GestionProducts::class)->name('admin.products')->middleware('can:contracts.view');
@@ -63,6 +65,8 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/import-manager', \App\Livewire\Admin\ImportManager::class)->name('admin.import-manager')->middleware('can:clients.create');
         Route::get('/admin/compagnies', \App\Livewire\Admin\GestionInsurers::class)->name('admin.compagnies')->middleware('can:contracts.view');
         Route::get('/admin/payments', \App\Livewire\Admin\PaymentManager::class)->name('admin.payments')->middleware('can:payments.manage');
+        Route::get('/admin/payments-center', \App\Livewire\Admin\PaymentCenter::class)->name('admin.payments.center')->middleware('can:clients.view');
+        Route::get('/admin/payments-center/{id}', \App\Livewire\Admin\PaymentWorkspace::class)->name('admin.payments.workspace')->middleware('can:clients.view');
 
         // Agent routes
         Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions')->middleware('can:commissions.view');

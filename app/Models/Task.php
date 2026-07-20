@@ -15,6 +15,7 @@ class Task extends Model
         'assigned_user_id',
         'client_id',
         'contract_id',
+        'dossier_id',
         'priority',
         'status',
         'due_date',
@@ -32,6 +33,11 @@ class Task extends Model
     public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class, 'contract_id');
+    }
+
+    public function dossier(): BelongsTo
+    {
+        return $this->belongsTo(Dossier::class, 'dossier_id');
     }
 
     public function assignee(): BelongsTo

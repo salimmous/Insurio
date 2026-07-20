@@ -119,7 +119,9 @@ class DashboardController extends Controller
         $suspendedTenantsCount = Tenant::where('status', 'suspended')->count();
         $trialTenantsCount = Tenant::where('status', 'trial')->count();
         
-        $mrr = Tenant::where('status', 'active')->sum('rent_amount') ?? 0.00;
+        $mrr = \App\Models\Landlord\Subscription::where('platform_subscriptions.status', 'active')
+            ->join('plans', 'platform_subscriptions.plan_id', '=', 'plans.id')
+            ->sum('plans.price') ?? 0.00;
         $arr = $mrr * 12;
         
         $revenueThisMonth = \App\Models\Landlord\PlatformPayment::whereMonth('created_at', now()->month)
@@ -136,9 +138,9 @@ class DashboardController extends Controller
         
         $failedPaymentsCount = \App\Models\Landlord\PlatformPayment::where('status', 'failed')->count();
         
-        $expiringSubscriptionsCount = Tenant::where('status', 'active')
-            ->whereNotNull('subscription_end_date')
-            ->whereBetween('subscription_end_date', [now()->toDateString(), now()->addDays(30)->toDateString()])
+        $expiringSubscriptionsCount = \App\Models\Landlord\Subscription::where('status', 'active')
+            ->whereNotNull('ends_at')
+            ->whereBetween('ends_at', [now(), now()->addDays(30)])
             ->count();
 
         $newTenantsToday = Tenant::whereDate('created_at', now()->toDateString())->count();

@@ -14,25 +14,25 @@
         <div class="flex h-screen overflow-hidden">
 
             <!-- LEFT SIDEBAR: Premium Stripe/Shopify Dark Slate Theme -->
-            <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-[#0B0F19] border-r border-[#1E293B]/60 flex-shrink-0 text-slate-350">
+            <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-[#0F172A] border-r border-[#1E293B] flex-shrink-0 text-slate-300">
                 <!-- Logo Block -->
-                <div class="h-16 flex items-center px-6 border-b border-[#1E293B]/40">
+                <div class="h-16 flex items-center px-6 border-b border-[#1E293B]">
                     <div class="flex items-center gap-2">
-                        <svg class="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="h-8 w-8 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2".5 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
-                        <span class="text-base font-extrabold text-white tracking-tight">Insurio Central</span>
+                        <span class="text-lg font-bold text-white font-sans tracking-wide">Insurio Central</span>
                     </div>
                 </div>
 
                 <!-- User Profile Block -->
-                <div class="p-3 mx-4 my-3 bg-[#111827] rounded-xl border border-[#374151]/30 flex items-center gap-2.5">
-                    <div class="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-white text-xs">
+                <div class="p-4 mx-4 my-4 bg-[#1E293B]/50 rounded-xl border border-[#334155]/40 flex items-center gap-3">
+                    <div class="h-9 w-9 rounded-full bg-teal-650 flex items-center justify-center font-bold text-white text-sm">
                         SA
                     </div>
                     <div class="overflow-hidden">
-                        <div class="font-semibold text-xs text-white truncate">{{ Auth::guard('platform')->user()->name }}</div>
-                        <div class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Super Admin</div>
+                        <div class="font-bold text-xs text-white truncate">{{ Auth::guard('platform')->user()->name }}</div>
+                        <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">Super Admin</div>
                     </div>
                 </div>
 

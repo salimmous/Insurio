@@ -186,36 +186,85 @@
 
                     <!-- Payments Tab -->
                     @if($activeTab === 'payments')
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-slate-100 text-left text-sm">
-                                <thead class="text-slate-500 font-semibold text-xs uppercase bg-slate-50/50">
-                                    <tr>
-                                        <th class="px-4 py-3">Date règlement</th>
-                                        <th class="px-4 py-3">Contrat</th>
-                                        <th class="px-4 py-3">Montant</th>
-                                        <th class="px-4 py-3">Mode</th>
-                                        <th class="px-4 py-3">Référence / Banque</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-150 text-slate-700 font-mono text-xs">
-                                    @forelse($payments as $pay)
-                                        <tr class="hover:bg-slate-50/50">
-                                            <td class="px-4 py-3.5">{{ $pay->date_reglement->format('d/m/Y') }}</td>
-                                            <td class="px-4 py-3.5 font-sans">
-                                                <span class="font-bold text-slate-800 block">{{ $pay->contrat->contract_number }}</span>
-                                                <span class="text-[10px] text-slate-400 block">{{ $pay->contrat->compagnie->nom ?? '-' }}</span>
-                                            </td>
-                                            <td class="px-4 py-3.5 font-semibold text-emerald-600">{{ number_format($pay->montant, 2) }} DH</td>
-                                            <td class="px-4 py-3.5 uppercase font-sans font-semibold text-slate-500">{{ $pay->mode_reglement }}</td>
-                                            <td class="px-4 py-3.5 font-sans text-slate-500">{{ $pay->reference_paiement ?? '-' }}</td>
-                                        </tr>
-                                    @empty
+                        <div class="space-y-6">
+                            <!-- Telemetry stats inside Client Profile -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <span class="text-[9px] font-extrabold uppercase text-slate-450 tracking-wider">Montant Payé</span>
+                                    <div class="text-lg font-black text-emerald-600 mt-1">
+                                        {{ number_format($payments->where('payment_status', 'paid')->sum('amount'), 2) }} DH
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <span class="text-[9px] font-extrabold uppercase text-slate-450 tracking-wider">Encours Client</span>
+                                    <div class="text-lg font-black text-rose-600 mt-1">
+                                        {{ number_format($payments->whereNotIn('payment_status', ['paid', 'cancelled', 'written_off'])->sum('remaining_amount'), 2) }} DH
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <span class="text-[9px] font-extrabold uppercase text-slate-450 tracking-wider">Nombre de Règlements</span>
+                                    <div class="text-lg font-black text-slate-800 mt-1">
+                                        {{ $payments->count() }} Fiches
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payments list table -->
+                            <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                                <table class="min-w-full divide-y divide-slate-100 text-left text-sm">
+                                    <thead class="text-slate-500 font-semibold text-xs uppercase bg-slate-50/50">
                                         <tr>
-                                            <td colspan="5" class="text-center py-8 text-slate-400 font-sans">Aucun règlement enregistré pour le moment.</td>
+                                            <th class="px-4 py-3">Règlement</th>
+                                            <th class="px-4 py-3">Contrat</th>
+                                            <th class="px-4 py-3">Montant / Payé</th>
+                                            <th class="px-4 py-3">Mode</th>
+                                            <th class="px-4 py-3">Statut</th>
+                                            <th class="px-4 py-3">Reçu</th>
+                                            <th class="px-4 py-3 text-right">Actions</th>
                                         </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-150 text-slate-700 font-mono text-xs">
+                                        @forelse($payments as $pay)
+                                            <tr class="hover:bg-slate-50/50">
+                                                <td class="px-4 py-3.5 font-bold text-slate-800">
+                                                    <a href="{{ route('admin.payments.workspace', $pay->id) }}" class="text-indigo-650 hover:underline">
+                                                        {{ $pay->payment_number }}
+                                                    </a>
+                                                </td>
+                                                <td class="px-4 py-3.5 font-sans">
+                                                    <span class="font-bold text-slate-800 block">{{ $pay->contrat->contract_number ?? '-' }}</span>
+                                                    <span class="text-[10px] text-slate-400 block">{{ $pay->contrat->compagnie->nom ?? '-' }}</span>
+                                                </td>
+                                                <td class="px-4 py-3.5">
+                                                    <span class="block font-bold text-slate-800">{{ number_format($pay->amount, 2) }} DH</span>
+                                                    @if($pay->paid_amount > 0)
+                                                        <span class="block text-[9px] text-emerald-600">Payé: {{ number_format($pay->paid_amount, 2) }}</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-3.5 uppercase font-sans font-semibold text-slate-500">{{ $pay->payment_method }}</td>
+                                                <td class="px-4 py-3.5">
+                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase
+                                                        {{ $pay->payment_status === 'paid' ? 'bg-emerald-100 text-emerald-800' : '' }}
+                                                        {{ $pay->payment_status === 'pending' ? 'bg-amber-100 text-amber-800' : '' }}
+                                                        {{ $pay->payment_status === 'overdue' ? 'bg-rose-100 text-rose-800' : '' }}
+                                                        {{ $pay->payment_status === 'returned' ? 'bg-red-100 text-red-800' : '' }}
+                                                    ">
+                                                        {{ $pay->payment_status }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3.5 font-sans text-slate-500">{{ $pay->receipt_number ?: '-' }}</td>
+                                                <td class="px-4 py-3.5 text-right font-sans">
+                                                    <a href="{{ route('admin.payments.workspace', $pay->id) }}" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-[10px] font-bold">Consulter</a>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7" class="text-center py-8 text-slate-400 font-sans">Aucun règlement enregistré pour le moment.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     @endif
 

@@ -17,6 +17,7 @@ class Document extends Model
         'chemin_fichier',
         'client_id',
         'contract_id',
+        'dossier_id',
         'type',
         'file_path',
         'file_name',
@@ -48,6 +49,11 @@ class Document extends Model
     public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class, 'contract_id');
+    }
+
+    public function dossier(): BelongsTo
+    {
+        return $this->belongsTo(Dossier::class, 'dossier_id');
     }
 
     public function uploader(): BelongsTo

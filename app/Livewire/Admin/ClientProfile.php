@@ -169,7 +169,7 @@ class ClientProfile extends Component
     {
         $contracts = $this->client->contrats()->with(['compagnie', 'product', 'reglements'])->latest()->get();
         $documents = Document::where('client_id', $this->client->id)->latest()->get();
-        $payments = \App\Models\Reglement::whereIn('contrat_id', $contracts->pluck('id'))->with('contrat')->latest()->get();
+        $payments = \App\Models\Payment::where('client_id', $this->client->id)->with('contrat.compagnie')->latest()->get();
         $timeline = Communication::where('client_id', $this->client->id)->with('user')->latest()->get();
 
         return view('livewire.admin.client-profile', compact('contracts', 'documents', 'payments', 'timeline'))

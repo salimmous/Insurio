@@ -5,9 +5,10 @@ namespace App\Models\Scopes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
-use App\Models\ContratAuto;
+use App\Models\Contract;
 use App\Models\Employe;
 use App\Models\CommissionEmploye;
+use App\Models\Dossier;
 
 class SuccursaleScope implements Scope
 {
@@ -38,7 +39,7 @@ class SuccursaleScope implements Scope
 
         // 3. Apply scoping based on role
         if ($user->hasRole('responsable-succursale')) {
-            if ($model instanceof ContratAuto || $model instanceof Employe) {
+            if ($model instanceof Contract || $model instanceof Employe || $model instanceof Dossier) {
                 $builder->where($model->getTable() . '.succursale_id', $succursaleId);
             } elseif ($model instanceof CommissionEmploye) {
                 $builder->whereHas('employe', function ($q) use ($succursaleId) {
@@ -46,10 +47,12 @@ class SuccursaleScope implements Scope
                 });
             }
         } elseif ($user->hasRole('agent-commercial')) {
-            if ($model instanceof ContratAuto || $model instanceof CommissionEmploye) {
+            if ($model instanceof Contract || $model instanceof CommissionEmploye) {
                 $builder->where($model->getTable() . '.employe_id', $employeId);
             } elseif ($model instanceof Employe) {
                 $builder->where($model->getTable() . '.id', $employeId);
+            } elseif ($model instanceof Dossier) {
+                $builder->where($model->getTable() . '.assigned_employee_id', $employeId);
             }
         }
     }

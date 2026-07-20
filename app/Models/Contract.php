@@ -298,6 +298,11 @@ class Contract extends Model
         return $this->belongsTo(Compagnie::class, 'insurance_company_id');
     }
 
+    public function dossiers(): HasMany
+    {
+        return $this->hasMany(Dossier::class, 'contract_id');
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Compagnie::class, 'insurance_company_id');
@@ -336,6 +341,11 @@ class Contract extends Model
     public function reglements(): HasMany
     {
         return $this->hasMany(Reglement::class, 'contrat_id');
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'contract_id');
     }
 
     public function renewals(): HasMany
