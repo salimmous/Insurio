@@ -13,7 +13,7 @@ class CommissionService
     /**
      * Calculate and record commission for a contract.
      */
-    public function calculerCommission(ContratAuto $contrat): ?CommissionEmploye
+    public function calculerCommission(\App\Models\Contract $contrat): ?CommissionEmploye
     {
         if (!$contrat->employe_id) {
             return null;
@@ -54,7 +54,7 @@ class CommissionService
     /**
      * Check if commission should trigger for the given action ('vente' or 'encaissement').
      */
-    public function triggerForAction(string $action, ContratAuto $contrat): void
+    public function triggerForAction(string $action, \App\Models\Contract $contrat): void
     {
         $configuredTrigger = Setting::get('commission_trigger', 'vente');
 

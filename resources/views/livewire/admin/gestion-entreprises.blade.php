@@ -35,7 +35,7 @@
                 </div>
                 <div>
                     <span class="block text-2xl font-bold text-gray-900">
-                        {{ \App\Models\Client::where('type', 'entreprise')->where('solvabilite', 'solvable')->count() }}
+                        {{ \App\Models\Client::where('client_type', 'company')->where('solvabilite', 'solvable')->count() }}
                     </span>
                     <span class="text-sm text-gray-500">Entreprises solvables</span>
                 </div>
@@ -48,7 +48,7 @@
                 </div>
                 <div>
                     <span class="block text-2xl font-bold text-gray-900">
-                        {{ \App\Models\Client::where('type', 'entreprise')->where('incident', true)->count() }}
+                        {{ \App\Models\Client::where('client_type', 'company')->where('incident', true)->count() }}
                     </span>
                     <span class="text-sm text-gray-500">Entreprises avec incidents</span>
                 </div>
@@ -82,23 +82,27 @@
                         @forelse($entreprises as $ent)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4">
-                                    <div class="font-semibold text-gray-900">{{ $ent->nom }}</div>
+                                    <div class="font-semibold text-indigo-600 hover:text-indigo-900">
+                                        <a href="{{ route('admin.clients.profile', $ent->id) }}" class="hover:underline">
+                                            {{ $ent->last_name }}
+                                        </a>
+                                    </div>
                                     @if($ent->employes->isNotEmpty())
                                         <div class="mt-1 flex flex-wrap gap-1">
                                             @foreach($ent->employes as $emp)
                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-50 text-slate-600 border border-slate-200">
-                                                    {{ $emp->nom }} {{ $emp->prenom }}
+                                                    {{ $emp->first_name }} {{ $emp->last_name }}
                                                 </span>
                                             @endforeach
                                         </div>
                                     @endif
-                                    <div class="text-xs text-gray-500 mt-1">{{ $ent->adresse ?? 'Pas d\'adresse renseignée' }}</div>
+                                    <div class="text-xs text-gray-500 mt-1">{{ $ent->address ?? 'Pas d\'adresse renseignée' }}</div>
                                 </td>
                                 <td class="px-6 py-4 font-mono font-bold text-gray-700 text-xs">
                                     {{ $ent->cin ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 font-mono text-gray-600 text-xs">
-                                    {{ $ent->telephone ?? '-' }}
+                                    {{ $ent->phone ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 text-gray-600">
                                     {{ $ent->email ?? '-' }}
@@ -118,6 +122,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right flex justify-end gap-3">
+                                    <a href="{{ route('admin.clients.profile', $ent->id) }}" class="text-emerald-600 hover:text-emerald-900 font-medium">Profil CRM</a>
                                     <button wire:click="openModal({{ $ent->id }})" class="text-indigo-600 hover:text-indigo-900 font-medium">Modifier</button>
                                     <button onclick="confirm('Supprimer cette entreprise ?') || event.stopImmediatePropagation()" wire:click="delete({{ $ent->id }})" class="text-rose-600 hover:text-rose-900 font-medium">Supprimer</button>
                                 </td>
@@ -139,7 +144,9 @@
                     <div class="p-4 flex flex-col gap-2 hover:bg-gray-50">
                         <div class="flex justify-between items-start">
                             <div>
-                                <span class="font-bold text-gray-800">{{ $ent->nom }}</span>
+                                <a href="{{ route('admin.clients.profile', $ent->id) }}" class="font-bold text-indigo-600 hover:underline block">
+                                    {{ $ent->last_name }}
+                                </a>
                                 <span class="text-xs text-gray-400 font-mono block">ICE/RC: {{ $ent->cin ?? '-' }}</span>
                             </div>
                             <div class="flex gap-1">
@@ -151,20 +158,21 @@
                             </div>
                         </div>
                         <div class="text-xs text-gray-600">
-                            <div><strong>Téléphone:</strong> {{ $ent->telephone ?? '-' }}</div>
+                            <div><strong>Téléphone:</strong> {{ $ent->phone ?? '-' }}</div>
                             <div><strong>E-mail:</strong> {{ $ent->email ?? '-' }}</div>
                             <div><strong>Incidents:</strong> {{ $ent->incident ? 'Oui' : 'Aucun' }}</div>
                             @if($ent->employes->isNotEmpty())
                                 <div class="mt-1.5 flex flex-wrap gap-1">
                                     @foreach($ent->employes as $emp)
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">
-                                            {{ $emp->nom }} {{ $emp->prenom }}
+                                            {{ $emp->first_name }} {{ $emp->last_name }}
                                         </span>
                                     @endforeach
                                 </div>
                             @endif
                         </div>
                         <div class="flex justify-end gap-3 text-xs mt-2 border-t pt-2 border-gray-100">
+                            <a href="{{ route('admin.clients.profile', $ent->id) }}" class="text-emerald-600 font-semibold">CRM</a>
                             <button wire:click="openModal({{ $ent->id }})" class="text-indigo-600 font-semibold">Modifier</button>
                             <button onclick="confirm('Supprimer cette entreprise ?') || event.stopImmediatePropagation()" wire:click="delete({{ $ent->id }})" class="text-rose-600 font-semibold">Supprimer</button>
                         </div>
@@ -210,8 +218,8 @@
                                 </div>
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Téléphone</label>
-                                    <input type="text" wire:model="telephone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('telephone') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                    <input type="text" wire:model="phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    @error('phone') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 
@@ -223,8 +231,8 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Adresse complète</label>
-                                <textarea wire:model="adresse" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                                @error('adresse') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                <textarea wire:model="address" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                                @error('address') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">

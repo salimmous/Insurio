@@ -177,21 +177,21 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Card 1 -->
                                 <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-32 transition-all hover:shadow-md">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">TOTAL AGENCES</span>
-                                    <div class="text-2xl font-black text-teal-650 font-mono my-1">{{ $tenants->count() }}</div>
-                                    <span class="text-[10px] text-slate-400 font-medium">Instanciées sur la plateforme</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Cabinets Actifs</span>
+                                    <div class="text-2xl font-black text-teal-600 font-mono my-1">{{ $activeTenantsCount }} / {{ $tenants->count() }}</div>
+                                    <span class="text-[10px] text-slate-400 font-medium">Nombre de cabinets d'assurances actifs</span>
                                 </div>
                                 <!-- Card 2 -->
                                 <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-32 transition-all hover:shadow-md">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">AGENCES ACTIVES</span>
-                                    <div class="text-2xl font-black text-indigo-600 font-mono my-1">{{ $tenants->where('status', 'active')->count() }}</div>
-                                    <span class="text-[10px] text-slate-400 font-medium">En cours d'abonnement actif</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">MRR (Revenu Récurrent Mensuel)</span>
+                                    <div class="text-2xl font-black text-indigo-600 font-mono my-1">{{ number_format($mrr, 2) }} DH</div>
+                                    <span class="text-[10px] text-slate-400 font-medium">Cumul mensuel des abonnements SaaS</span>
                                 </div>
                                 <!-- Card 3 -->
                                 <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-32 transition-all hover:shadow-md">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">ACTIVITÉS CONSOLE (24H)</span>
-                                    <div class="text-2xl font-black text-amber-600 font-mono my-1">{{ $logs->count() }}</div>
-                                    <span class="text-[10px] text-slate-400 font-medium">Opérations d'administration effectuées</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Taux d'Attrition (Churn)</span>
+                                    <div class="text-2xl font-black text-rose-650 font-mono my-1">{{ number_format($churnRate, 1) }}%</div>
+                                    <span class="text-[10px] text-slate-400 font-medium">Pourcentage de cabinets suspendus</span>
                                 </div>
                             </div>
 

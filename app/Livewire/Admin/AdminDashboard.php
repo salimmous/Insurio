@@ -3,7 +3,7 @@
 namespace App\Livewire\Admin;
 
 use Livewire\Component;
-use App\Models\ContratAuto;
+use App\Models\Contract;
 use App\Models\Succursale;
 use App\Models\Employe;
 use App\Models\CommissionEmploye;
@@ -22,10 +22,16 @@ class AdminDashboard extends Component
     public $agentRankings = [];
     public $expiringContracts = [];
 
-    // New Cashflow & Expense metrics
+    // Expiring buckets
+    public $expiring30Count = 0;
+    public $expiring15Count = 0;
+    public $expiring7Count = 0;
+
+    // Financials
     public $selectedBranch = '';
     public $totalExpenses = 0.00;
     public $netCashflow = 0.00;
+    public $netProfit = 0.00;
     public $clientsCount = 0;
 
     // Expense Category details
@@ -37,6 +43,11 @@ class AdminDashboard extends Component
 
     // Sidebar/Selector List
     public $branchList = [];
+
+    // Chart Data
+    public $chartLabels = [];
+    public $chartProductionData = [];
+    public $chartCommissionsData = [];
 
     public function mount()
     {
@@ -72,8 +83,8 @@ class AdminDashboard extends Component
 
     public function loadKPIs()
     {
-        // 1. Base query scope
-        $contractsQuery = ContratAuto::where('statut', 'actif');
+        // 1. Base queries
+        $contractsQuery = Contract::where('status', 'active');
         $commissionsQuery = CommissionEmploye::where('statut', 'payee');
         $expensesQuery = AgencyExpense::query();
 
@@ -87,8 +98,8 @@ class AdminDashboard extends Component
         }
 
         // 3. Core KPIs
-        $this->totalProduction = (float)$contractsQuery->sum('prime_totale');
-        $this->totalCommissions = (float)$commissionsQuery->sum('montant_commission');
+        $this->totalProduction = (float)$contractsQuery->sum('premium_amount');
+        $this->totalCommissions = (float)$contractsQuery->sum('commission_amount');
         $this->activeContractsCount = $contractsQuery->count();
 
         // Solde à recouvrer (unpaid balance)
@@ -98,10 +109,9 @@ class AdminDashboard extends Component
         });
 
         // 4. Clients Count
-        // If a branch is selected, only count clients who have active contracts in that branch
         if ($this->selectedBranch) {
-            $this->clientsCount = Client::whereHas('contrats', function($q) {
-                $q->where('succursale_id', $this->selectedBranch)->where('statut', 'actif');
+            $this->clientsCount = Client::whereHas('contracts', function($q) {
+                $q->where('succursale_id', $this->selectedBranch)->where('status', 'active');
             })->count();
         } else {
             $this->clientsCount = Client::count();
@@ -114,33 +124,53 @@ class AdminDashboard extends Component
         $this->expenseSalaire = (float)$expensesQuery->clone()->where('category', 'salaire')->sum('amount');
         $this->expenseAutre = (float)$expensesQuery->clone()->where('category', 'autre')->sum('amount');
 
-        // Total expenses = sum of all categories + internal commissions paid
+        // Total expenses = sum of all categories + paid internal commissions
         $totalDirectExpenses = $this->expenseLoyer + $this->expenseElectricite + $this->expenseEau + $this->expenseSalaire + $this->expenseAutre;
-        $this->totalExpenses = $totalDirectExpenses + $this->totalCommissions;
+        $totalEmployeeCommsPaid = (float)$commissionsQuery->sum('montant_commission');
+        $this->totalExpenses = $totalDirectExpenses + $totalEmployeeCommsPaid;
 
-        // Net Cashflow = Inflow (Total Production) - Outflow (Total Expenses)
+        // Cashflow & Profits
         $this->netCashflow = $this->totalProduction - $this->totalExpenses;
+        $this->netProfit = ($this->totalCommissions > 0 ? $this->totalCommissions : $this->totalProduction) - $this->totalExpenses;
 
         // 6. Latest Contracts
-        $latestQuery = ContratAuto::with(['client', 'succursale'])->latest();
+        $latestQuery = Contract::with(['client', 'succursale'])->latest();
         if ($this->selectedBranch) {
             $latestQuery->where('succursale_id', $this->selectedBranch);
         }
         $this->latestContracts = $latestQuery->limit(5)->get();
 
-        // 7. Expiring Contracts in next 30 days
-        $expiringQuery = ContratAuto::where('statut', 'actif')
-            ->whereBetween('date_echeance', [now()->toDateString(), now()->addDays(30)->toDateString()])
+        // 7. Expiring Contracts Buckets
+        $expiring30Query = Contract::where('status', 'active')
+            ->whereBetween('end_date', [now()->toDateString(), now()->addDays(30)->toDateString()]);
+        $expiring15Query = Contract::where('status', 'active')
+            ->whereBetween('end_date', [now()->toDateString(), now()->addDays(15)->toDateString()]);
+            $expiring7Query = Contract::where('status', 'active')
+            ->whereBetween('end_date', [now()->toDateString(), now()->addDays(7)->toDateString()]);
+
+        if ($this->selectedBranch) {
+            $expiring30Query->where('succursale_id', $this->selectedBranch);
+            $expiring15Query->where('succursale_id', $this->selectedBranch);
+            $expiring7Query->where('succursale_id', $this->selectedBranch);
+        }
+
+        $this->expiring30Count = $expiring30Query->count();
+        $this->expiring15Count = $expiring15Query->count();
+        $this->expiring7Count = $expiring7Query->count();
+
+        // 7b. Expiring Contracts List (Top 5)
+        $expiringQuery = Contract::where('status', 'active')
+            ->whereBetween('end_date', [now()->toDateString(), now()->addDays(30)->toDateString()])
             ->with(['client', 'employe'])
-            ->orderBy('date_echeance', 'asc');
+            ->orderBy('end_date', 'asc');
         if ($this->selectedBranch) {
             $expiringQuery->where('succursale_id', $this->selectedBranch);
         }
         $this->expiringContracts = $expiringQuery->limit(5)->get();
 
-        // 8. Branch Performance (only relevant if viewing globally)
-        $this->branchRankings = ContratAuto::select('succursale_id', DB::raw('sum(prime_totale) as total_prod'))
-            ->where('statut', 'actif')
+        // 8. Branch Performance
+        $this->branchRankings = Contract::select('succursale_id', DB::raw('sum(premium_amount) as total_prod'))
+            ->where('status', 'active')
             ->whereNotNull('succursale_id')
             ->groupBy('succursale_id')
             ->orderBy('total_prod', 'desc')
@@ -149,8 +179,8 @@ class AdminDashboard extends Component
             ->get();
 
         // 9. Agent Performance
-        $agentQuery = ContratAuto::select('employe_id', DB::raw('sum(prime_totale) as total_prod'))
-            ->where('statut', 'actif')
+        $agentQuery = Contract::select('employe_id', DB::raw('sum(premium_amount) as total_prod'))
+            ->where('status', 'active')
             ->whereNotNull('employe_id')
             ->groupBy('employe_id')
             ->orderBy('total_prod', 'desc')
@@ -159,6 +189,37 @@ class AdminDashboard extends Component
             $agentQuery->where('succursale_id', $this->selectedBranch);
         }
         $this->agentRankings = $agentQuery->limit(5)->get();
+
+        // 10. Generate dynamic chart data for current year
+        $monthExpr = DB::connection()->getDriverName() === 'sqlite'
+            ? 'CAST(strftime("%m", start_date) AS INTEGER)'
+            : 'MONTH(start_date)';
+
+        $monthlyStats = Contract::select(
+            DB::raw("{$monthExpr} as month"),
+            DB::raw('SUM(premium_amount) as total_prod'),
+            DB::raw('SUM(commission_amount) as total_comm')
+        )
+        ->whereYear('start_date', now()->year)
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
+
+        $labels = [];
+        $prodData = [];
+        $commData = [];
+        $months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $labels[] = $months[$i - 1];
+            $stat = $monthlyStats->firstWhere('month', $i);
+            $prodData[] = $stat ? (float)$stat->total_prod : 0;
+            $commData[] = $stat ? (float)$stat->total_comm : 0;
+        }
+
+        $this->chartLabels = $labels;
+        $this->chartProductionData = $prodData;
+        $this->chartCommissionsData = $commData;
     }
 
     public function render()

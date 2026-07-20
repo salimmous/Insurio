@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Client;
+use Illuminate\Support\Str;
 
 class GestionEntreprises extends Component
 {
@@ -14,22 +15,26 @@ class GestionEntreprises extends Component
     
     // Form fields
     public $clientId = null;
-    public $nom = '';
+    public $nom = ''; // Maps to last_name
     public $email = '';
-    public $telephone = '';
+    public $phone = '';
     public $cin = ''; // ICE / RC
-    public $adresse = '';
+    public $address = '';
     public $solvabilite = 'solvable';
     public $incident = false;
+
+    // Compatibility fields
+    public $telephone = '';
+    public $adresse = '';
 
     public $isModalOpen = false;
 
     protected $rules = [
         'nom' => 'required|string|max:255', // Raison Sociale
         'email' => 'nullable|email|max:255',
-        'telephone' => 'nullable|string|max:50',
+        'phone' => 'nullable|string|max:50',
         'cin' => 'nullable|string|max:50', // ICE / RC
-        'adresse' => 'nullable|string|max:500',
+        'address' => 'nullable|string|max:500',
         'solvabilite' => 'required|in:solvable,non-solvable',
         'incident' => 'required|boolean',
     ];
@@ -46,13 +51,16 @@ class GestionEntreprises extends Component
 
         if ($id) {
             $client = Client::findOrFail($id);
-            $this->nom = $client->nom;
+            $this->nom = $client->last_name;
             $this->email = $client->email;
-            $this->telephone = $client->telephone;
+            $this->phone = $client->phone;
             $this->cin = $client->cin;
-            $this->adresse = $client->adresse;
+            $this->address = $client->address;
             $this->solvabilite = $client->solvabilite;
             $this->incident = (bool)$client->incident;
+            
+            $this->telephone = $this->phone;
+            $this->adresse = $this->address;
         } else {
             $this->resetForm();
         }
@@ -71,29 +79,41 @@ class GestionEntreprises extends Component
         $this->clientId = null;
         $this->nom = '';
         $this->email = '';
-        $this->telephone = '';
+        $this->phone = '';
         $this->cin = '';
-        $this->adresse = '';
+        $this->address = '';
         $this->solvabilite = 'solvable';
         $this->incident = false;
+
+        $this->telephone = '';
+        $this->adresse = '';
     }
 
     public function save()
     {
+        if ($this->telephone) {
+            $this->phone = $this->telephone;
+        }
+        if ($this->adresse) {
+            $this->address = $this->adresse;
+        }
+
         $this->validate();
 
         Client::updateOrCreate(
             ['id' => $this->clientId],
             [
-                'nom' => $this->nom,
-                'prenom' => '', // Companies have no prenom
+                'uuid' => $this->clientId ? Client::findOrFail($this->clientId)->uuid : (string) Str::uuid(),
+                'last_name' => $this->nom,
+                'first_name' => '', // Companies have no first_name
+                'company_name' => $this->nom,
                 'email' => $this->email,
-                'telephone' => $this->telephone,
+                'phone' => $this->phone,
                 'cin' => $this->cin,
-                'adresse' => $this->adresse,
+                'address' => $this->address,
                 'solvabilite' => $this->solvabilite,
                 'incident' => $this->incident,
-                'type' => 'entreprise',
+                'client_type' => 'company',
             ]
         );
 
@@ -117,13 +137,13 @@ class GestionEntreprises extends Component
 
     public function render()
     {
-        $query = Client::where('type', 'entreprise');
+        $query = Client::where('client_type', 'company');
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('nom', 'like', '%' . $this->search . '%')
+                $q->where('last_name', 'like', '%' . $this->search . '%')
                   ->orWhere('cin', 'like', '%' . $this->search . '%')
-                  ->orWhere('telephone', 'like', '%' . $this->search . '%')
+                  ->orWhere('phone', 'like', '%' . $this->search . '%')
                   ->orWhere('email', 'like', '%' . $this->search . '%');
             });
         }

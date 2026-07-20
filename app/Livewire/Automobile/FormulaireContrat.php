@@ -204,7 +204,7 @@ class FormulaireContrat extends Component
     public function save()
     {
         $rules = [
-            'numero_contrat' => 'required|unique:contrats_auto,numero_contrat,' . $this->contratId,
+            'numero_contrat' => 'required|unique:contracts,numero_contrat,' . $this->contratId,
             'compagnie_id' => 'required|exists:compagnies,id',
             'police' => 'required',
             'client_id' => 'required|exists:clients,id',

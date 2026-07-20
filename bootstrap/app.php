@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'central' => \App\Http\Middleware\PreventAccessFromTenantDomains::class,
+            'tenant.api' => \App\Http\Middleware\TenantApiAuth::class,
         ]);
         
         $middleware->redirectGuestsTo(fn ($request) => $request->is('super-admin*') ? route('platform.login') : route('login'));

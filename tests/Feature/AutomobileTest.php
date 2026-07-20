@@ -117,7 +117,7 @@ class AutomobileTest extends TestCase
             ->assertHasNoErrors()
             ->assertRedirect(route('automobile.index'));
 
-        $this->assertDatabaseHas('contrats_auto', [
+        $this->assertDatabaseHas('contracts', [
             'numero_contrat' => 'REF-NEW-01',
             'police' => 'POL-NEW-99',
             'prime_totale' => 2000.00, // zero taxes, accessories, pta set yet

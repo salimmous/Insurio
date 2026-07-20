@@ -54,6 +54,8 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/commissions', \App\Livewire\Admin\GestionCommissions::class)->name('admin.commissions');
         Route::get('/admin/charges', \App\Livewire\Admin\GestionCharges::class)->name('admin.charges');
         Route::get('/admin/clients', \App\Livewire\Admin\GestionClients::class)->name('admin.clients');
+        Route::get('/admin/clients/{clientId}', \App\Livewire\Admin\ClientProfile::class)->name('admin.clients.profile');
+        Route::get('/admin/tasks', \App\Livewire\Admin\TaskManager::class)->name('admin.tasks');
         Route::get('/admin/entreprises', \App\Livewire\Admin\GestionEntreprises::class)->name('admin.entreprises');
         Route::get('/admin/produits', \App\Livewire\Admin\GestionProducts::class)->name('admin.products');
 
@@ -62,6 +64,9 @@ Route::middleware($tenantMiddleware)->group(function () {
 
         // PDF Generation route
         Route::get('/automobile/pdf/{contratId}/{type}', [\App\Http\Controllers\Tenant\PDFController::class, 'generate'])->name('automobile.pdf');
+
+        // Secure Document Preview route
+        Route::get('/documents/preview/{id}', [\App\Http\Controllers\Tenant\DocumentPreviewController::class, 'show'])->name('documents.preview');
 
         // Logout route
         Route::post('/logout', function () {
@@ -77,6 +82,17 @@ Route::middleware($tenantMiddleware)->group(function () {
         session(['impersonated_by_landlord' => true]);
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
     })->name('tenant.impersonate');
+
+    // API v1 routes (Tenant-isolated, token authenticated, rate-limited)
+    Route::prefix('api/v1')->middleware(['tenant.api', 'throttle:60,1'])->group(function () {
+        Route::get('/clients', [\App\Http\Controllers\Api\v1\ApiClientController::class, 'index']);
+        Route::post('/clients', [\App\Http\Controllers\Api\v1\ApiClientController::class, 'store']);
+
+        Route::get('/contracts', [\App\Http\Controllers\Api\v1\ApiContractController::class, 'index']);
+        Route::post('/contracts', [\App\Http\Controllers\Api\v1\ApiContractController::class, 'store']);
+
+        Route::post('/documents', [\App\Http\Controllers\Api\v1\ApiDocumentController::class, 'store']);
+    });
 
     // Tenant Authentication Routes (Volt/Breeze)
     require base_path('routes/auth.php');

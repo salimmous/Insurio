@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Tenant;
 use App\Services\TenantOnboardingService;
 use App\Models\Landlord\PlatformActivityLog;
+use App\Models\Landlord\Plan;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -20,6 +21,13 @@ class DashboardController extends Controller
 
     public function index()
     {
+        // Auto-seed plans if table is empty
+        if (Plan::count() === 0) {
+            Plan::create(['name' => 'Gratuit', 'price' => 0.00, 'features' => ['base'], 'limits' => ['users_limit' => 2]]);
+            Plan::create(['name' => 'Premium', 'price' => 490.00, 'features' => ['commissions', 'smtp'], 'limits' => ['users_limit' => 10]]);
+            Plan::create(['name' => 'Entreprise', 'price' => 990.00, 'features' => ['multi-succursales'], 'limits' => ['users_limit' => 100]]);
+        }
+
         $tenants = Tenant::with('domains')->latest()->get();
 
         foreach ($tenants as $tenant) {
@@ -27,8 +35,8 @@ class DashboardController extends Controller
                 $tenant->stats = $tenant->run(function () {
                     return [
                         'clients' => \Illuminate\Support\Facades\Schema::hasTable('clients') ? \App\Models\Client::withoutGlobalScopes()->count() : 0,
-                        'contrats' => \Illuminate\Support\Facades\Schema::hasTable('contrats_auto') ? \App\Models\ContratAuto::withoutGlobalScopes()->count() : 0,
-                        'primes' => \Illuminate\Support\Facades\Schema::hasTable('contrats_auto') ? \App\Models\ContratAuto::withoutGlobalScopes()->sum('prime_totale') : 0,
+                        'contrats' => \Illuminate\Support\Facades\Schema::hasTable('contracts') ? \App\Models\Contract::withoutGlobalScopes()->count() : 0,
+                        'primes' => \Illuminate\Support\Facades\Schema::hasTable('contracts') ? \App\Models\Contract::withoutGlobalScopes()->sum('premium_amount') : 0,
                         'employes' => \Illuminate\Support\Facades\Schema::hasTable('employes') ? \App\Models\Employe::withoutGlobalScopes()->count() : 0,
                         'commissions' => \Illuminate\Support\Facades\Schema::hasTable('commissions_employes') ? \App\Models\CommissionEmploye::withoutGlobalScopes()->sum('montant_commission') : 0,
                     ];
@@ -46,26 +54,60 @@ class DashboardController extends Controller
 
         $logs = PlatformActivityLog::latest()->limit(15)->get();
 
-        return view('platform.dashboard', compact('tenants', 'logs'));
+        // Platform KPIs
+        $activeTenantsCount = Tenant::where('status', 'active')->count();
+        $mrr = Tenant::where('status', 'active')->sum('rent_amount') ?? 0.00;
+        $totalTenants = Tenant::count();
+        $churnRate = $totalTenants > 0 ? (Tenant::where('status', 'suspended')->count() / $totalTenants) * 100 : 0;
+
+        return view('platform.dashboard', compact('tenants', 'logs', 'activeTenantsCount', 'mrr', 'churnRate'));
     }
 
     public function create()
     {
-        return view('platform.tenants.create');
+        // Auto-seed plans if table is empty
+        if (Plan::count() === 0) {
+            Plan::create(['name' => 'Gratuit', 'price' => 0.00, 'features' => ['base'], 'limits' => ['users_limit' => 2]]);
+            Plan::create(['name' => 'Premium', 'price' => 490.00, 'features' => ['commissions', 'smtp'], 'limits' => ['users_limit' => 10]]);
+            Plan::create(['name' => 'Entreprise', 'price' => 990.00, 'features' => ['multi-succursales'], 'limits' => ['users_limit' => 100]]);
+        }
+        $plans = Plan::all();
+        return view('platform.tenants.create', compact('plans'));
     }
 
     public function store(Request $request)
     {
+        // Auto-seed plans if table is empty
+        if (Plan::count() === 0) {
+            Plan::create(['name' => 'Gratuit', 'price' => 0.00, 'features' => ['base'], 'limits' => ['users_limit' => 2]]);
+            Plan::create(['name' => 'Premium', 'price' => 490.00, 'features' => ['commissions', 'smtp'], 'limits' => ['users_limit' => 10]]);
+            Plan::create(['name' => 'Entreprise', 'price' => 990.00, 'features' => ['multi-succursales'], 'limits' => ['users_limit' => 100]]);
+        }
+
         $validated = $request->validate([
             'id' => ['required', 'string', 'alpha_num', 'unique:tenants,id'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'plan' => ['required', 'string', 'in:gratuit,premium,entreprise'],
+            'plan_id' => ['nullable', 'exists:plans,id'],
+            'plan' => ['nullable', 'string'],
             'subscription_start_date' => ['nullable', 'date'],
             'subscription_end_date' => ['nullable', 'date'],
             'rent_amount' => ['nullable', 'numeric', 'min:0'],
             'custom_domain' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $planId = $validated['plan_id'] ?? null;
+        if (!$planId && !empty($validated['plan'])) {
+            $planModel = Plan::where('name', 'like', $validated['plan'])->first();
+            $planId = $planModel ? $planModel->id : null;
+        }
+
+        if (!$planId) {
+            $planModel = Plan::first();
+            $planId = $planModel ? $planModel->id : null;
+        }
+
+        $selectedPlan = Plan::findOrFail($planId);
 
         try {
             $tenant = $this->onboardingService->createTenant([
@@ -74,10 +116,11 @@ class DashboardController extends Controller
                 'admin_email' => $validated['email'],
                 'admin_password' => 'password', // Default password
                 'subdomain' => $validated['id'],
-                'plan' => $validated['plan'],
+                'plan' => strtolower($selectedPlan->name),
+                'plan_id' => $selectedPlan->id,
                 'subscription_start_date' => ($validated['subscription_start_date'] ?? null) ? \Carbon\Carbon::parse($validated['subscription_start_date'])->format('Y-m-d') : null,
                 'subscription_end_date' => ($validated['subscription_end_date'] ?? null) ? \Carbon\Carbon::parse($validated['subscription_end_date'])->format('Y-m-d') : null,
-                'rent_amount' => isset($validated['rent_amount']) ? (float) $validated['rent_amount'] : null,
+                'rent_amount' => isset($validated['rent_amount']) ? (float) $validated['rent_amount'] : (float)$selectedPlan->price,
                 'custom_domain' => $validated['custom_domain'] ?? null,
             ]);
 
@@ -98,6 +141,13 @@ class DashboardController extends Controller
     public function edit($id)
     {
         $tenant = Tenant::findOrFail($id);
+        // Auto-seed plans if table is empty
+        if (Plan::count() === 0) {
+            Plan::create(['name' => 'Gratuit', 'price' => 0.00, 'features' => ['base'], 'limits' => ['users_limit' => 2]]);
+            Plan::create(['name' => 'Premium', 'price' => 490.00, 'features' => ['commissions', 'smtp'], 'limits' => ['users_limit' => 10]]);
+            Plan::create(['name' => 'Entreprise', 'price' => 990.00, 'features' => ['multi-succursales'], 'limits' => ['users_limit' => 100]]);
+        }
+        $plans = Plan::all();
         
         $centralDomain = config('tenancy.central_domains.2') ?? 'sc7mosa1422.universe.wf';
         $subdomainName = $tenant->id . '.' . $centralDomain;
@@ -110,7 +160,7 @@ class DashboardController extends Controller
         $succursales = \App\Models\Succursale::all();
         tenancy()->end();
         
-        return view('platform.tenants.edit', compact('tenant', 'customDomain', 'succursales'));
+        return view('platform.tenants.edit', compact('tenant', 'customDomain', 'succursales', 'plans'));
     }
 
     public function update(Request $request, $id)
@@ -119,23 +169,37 @@ class DashboardController extends Controller
         
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'plan' => ['required', 'string', 'in:gratuit,premium,entreprise'],
+            'plan_id' => ['nullable', 'exists:plans,id'],
+            'plan' => ['nullable', 'string'],
             'status' => ['required', 'string', 'in:active,suspended,trial'],
             'subscription_start_date' => ['nullable', 'date'],
             'subscription_end_date' => ['nullable', 'date'],
             'rent_amount' => ['nullable', 'numeric', 'min:0'],
             'custom_domain' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $planId = $validated['plan_id'] ?? null;
+        if (!$planId && !empty($validated['plan'])) {
+            $planModel = Plan::where('name', 'like', $validated['plan'])->first();
+            $planId = $planModel ? $planModel->id : null;
+        }
+
+        if (!$planId) {
+            $planId = $tenant->plan_id ?? Plan::first()?->id;
+        }
+
+        $selectedPlan = Plan::findOrFail($planId);
         
         $tenant->update([
             'name' => $validated['name'],
-            'plan' => $validated['plan'],
+            'plan' => strtolower($selectedPlan->name),
+            'plan_id' => $selectedPlan->id,
             'status' => $validated['status'],
         ]);
         
         $tenant->subscription_start_date = ($validated['subscription_start_date'] ?? null) ? \Carbon\Carbon::parse($validated['subscription_start_date'])->format('Y-m-d') : null;
         $tenant->subscription_end_date = ($validated['subscription_end_date'] ?? null) ? \Carbon\Carbon::parse($validated['subscription_end_date'])->format('Y-m-d') : null;
-        $tenant->rent_amount = isset($validated['rent_amount']) ? (float) $validated['rent_amount'] : null;
+        $tenant->rent_amount = isset($validated['rent_amount']) ? (float) $validated['rent_amount'] : (float)$selectedPlan->price;
         $tenant->save();
         
         $centralDomain = config('tenancy.central_domains.2') ?? 'sc7mosa1422.universe.wf';
@@ -271,12 +335,6 @@ class DashboardController extends Controller
         return redirect()->route('platform.dashboard')->with('message', "L'agence a été supprimée avec succès.");
     }
 
-    /**
-     * Delete a directory recursively.
-     *
-     * @param string $dirPath
-     * @return void
-     */
     private function deleteDir(string $dirPath): void
     {
         if (!is_dir($dirPath)) {
@@ -310,22 +368,18 @@ class DashboardController extends Controller
         ]);
 
         if (!empty($validated['domain'])) {
-            // Check if domain exists f central domains table
             if ($tenant->domains()->where('domain', $validated['domain'])->exists() || \Stancl\Tenancy\Database\Models\Domain::where('domain', $validated['domain'])->exists()) {
                 return redirect()->back()->withErrors(['domain' => 'Ce nom de domaine est déjà enregistré sur la plateforme.']);
             }
         }
 
-        // Initialize tenant database context
         tenancy()->initialize($tenant);
         
-        // Check if code_succursale is unique inside this tenant
         if (\App\Models\Succursale::where('code_succursale', $validated['code_succursale'])->exists()) {
             tenancy()->end();
             return redirect()->back()->withErrors(['code_succursale' => 'Ce code de succursale existe déjà pour ce cabinet.']);
         }
 
-        // Check if domain is unique inside this tenant
         if (!empty($validated['domain']) && \App\Models\Succursale::where('domain', $validated['domain'])->exists()) {
             tenancy()->end();
             return redirect()->back()->withErrors(['domain' => 'Ce nom de domaine est déjà affecté à une succursale.']);
@@ -344,7 +398,6 @@ class DashboardController extends Controller
 
         tenancy()->end();
 
-        // Create the domain record centrally so Stancl Tenancy resolves it to this tenant
         if (!empty($validated['domain'])) {
             $tenant->domains()->create(['domain' => $validated['domain']]);
         }

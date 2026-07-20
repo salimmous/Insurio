@@ -195,12 +195,14 @@
                                             </div>
 
                                             <div>
-                                                <label for="plan" class="block text-xs font-bold uppercase tracking-wider text-slate-455 mb-2">Plan d'Abonnement SaaS</label>
-                                                <select id="plan" name="plan" required
-                                                        class="w-full bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 rounded-xl px-4 py-3 outline-none text-sm transition-all text-slate-700">
-                                                    <option value="gratuit" {{ old('plan', $tenant->plan) == 'gratuit' ? 'selected' : '' }}>Gratuit (Base)</option>
-                                                    <option value="premium" {{ old('plan', $tenant->plan) == 'premium' ? 'selected' : '' }}>Premium (Commissions & SMTP)</option>
-                                                    <option value="entreprise" {{ old('plan', $tenant->plan) == 'entreprise' ? 'selected' : '' }}>Entreprise (Multi-succursales)</option>
+                                                <label for="plan_id" class="block text-xs font-bold uppercase tracking-wider text-slate-455 mb-2">Plan d'Abonnement SaaS</label>
+                                                <select id="plan_id" name="plan_id" required
+                                                    class="w-full bg-slate-50 border border-slate-200 focus:bg-white rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none transition-all text-slate-700">
+                                                    @foreach($plans as $p)
+                                                        <option value="{{ $p->id }}" {{ old('plan_id', $tenant->plan_id) == $p->id ? 'selected' : '' }}>
+                                                            {{ $p->name }} ({{ number_format($p->price, 0) }} DH/mois)
+                                                        </option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>

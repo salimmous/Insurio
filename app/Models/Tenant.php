@@ -23,12 +23,18 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'db_name',
             'status',
             'plan',
+            'plan_id',
             'created_by',
             'logo_path',
             'favicon_path',
             'couleur_primaire',
             'couleur_secondaire',
         ];
+    }
+
+    public function subscriptionPlan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Landlord\Plan::class, 'plan_id');
     }
 
     public function isExpired(): bool
