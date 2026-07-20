@@ -149,4 +149,50 @@ class AutomobileTest extends TestCase
 
         $this->assertEquals('resilie', $contrat->fresh()->statut);
     }
+
+    public function test_liste_contrats_relance_email()
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+        
+        // Assign admin role to bypass branch scoping
+        $adminRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'agency-admin', 'guard_name' => 'web']);
+        $this->user->assignRole($adminRole);
+        
+        $this->actingAs($this->user);
+
+        // Configure Mail settings
+        \App\Models\Setting::set('mail_host', 'smtp.mailtrap.io');
+        \App\Models\Setting::set('mail_port', '2525');
+        \App\Models\Setting::set('mail_username', 'user');
+        \App\Models\Setting::set('mail_password', 'pass');
+        \App\Models\Setting::set('mail_from_address', 'test@insurio.com');
+        \App\Models\Setting::set('mail_from_name', 'Insurio App');
+
+        $this->client->update(['email' => 'client@test.com']);
+
+        $contrat = ContratAuto::create([
+            'numero_contrat' => 'REF-EMAIL-99',
+            'client_id' => $this->client->id,
+            'vehicule_id' => $this->vehicule->id,
+            'compagnie_id' => $this->compagnie->id,
+            'branch_id' => $this->branch->id,
+            'police' => 'POL-123',
+            'date_effet' => '2026-07-19',
+            'date_echeance' => '2027-07-19',
+            'date_production' => '2026-07-19',
+            'prime_rc' => 2000,
+            'statut' => 'actif',
+        ]);
+
+        $component = new ListeContrats();
+        $component->selectedContratId = $contrat->id;
+        $component->relancerParEmail();
+
+        $this->assertEquals(
+            "E-mail de rappel envoyé avec succès à {$this->client->email} !",
+            session('message')
+        );
+
+        \Illuminate\Support\Facades\Mail::assertSentCount(1);
+    }
 }

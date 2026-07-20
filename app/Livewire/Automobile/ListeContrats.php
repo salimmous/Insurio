@@ -47,6 +47,17 @@ class ListeContrats extends Component
         }
     }
 
+    public function renouvelerContrat()
+    {
+        if ($this->selectedContratId) {
+            $contrat = ContratAuto::findOrFail($this->selectedContratId);
+            $newContrat = app(\App\Services\ContractWorkflowService::class)->renouveler($contrat);
+            
+            session()->flash('message', 'Contrat renouvelé avec succès (Nouveau Contrat: ' . $newContrat->numero_contrat . ')');
+            return redirect()->route('automobile.edit', $newContrat->id);
+        }
+    }
+
     public function annulerContrat()
     {
         if ($this->selectedContratId) {
@@ -56,14 +67,35 @@ class ListeContrats extends Component
         }
     }
 
-    public function renouvelerContrat()
+    public function relancerParEmail()
     {
         if ($this->selectedContratId) {
-            $contrat = ContratAuto::findOrFail($this->selectedContratId);
-            $newContrat = app(\App\Services\ContractWorkflowService::class)->renouveler($contrat);
-            
-            session()->flash('message', 'Contrat renouvelé avec succès (Nouveau Contrat: ' . $newContrat->numero_contrat . ')');
-            return redirect()->route('automobile.edit', $newContrat->id);
+            $contrat = ContratAuto::with('client')->findOrFail($this->selectedContratId);
+            $client = $contrat->client;
+
+            if (!$client || empty($client->email)) {
+                session()->flash('error', "Le client n'a pas d'adresse e-mail configurée.");
+                return;
+            }
+
+            $mailHost = \App\Models\Setting::get('mail_host');
+            if (empty($mailHost)) {
+                session()->flash('error', "Le serveur SMTP n'est pas configuré. Veuillez aller dans la configuration de l'agence pour l'activer.");
+                return;
+            }
+
+            try {
+                $tenantName = (function_exists('tenant') && tenant()) ? tenant('name') : 'Insurio';
+                $agencyName = \App\Models\Setting::get('agency_name', $tenantName);
+                $agencyPhone = \App\Models\Setting::get('agency_phone', '+212 5 22 00 00 00');
+
+                \Illuminate\Support\Facades\Mail::to($client->email)
+                    ->send(new \App\Mail\RenewalReminderMail($client, $contrat, $agencyName, $agencyPhone));
+
+                session()->flash('message', "E-mail de rappel envoyé avec succès à {$client->email} !");
+            } catch (\Throwable $e) {
+                session()->flash('error', "Échec de l'envoi de l'e-mail : " . $e->getMessage());
+            }
         }
     }
 

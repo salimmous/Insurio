@@ -35,6 +35,11 @@
         {{ session('message') }}
     </div>
     @endif
+    @if (session()->has('error'))
+    <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm font-semibold">
+        {{ session('error') }}
+    </div>
+    @endif
 
     <!-- Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
@@ -278,6 +283,29 @@
                 <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Reglements</button>
                 <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Chèque à verser</button>
                 <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Consulter</button>
+            @endif
+
+            @if($selectedContratId && $selectedContrat)
+                <span class="text-xs font-bold uppercase text-slate-400 tracking-wider mt-4 mb-2 border-b border-slate-100 pb-2 block">📢 Relances Échéance</span>
+                
+                <!-- WhatsApp reminder -->
+                @php
+                    $clientPhone = $selectedContrat->client->telephone ?? '';
+                    $cleanPhone = preg_replace('/[^0-9]/', '', $clientPhone);
+                    if (str_starts_with($cleanPhone, '0')) {
+                        $cleanPhone = '212' . substr($cleanPhone, 1);
+                    }
+                    $waText = "Bonjour " . $selectedContrat->client->nom . " " . $selectedContrat->client->prenom . ", votre contrat d'assurance automobile Insurio N° " . $selectedContrat->numero_contrat . " chez la compagnie " . $selectedContrat->compagnie->nom . " arrive à échéance le " . $selectedContrat->date_echeance->format('d/m/Y') . ". Pour continuer à rouler en toute sécurité, veuillez nous contacter pour le renouveler. Cordialement.";
+                    $waLink = "https://wa.me/" . $cleanPhone . "?text=" . urlencode($waText);
+                @endphp
+                <a href="{{ $waLink }}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all shadow-sm flex items-center justify-center gap-1">
+                    💬 Relancer WhatsApp
+                </a>
+
+                <!-- Email reminder -->
+                <button wire:click="relancerParEmail" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all shadow-sm flex items-center justify-center gap-1">
+                    ✉️ Relancer Email
+                </button>
             @endif
         </div>
     </div>
