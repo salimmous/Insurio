@@ -71,6 +71,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-medium font-mono text-[11px]">
+                            @forelse($contrats as $contrat)
                             <tr wire:click="selectContrat({{ $contrat->id }})" 
                                 class="hover:bg-slate-50 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
                                 <td class="px-3 py-2.5 text-slate-400">{{ $contrat->id }}</td>
