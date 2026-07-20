@@ -22,6 +22,7 @@
             <select wire:model.live="filterStatut" class="bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3 py-2 text-sm text-slate-800 outline-none transition-all">
                 <option value="">Statuts (Tous)</option>
                 <option value="actif">Actif</option>
+                <option value="expiring_7_days">Échéance < 7 jours</option>
                 <option value="expire">Expiré</option>
                 <option value="resilie">Résilié</option>
                 <option value="annule">Annulé</option>
@@ -70,9 +71,8 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-medium font-mono text-[11px]">
-                            @forelse($contrats as $contrat)
                             <tr wire:click="selectContrat({{ $contrat->id }})" 
-                                class="hover:bg-slate-55 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
+                                class="hover:bg-slate-50 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
                                 <td class="px-3 py-2.5 text-slate-400">{{ $contrat->id }}</td>
                                 <td class="px-3 py-2.5 text-teal-600 font-bold">{{ $contrat->numero_contrat }}</td>
                                 <td class="px-3 py-2.5 text-slate-500">CL-{{ str_pad($contrat->client_id, 6, '0', STR_PAD_LEFT) }}</td>
@@ -82,7 +82,18 @@
                                 <td class="px-3 py-2.5">{{ $contrat->attestation ?? '-' }}</td>
                                 <td class="px-3 py-2.5 text-slate-800">{{ $contrat->matricule }}</td>
                                 <td class="px-3 py-2.5 text-slate-600">{{ $contrat->date_effet->format('d/m/Y') }}</td>
-                                <td class="px-3 py-2.5 text-slate-600">{{ $contrat->date_echeance->format('d/m/Y') }}</td>
+                                <td class="px-3 py-2.5 text-slate-600">
+                                    @php
+                                        $isExpiringSoon = $contrat->statut === 'actif' && $contrat->date_echeance->between(now()->startOfDay(), now()->addDays(7)->endOfDay());
+                                    @endphp
+                                    @if($isExpiringSoon)
+                                        <span class="text-rose-600 font-bold bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200" title="Expire bientôt">
+                                            {{ $contrat->date_echeance->format('d/m/Y') }} ⚠️
+                                        </span>
+                                    @else
+                                        {{ $contrat->date_echeance->format('d/m/Y') }}
+                                    @endif
+                                </td>
                                 <td class="px-3 py-2.5 text-right text-slate-900 font-bold font-mono">{{ number_format($contrat->prime_totale, 2) }} DH</td>
                                 <td class="px-3 py-2.5 font-sans text-slate-800">{{ $contrat->compagnie->nom }}</td>
                                 <td class="px-3 py-2.5 text-center">
@@ -105,7 +116,7 @@
                 <!-- Mobile View -->
                 <div class="block md:hidden divide-y divide-slate-100">
                     @forelse($contrats as $contrat)
-                        <div wire:click="selectContrat({{ $contrat->id }})" class="p-4 flex flex-col gap-2 hover:bg-slate-55 cursor-pointer {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-4 border-teal-600' : '' }}">
+                        <div wire:click="selectContrat({{ $contrat->id }})" class="p-4 flex flex-col gap-2 hover:bg-slate-50 cursor-pointer {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-4 border-teal-600' : '' }}">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <span class="font-bold text-indigo-600 font-mono">#{{ $contrat->numero_contrat }}</span>
@@ -121,7 +132,19 @@
                             </div>
                             <div class="flex justify-between text-[10px] text-slate-400 font-mono">
                                 <div>Effet: {{ $contrat->date_effet->format('d/m/Y') }}</div>
-                                <div>Expire: {{ $contrat->date_echeance->format('d/m/Y') }}</div>
+                                <div>
+                                    Expire: 
+                                    @php
+                                        $isExpiringSoon = $contrat->statut === 'actif' && $contrat->date_echeance->between(now()->startOfDay(), now()->addDays(7)->endOfDay());
+                                    @endphp
+                                    @if($isExpiringSoon)
+                                        <span class="text-rose-600 font-bold bg-rose-50 px-1 py-0.5 rounded border border-rose-200">
+                                            {{ $contrat->date_echeance->format('d/m/Y') }} ⚠️
+                                        </span>
+                                    @else
+                                        {{ $contrat->date_echeance->format('d/m/Y') }}
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @empty
@@ -228,26 +251,8 @@
                 <button wire:click="renouvelerContrat" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all border border-slate-200">
                     Renouvellement
                 </button>
-                <button onclick="alert('Action [Chg Vehicule] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Chg Vehicule
-                </button>
-                <a href="{{ route('automobile.edit', $selectedContratId) }}" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all border border-slate-200">
-                    Saisie par lot
-                </a>
-                <button onclick="alert('Action [Rémission] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Rémission
-                </button>
-                <button onclick="alert('Action [Major. Sinistre] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Major. Sinistre
-                </button>
-                <button onclick="alert('Action [Duplicata] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Duplicata
-                </button>
-                <button onclick="alert('Action [CarteVerte] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    CarteVerte
-                </button>
-                <button onclick="alert('Action [Prorata] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Prorata
+                <button wire:click="openReglementsModal" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
+                    Reglements
                 </button>
                 <button wire:click="resilierContrat" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-amber-200/60">
                     Resiliation
@@ -255,34 +260,12 @@
                 <button wire:click="annulerContrat" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-rose-200/60">
                     Annulation
                 </button>
-                <button onclick="alert('Action [Frontière] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Frontière
-                </button>
-                 <button wire:click="openReglementsModal" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                     Reglements
-                 </button>
-                <button onclick="alert('Action [Chèque à verser] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Chèque à verser
-                </button>
-                <a href="{{ route('automobile.edit', $selectedContratId) }}" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all border border-slate-200">
-                    Consulter
-                </a>
             @else
                 <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Modifier</button>
                 <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Renouvellement</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Chg Vehicule</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Saisie par lot</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Rémission</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Major. Sinistre</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Duplicata</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">CarteVerte</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Prorata</button>
+                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Reglements</button>
                 <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Resiliation</button>
                 <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Annulation</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Frontière</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Reglements</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Chèque à verser</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Consulter</button>
             @endif
 
             @if($selectedContratId && $selectedContrat)

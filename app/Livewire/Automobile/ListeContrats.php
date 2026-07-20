@@ -176,7 +176,12 @@ class ListeContrats extends Component
         }
 
         if (!empty($this->filterStatut)) {
-            $query->where('statut', $this->filterStatut);
+            if ($this->filterStatut === 'expiring_7_days') {
+                $query->where('statut', 'actif')
+                      ->whereBetween('date_echeance', [now()->toDateString(), now()->addDays(7)->toDateString()]);
+            } else {
+                $query->where('statut', $this->filterStatut);
+            }
         }
 
         $contrats = $query->latest()->paginate(10);
