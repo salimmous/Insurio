@@ -58,28 +58,29 @@ return new class extends Migration
             Schema::rename('contrats_auto', 'contracts');
         }
 
-        // Check if the foreign key contracts_vehicule_id_foreign exists
-        $hasForeignKey = false;
+        // Drop foreign keys in separate try-catch blocks to allow columns to be dropped or modified safely
         if (DB::getDriverName() !== 'sqlite') {
             try {
-                $foreignKeys = DB::select("
-                    SELECT CONSTRAINT_NAME 
-                    FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
-                    WHERE TABLE_SCHEMA = SCHEMA() 
-                      AND TABLE_NAME = 'contracts' 
-                      AND COLUMN_NAME = 'vehicule_id' 
-                      AND REFERENCED_TABLE_NAME IS NOT NULL
-                ");
-                $hasForeignKey = !empty($foreignKeys);
-            } catch (\Exception $e) {
-                $hasForeignKey = false;
-            }
-        } else {
-            $hasForeignKey = true;
+                Schema::table('contracts', function (Blueprint $table) {
+                    $table->dropForeign('contrats_auto_vehicule_id_foreign');
+                });
+            } catch (\Exception $e) {}
+
+            try {
+                Schema::table('contracts', function (Blueprint $table) {
+                    $table->dropForeign('contracts_vehicule_id_foreign');
+                });
+            } catch (\Exception $e) {}
+
+            try {
+                Schema::table('contracts', function (Blueprint $table) {
+                    $table->dropForeign(['vehicule_id']);
+                });
+            } catch (\Exception $e) {}
         }
 
         // 3. Update contracts schema
-        Schema::table('contracts', function (Blueprint $table) use ($hasForeignKey) {
+        Schema::table('contracts', function (Blueprint $table) {
             // Add polymorphic columns if not exist
             if (!Schema::hasColumn('contracts', 'details_type')) {
                 $table->string('details_type')->nullable()->after('id');
@@ -117,14 +118,6 @@ return new class extends Migration
                 $table->unsignedBigInteger('insurance_type_id')->nullable()->after('insurance_company_id');
             }
             
-            // Drop foreign keys to allow columns to be dropped or modified
-            if ($hasForeignKey) {
-                try {
-                    $table->dropForeign(['vehicule_id']);
-                } catch (\Exception $e) {
-                    // Ignore
-                }
-            }
             $table->unsignedBigInteger('vehicule_id')->nullable()->change();
         });
 
