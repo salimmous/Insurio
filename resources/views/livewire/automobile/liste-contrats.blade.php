@@ -43,10 +43,10 @@
     @endif
 
     <!-- Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-6 gap-6 items-start">
         
-        <!-- Main content area (Left - 4/5 cols) -->
-        <div class="lg:col-span-4 flex flex-col gap-6">
+        <!-- Main content area (Left - 5/6 cols) -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
             
             <!-- Table / Grid -->
             <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
