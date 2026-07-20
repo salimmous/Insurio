@@ -6,7 +6,7 @@
             <div>
                 <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">{{ \App\Models\Setting::get('agency_name', tenant('name') ?? 'Insurio') }}</span>
                 <h1 class="text-2xl font-bold text-slate-900 mt-0.5">
-                    {{ $contratId ? 'Modifier le Contrat' : 'Nouveau Contrat Automobile' }}
+                    {{ $contratId ? 'Modifier le Contrat' : "Nouveau Contrat d'Assurance" }}
                 </h1>
             </div>
             <a href="{{ route('automobile.index') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 border border-slate-200/40">
@@ -24,7 +24,18 @@
                     1. Identification & Dates du Contrat
                 </h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-500 mb-2">Produit d'Assurance</label>
+                        <select wire:model.live="product_id" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-semibold">
+                            <option value="">Sélectionner...</option>
+                            @foreach($products as $product)
+                            <option value="{{ $product->id }}">{{ $product->nom }}</option>
+                            @endforeach
+                        </select>
+                        @error('product_id') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
                     <div>
                         <label class="block text-sm font-medium text-slate-500 mb-2">Référence Cabinet</label>
                         <input wire:model="numero_contrat" type="text" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">

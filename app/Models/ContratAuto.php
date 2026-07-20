@@ -63,6 +63,7 @@ class ContratAuto extends Model
         'statut',
         'succursale_id',
         'employe_id',
+        'product_id',
     ];
 
     protected $casts = [
@@ -156,6 +157,11 @@ class ContratAuto extends Model
     public function employe(): BelongsTo
     {
         return $this->belongsTo(Employe::class, 'employe_id');
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
     public function reglements(): HasMany

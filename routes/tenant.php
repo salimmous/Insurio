@@ -55,6 +55,7 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/charges', \App\Livewire\Admin\GestionCharges::class)->name('admin.charges');
         Route::get('/admin/clients', \App\Livewire\Admin\GestionClients::class)->name('admin.clients');
         Route::get('/admin/entreprises', \App\Livewire\Admin\GestionEntreprises::class)->name('admin.entreprises');
+        Route::get('/admin/produits', \App\Livewire\Admin\GestionProducts::class)->name('admin.products');
 
         // Agent routes
         Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions');

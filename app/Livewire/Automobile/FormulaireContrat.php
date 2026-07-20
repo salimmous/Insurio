@@ -32,6 +32,7 @@ class FormulaireContrat extends Component
     public $branche_code;
     public $branche_libelle;
     public $branch_id;
+    public $product_id;
 
     // Véhicule
     public $usage;
@@ -88,6 +89,7 @@ class FormulaireContrat extends Component
             $this->contratId = $contratId;
             $contrat = ContratAuto::findOrFail($contratId);
             $this->fill($contrat->toArray());
+            $this->product_id = $contrat->product_id;
             $this->date_effet = $contrat->date_effet->format('Y-m-d');
             $this->date_echeance = $contrat->date_echeance->format('Y-m-d');
             $this->date_production = $contrat->date_production->format('Y-m-d');
@@ -103,6 +105,23 @@ class FormulaireContrat extends Component
             if ($contrat->apporteur) {
                 $this->nom_apporteur = $contrat->apporteur->nom . ' ' . $contrat->apporteur->prenom;
             }
+        } else {
+            // Default to AUTO product
+            $defaultProduct = \App\Models\Product::where('code', 'AUTO')->first();
+            if ($defaultProduct) {
+                $this->product_id = $defaultProduct->id;
+                $this->branche_code = $defaultProduct->code;
+                $this->branche_libelle = $defaultProduct->nom;
+            }
+        }
+    }
+
+    public function updatedProductId($value)
+    {
+        $product = \App\Models\Product::find($value);
+        if ($product) {
+            $this->branche_code = $product->code;
+            $this->branche_libelle = $product->nom;
         }
     }
 
@@ -231,6 +250,7 @@ class FormulaireContrat extends Component
             'branche_code' => $this->branche_code,
             'branche_libelle' => $this->branche_libelle,
             'branch_id' => $this->branch_id,
+            'product_id' => $this->product_id,
             'usage' => $this->usage,
             'code_classe' => $this->code_classe,
             'sous_classe' => $this->sous_classe,
@@ -285,8 +305,9 @@ class FormulaireContrat extends Component
         $compagnies = Compagnie::all();
         $apporteurs = Apporteur::all();
         $branches = AgenceBranch::all();
+        $products = \App\Models\Product::where('statut', 'actif')->get();
 
-        return view('livewire.automobile.formulaire-contrat', compact('compagnies', 'apporteurs', 'branches'))
+        return view('livewire.automobile.formulaire-contrat', compact('compagnies', 'apporteurs', 'branches', 'products'))
             ->layout('layouts.app');
     }
 }

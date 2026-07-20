@@ -3,8 +3,8 @@
     <!-- Top header & filters -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white border border-slate-200/80 rounded-2xl px-6 py-4 shadow-sm gap-4">
         <div>
-            <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">Production Auto</span>
-            <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Registre de Production Automobile</h1>
+            <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">Production</span>
+            <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Registre de Production Assurance</h1>
         </div>
         
         <!-- Search & Filter Controls -->

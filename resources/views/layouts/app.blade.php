@@ -91,13 +91,23 @@
                         </a>
                     @endif
 
-                    <!-- Automobile Register -->
+                    <!-- Production Register -->
                     @if(in_array('automobile', $enabledPages))
                         <a href="{{ Route::has('automobile.index') ? route('automobile.index') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('automobile.*') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
                             <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            Registre Automobile
+                            Production Assurance
+                        </a>
+                    @endif
+
+                    <!-- Produits d'Assurance -->
+                    @if(auth()->user()->hasRole('agency-admin'))
+                        <a href="{{ Route::has('admin.products') ? route('admin.products') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.products') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Produits
                         </a>
                     @endif
 
@@ -231,7 +241,10 @@
                     @if(!auth()->user()->hasRole('agent-commercial'))
                         <a href="{{ Route::has('dashboard') ? route('dashboard') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Dashboard</a>
                     @endif
-                    <a href="{{ Route::has('automobile.index') ? route('automobile.index') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Registre Automobile</a>
+                    <a href="{{ Route::has('automobile.index') ? route('automobile.index') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Production Assurance</a>
+                    @if(auth()->user()->hasRole('agency-admin'))
+                        <a href="{{ Route::has('admin.products') ? route('admin.products') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Produits</a>
+                    @endif
                     <a href="{{ Route::has('admin.clients') ? route('admin.clients') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Clients</a>
                     <a href="{{ Route::has('admin.entreprises') ? route('admin.entreprises') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Entreprises</a>
                     @if(auth()->user()->hasRole('agency-admin'))

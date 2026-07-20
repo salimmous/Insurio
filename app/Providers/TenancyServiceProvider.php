@@ -176,7 +176,12 @@ class TenancyServiceProvider extends ServiceProvider
             if (app()->environment('testing')) {
                 $isAutomobileTest = false;
                 foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $step) {
-                    if (isset($step['class']) && str_contains($step['class'], 'AutomobileTest')) {
+                    if (isset($step['class']) && (
+                        str_contains($step['class'], 'AutomobileTest') || 
+                        str_contains($step['class'], 'CommissionTest') || 
+                        str_contains($step['class'], 'GestionClientsTest') || 
+                        str_contains($step['class'], 'GestionProductsTest')
+                    )) {
                         $isAutomobileTest = true;
                         break;
                     }
