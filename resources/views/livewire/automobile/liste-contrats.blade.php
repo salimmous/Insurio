@@ -43,10 +43,10 @@
     @endif
 
     <!-- Content Grid -->
-    <div class="flex flex-col lg:flex-row gap-6 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
         
-        <!-- Main content area (Left) -->
-        <div class="flex-1 min-w-0 flex flex-col gap-6">
+        <!-- Main content area (Left - 4/5 cols) -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
             
             <!-- Table / Grid -->
             <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
@@ -237,8 +237,8 @@
             </div>
         </div>
 
-        <!-- Sidebar Actions (Right) -->
-        <div class="w-full lg:w-56 shrink-0 bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col gap-2">
+        <!-- Sidebar Actions (Right - 1/5 cols) -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col gap-2">
             <span class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2 border-b border-slate-100 pb-2 block">Actions</span>
             
             <a href="{{ route('automobile.create') }}" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all shadow-sm">
