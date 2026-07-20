@@ -195,4 +195,60 @@ class AutomobileTest extends TestCase
 
         \Illuminate\Support\Facades\Mail::assertSentCount(1);
     }
+
+    public function test_liste_contrats_can_manage_reglements()
+    {
+        $this->actingAs($this->user);
+
+        $contrat = ContratAuto::create([
+            'numero_contrat' => 'REF-PAY-777',
+            'client_id' => $this->client->id,
+            'vehicule_id' => $this->vehicule->id,
+            'compagnie_id' => $this->compagnie->id,
+            'branch_id' => $this->branch->id,
+            'police' => 'POL-PAY-777',
+            'date_effet' => '2026-07-19',
+            'date_echeance' => '2027-07-19',
+            'date_production' => '2026-07-19',
+            'prime_rc' => 3000,
+            'taxe_auto' => 300,
+            'timbre' => 20,
+            'statut' => 'actif',
+        ]);
+
+        // Total premium is 3000 + 300 + 20 = 3320
+        $this->assertEquals(3320.00, $contrat->prime_totale);
+        $this->assertEquals(3320.00, $contrat->solde);
+
+        // Record a payment of 1320
+        Livewire::test(ListeContrats::class)
+            ->set('selectedContratId', $contrat->id)
+            ->call('openReglementsModal')
+            ->assertSet('reglementMontant', 3320.00)
+            ->set('reglementMontant', 1320.00)
+            ->set('reglementDate', '2026-07-20')
+            ->set('reglementMode', 'cheque')
+            ->set('reglementReference', 'CHQ-100200')
+            ->call('addReglement')
+            ->assertHasNoErrors()
+            ->assertDispatched('swal:success');
+
+        $this->assertEquals(2000.00, $contrat->fresh()->solde);
+        $this->assertEquals(1, $contrat->reglements()->count());
+
+        $reglement = $contrat->reglements->first();
+        $this->assertEquals(1320.00, $reglement->montant);
+        $this->assertEquals('cheque', $reglement->mode_reglement);
+        $this->assertEquals('CHQ-100200', $reglement->reference_paiement);
+
+        // Delete payment
+        Livewire::test(ListeContrats::class)
+            ->set('selectedContratId', $contrat->id)
+            ->call('deleteReglement', $reglement->id)
+            ->assertHasNoErrors()
+            ->assertDispatched('swal:success');
+
+        $this->assertEquals(3320.00, $contrat->fresh()->solde);
+        $this->assertEquals(0, $contrat->reglements()->count());
+    }
 }

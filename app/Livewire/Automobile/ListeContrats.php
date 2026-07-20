@@ -18,6 +18,13 @@ class ListeContrats extends Component
     // Active selected contract ID in the grid
     public $selectedContratId = null;
 
+    // Reglements Modal properties
+    public $isReglementsModalOpen = false;
+    public $reglementMontant = '';
+    public $reglementDate = '';
+    public $reglementMode = 'especes';
+    public $reglementReference = '';
+
     protected $queryString = [
         'search' => ['except' => ''],
         'filterCompagnie' => ['except' => ''],
@@ -97,6 +104,55 @@ class ListeContrats extends Component
                 session()->flash('error', "Échec de l'envoi de l'e-mail : " . $e->getMessage());
             }
         }
+    }
+
+    public function openReglementsModal()
+    {
+        if ($this->selectedContratId) {
+            $contrat = ContratAuto::findOrFail($this->selectedContratId);
+            $this->reglementMontant = $contrat->solde;
+            $this->reglementDate = now()->toDateString();
+            $this->reglementMode = 'especes';
+            $this->reglementReference = '';
+            $this->isReglementsModalOpen = true;
+        }
+    }
+
+    public function closeReglementsModal()
+    {
+        $this->isReglementsModalOpen = false;
+    }
+
+    public function addReglement()
+    {
+        if (!$this->selectedContratId) return;
+
+        $contrat = ContratAuto::findOrFail($this->selectedContratId);
+
+        $this->validate([
+            'reglementMontant' => 'required|numeric|min:0.01',
+            'reglementDate' => 'required|date',
+            'reglementMode' => 'required|in:especes,cheque,virement,carte',
+            'reglementReference' => 'nullable|string|max:255',
+        ]);
+
+        \App\Models\Reglement::create([
+            'contrat_id' => $contrat->id,
+            'montant' => $this->reglementMontant,
+            'date_reglement' => $this->reglementDate,
+            'mode_reglement' => $this->reglementMode,
+            'reference_paiement' => $this->reglementReference,
+        ]);
+
+        $this->closeReglementsModal();
+        $this->dispatch('swal:success', ['message' => 'Règlement enregistré avec succès.']);
+    }
+
+    public function deleteReglement($id)
+    {
+        $reglement = \App\Models\Reglement::findOrFail($id);
+        $reglement->delete();
+        $this->dispatch('swal:success', ['message' => 'Règlement supprimé avec succès.']);
     }
 
     public function render()

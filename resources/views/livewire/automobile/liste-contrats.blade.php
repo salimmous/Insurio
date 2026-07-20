@@ -258,9 +258,9 @@
                 <button onclick="alert('Action [Frontière] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
                     Frontière
                 </button>
-                <button onclick="alert('Action [Reglements] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Reglements
-                </button>
+                 <button wire:click="openReglementsModal" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
+                     Reglements
+                 </button>
                 <button onclick="alert('Action [Chèque à verser] à définir')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
                     Chèque à verser
                 </button>
@@ -309,4 +309,146 @@
             @endif
         </div>
     </div>
+
+    <!-- Règlements Modal -->
+    @if($isReglementsModalOpen && $selectedContrat)
+        <div class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="closeReglementsModal"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                
+                <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-100">
+                    <!-- Header -->
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200/60 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">Suivi Financier</span>
+                            <h3 class="text-lg font-bold text-slate-800" id="modal-title">
+                                Règlements & Paiements - Contrat #{{ $selectedContrat->numero_contrat }}
+                            </h3>
+                        </div>
+                        <button wire:click="closeReglementsModal" class="text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        <!-- Situation Financière -->
+                        <div class="grid grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/50">
+                            <div>
+                                <span class="text-xs font-medium text-slate-400 uppercase">Prime Totale</span>
+                                <span class="block text-md font-bold text-slate-700 font-mono mt-0.5">{{ number_format($selectedContrat->prime_totale, 2) }} DH</span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-medium text-slate-400 uppercase">Déjà Payé</span>
+                                <span class="block text-md font-bold text-emerald-600 font-mono mt-0.5">{{ number_format($selectedContrat->reglements->sum('montant'), 2) }} DH</span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-medium text-slate-400 uppercase">Solde Restant</span>
+                                <span class="block text-md font-bold text-amber-600 font-mono mt-0.5">{{ number_format($selectedContrat->solde, 2) }} DH</span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-medium text-slate-400 uppercase">Statut</span>
+                                <div class="mt-1">
+                                    @if($selectedContrat->solde <= 0)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Soldé</span>
+                                    @elseif($selectedContrat->reglements->sum('montant') > 0)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">Partiel</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-rose-100 text-rose-800">Non payé</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Liste des règlements enregistrés -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                                Historique des règlements
+                            </h4>
+                            <div class="border border-slate-150 rounded-xl overflow-hidden bg-white">
+                                <table class="min-w-full divide-y divide-slate-100 text-sm text-left">
+                                    <thead class="bg-slate-50 text-slate-500 font-semibold text-xs uppercase">
+                                        <tr>
+                                            <th class="px-4 py-2.5">Date</th>
+                                            <th class="px-4 py-2.5">Montant</th>
+                                            <th class="px-4 py-2.5">Mode</th>
+                                            <th class="px-4 py-2.5">Référence</th>
+                                            <th class="px-4 py-2.5 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 font-mono text-xs text-slate-700">
+                                        @forelse($selectedContrat->reglements as $reg)
+                                            <tr class="hover:bg-slate-50">
+                                                <td class="px-4 py-3">{{ $reg->date_reglement->format('d/m/Y') }}</td>
+                                                <td class="px-4 py-3 font-semibold text-emerald-600">{{ number_format($reg->montant, 2) }} DH</td>
+                                                <td class="px-4 py-3 uppercase font-sans font-semibold text-slate-500">{{ $reg->mode_reglement }}</td>
+                                                <td class="px-4 py-3 text-slate-500">{{ $reg->reference_paiement ?? '-' }}</td>
+                                                <td class="px-4 py-3 text-right font-sans">
+                                                    <button onclick="confirm('Supprimer ce règlement ?') || event.stopImmediatePropagation()" wire:click="deleteReglement({{ $reg->id }})" class="text-rose-500 hover:text-rose-700 font-semibold transition-colors">
+                                                        Supprimer
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="px-4 py-8 text-center text-slate-400 font-sans">Aucun règlement enregistré pour le moment.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Ajouter un règlement -->
+                        @if($selectedContrat->solde > 0)
+                            <div class="border-t border-slate-150 pt-5">
+                                <h4 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Enregistrer un nouveau règlement
+                                </h4>
+                                <form wire:submit.prevent="addReglement" class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/50">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Montant (DH)</label>
+                                        <input type="number" step="0.01" wire:model="reglementMontant" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 font-mono font-semibold">
+                                        @error('reglementMontant') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Date</label>
+                                        <input type="date" wire:model="reglementDate" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 font-mono">
+                                        @error('reglementDate') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mode de règlement</label>
+                                        <select wire:model="reglementMode" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                                            <option value="especes">Espèces</option>
+                                            <option value="cheque">Chèque</option>
+                                            <option value="virement">Virement</option>
+                                            <option value="carte">Carte bancaire</option>
+                                        </select>
+                                        @error('reglementMode') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Référence / Numéro</label>
+                                        <input type="text" wire:model="reglementReference" placeholder="ex: N° de chèque, transaction" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                                        @error('reglementReference') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="col-span-2 flex justify-end mt-2">
+                                        <button type="submit" class="inline-flex justify-center px-4 py-2 bg-teal-600 hover:bg-teal-700 border border-transparent rounded-lg font-semibold text-white text-sm transition-colors shadow">
+                                            Enregistrer le règlement
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        @else
+                            <div class="bg-emerald-50 text-emerald-800 text-xs font-semibold p-4 rounded-xl border border-emerald-200 text-center flex items-center justify-center gap-1.5">
+                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Ce contrat est entièrement soldé. Aucun paiement supplémentaire n'est requis.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
