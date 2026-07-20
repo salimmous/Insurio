@@ -259,6 +259,13 @@ $builder->where('succursale_id', $employe->succursale_id);
 
 ---
 
+## Historique des Mises à Jour (Changelog)
+
+Les modifications importantes de la plateforme sont suivies par date :
+*   **[20 Juillet 2026]** : Corrections de bugs de production (variables indéfinies, typages, MySQL Central), optimisation du positionnement du badge de notification, configuration complète de Corbell AI (49k+ méthodes graphées), nettoyage de la barre d'actions du registre Automobile, ajout d'alertes visuelles et de filtres pour les contrats expirant dans moins de 7 jours. Voir le rapport détaillé : [changelog-2026-07-20.md](file:///Users/salim/Downloads/asusrence/documentation/changelog-2026-07-20.md).
+
+---
+
 ## Licence
 
 Insurio est un logiciel propriétaire. Tous droits réservés.
