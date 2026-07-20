@@ -134,7 +134,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
                 <!-- Client & Apporteur -->
-                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4 {{ in_array($branche_code, ['AUTO', 'MOTO']) ? '' : 'lg:col-span-2' }}">
                     <h2 class="text-lg font-semibold text-teal-600 border-b border-slate-100 pb-2 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         2. Client & Apporteur
@@ -196,6 +196,7 @@
                 </div>
 
                 <!-- Véhicule -->
+                @if(in_array($branche_code, ['AUTO', 'MOTO']))
                 <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
                     <h2 class="text-lg font-semibold text-teal-600 border-b border-slate-100 pb-2 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h2m-6 0a1 1 0 001-1v-3a1 1 0 00-1-1H9m12 0h-3M12 9h4"/></svg>
@@ -244,10 +245,22 @@
                             </div>
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Puis. fiscale</label>
-                            <input wire:model="puissance_fiscale" type="number" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                        </div>
+                        @if($branche_code === 'MOTO')
+                            <div>
+                                <label class="block text-sm font-medium text-slate-500 mb-2">Cylindrée (CC)</label>
+                                <select wire:model="puissance_fiscale" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-semibold">
+                                    <option value="">Sélectionner...</option>
+                                    <option value="50">Moins de 50 cc (Cyclomoteur)</option>
+                                    <option value="125">50 cc à 125 cc (Légère)</option>
+                                    <option value="250">Plus de 125 cc (Grosse cylindrée)</option>
+                                </select>
+                            </div>
+                        @else
+                            <div>
+                                <label class="block text-sm font-medium text-slate-500 mb-2">Puis. fiscale</label>
+                                <input wire:model="puissance_fiscale" type="number" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
+                            </div>
+                        @endif
 
                         <div>
                             <label class="block text-sm font-medium text-slate-500 mb-2">Nb place</label>
@@ -276,6 +289,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
 
             <!-- SECTION 3: Primes de Garanties -->
