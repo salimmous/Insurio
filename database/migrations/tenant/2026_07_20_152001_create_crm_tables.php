@@ -16,21 +16,51 @@ return new class extends Migration
 
         // 1. Update clients table
         Schema::table('clients', function (Blueprint $table) {
-            $table->uuid('uuid')->nullable()->unique()->after('id');
-            $table->renameColumn('prenom', 'first_name');
-            $table->renameColumn('nom', 'last_name');
-            $table->string('company_name')->nullable()->after('prenom'); // using temporary positions
-            $table->renameColumn('type', 'client_type');
-            $table->renameColumn('telephone', 'phone');
-            $table->string('whatsapp_number')->nullable()->after('telephone');
-            $table->string('passport')->nullable()->after('cin');
-            $table->date('date_of_birth')->nullable()->after('passport');
-            $table->string('profession')->nullable()->after('date_of_birth');
-            $table->renameColumn('adresse', 'address');
-            $table->string('city')->nullable()->after('adresse');
-            $table->text('notes')->nullable()->after('city');
-            $table->unsignedBigInteger('succursale_id')->nullable()->after('notes');
-            $table->unsignedBigInteger('created_by')->nullable()->after('succursale_id');
+            if (!Schema::hasColumn('clients', 'uuid')) {
+                $table->uuid('uuid')->nullable()->unique();
+            }
+            if (Schema::hasColumn('clients', 'prenom')) {
+                $table->renameColumn('prenom', 'first_name');
+            }
+            if (Schema::hasColumn('clients', 'nom')) {
+                $table->renameColumn('nom', 'last_name');
+            }
+            if (!Schema::hasColumn('clients', 'company_name')) {
+                $table->string('company_name')->nullable();
+            }
+            if (Schema::hasColumn('clients', 'type')) {
+                $table->renameColumn('type', 'client_type');
+            }
+            if (Schema::hasColumn('clients', 'telephone')) {
+                $table->renameColumn('telephone', 'phone');
+            }
+            if (!Schema::hasColumn('clients', 'whatsapp_number')) {
+                $table->string('whatsapp_number')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'passport')) {
+                $table->string('passport')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'date_of_birth')) {
+                $table->date('date_of_birth')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'profession')) {
+                $table->string('profession')->nullable();
+            }
+            if (Schema::hasColumn('clients', 'adresse')) {
+                $table->renameColumn('adresse', 'address');
+            }
+            if (!Schema::hasColumn('clients', 'city')) {
+                $table->string('city')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'notes')) {
+                $table->text('notes')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'succursale_id')) {
+                $table->unsignedBigInteger('succursale_id')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'created_by')) {
+                $table->unsignedBigInteger('created_by')->nullable();
+            }
         });
 
         // Data migration for client_type and UUIDs
