@@ -18,13 +18,6 @@ class AdminDashboard extends Component
     public $totalCommissions = 0.00;
     public $activeContractsCount = 0;
     public $totalImpayes = 0.00;
-    public $latestContracts = [];
-    public $branchRankings = [];
-    public $agentRankings = [];
-    public $expiringContracts = [];
-    public $contractsByCompany = [];
-    public $contractsByType = [];
-
     // Expiring buckets
     public $expiring30Count = 0;
     public $expiring15Count = 0;
@@ -76,48 +69,6 @@ class AdminDashboard extends Component
         }
 
         $this->branchList = Succursale::all();
-        $this->loadKPIs();
-    }
-
-    public function updatedSelectedBranch()
-    {
-        $this->loadKPIs();
-    }
-
-    public function loadKPIs()
-    {
-        $cacheKey = 'dashboard_kpis_' . tenant('id') . '_branch_' . ($this->selectedBranch ?: 'all');
-        $ttl = 600; // 10 minutes
-
-        $cached = Cache::remember($cacheKey, $ttl, function () {
-            return $this->computeKPIs();
-        });
-
-        $this->totalProduction        = $cached['totalProduction'];
-        $this->totalCommissions       = $cached['totalCommissions'];
-        $this->activeContractsCount   = $cached['activeContractsCount'];
-        $this->totalImpayes           = $cached['totalImpayes'];
-        $this->clientsCount           = $cached['clientsCount'];
-        $this->expenseLoyer           = $cached['expenseLoyer'];
-        $this->expenseElectricite     = $cached['expenseElectricite'];
-        $this->expenseEau             = $cached['expenseEau'];
-        $this->expenseSalaire         = $cached['expenseSalaire'];
-        $this->expenseAutre           = $cached['expenseAutre'];
-        $this->totalExpenses          = $cached['totalExpenses'];
-        $this->netCashflow            = $cached['netCashflow'];
-        $this->netProfit              = $cached['netProfit'];
-        $this->latestContracts        = $cached['latestContracts'];
-        $this->expiring30Count        = $cached['expiring30Count'];
-        $this->expiring15Count        = $cached['expiring15Count'];
-        $this->expiring7Count         = $cached['expiring7Count'];
-        $this->expiringContracts      = $cached['expiringContracts'];
-        $this->branchRankings         = $cached['branchRankings'];
-        $this->agentRankings          = $cached['agentRankings'];
-        $this->chartLabels            = $cached['chartLabels'];
-        $this->chartProductionData    = $cached['chartProductionData'];
-        $this->chartCommissionsData   = $cached['chartCommissionsData'];
-        $this->contractsByCompany     = $cached['contractsByCompany'];
-        $this->contractsByType        = $cached['contractsByType'];
     }
 
     public function refreshDashboard()
@@ -125,7 +76,6 @@ class AdminDashboard extends Component
         // Allow manual cache bust (e.g. after creating a contract)
         $cacheKey = 'dashboard_kpis_' . tenant('id') . '_branch_' . ($this->selectedBranch ?: 'all');
         Cache::forget($cacheKey);
-        $this->loadKPIs();
         $this->dispatch('swal:success', ['message' => 'Tableau de bord actualisé.']);
     }
 
@@ -313,7 +263,41 @@ class AdminDashboard extends Component
 
     public function render()
     {
-        return view('livewire.admin.admin-dashboard')
-            ->layout('layouts.app');
+        $cacheKey = 'dashboard_kpis_' . tenant('id') . '_branch_' . ($this->selectedBranch ?: 'all');
+        $ttl = 600; // 10 minutes
+
+        $cached = Cache::remember($cacheKey, $ttl, function () {
+            return $this->computeKPIs();
+        });
+
+        // Map cached scalar KPIs to public properties
+        $this->totalProduction      = $cached['totalProduction'];
+        $this->totalCommissions     = $cached['totalCommissions'];
+        $this->activeContractsCount = $cached['activeContractsCount'];
+        $this->totalImpayes         = $cached['totalImpayes'];
+        $this->clientsCount         = $cached['clientsCount'];
+        $this->expenseLoyer         = $cached['expenseLoyer'];
+        $this->expenseElectricite   = $cached['expenseElectricite'];
+        $this->expenseEau           = $cached['expenseEau'];
+        $this->expenseSalaire       = $cached['expenseSalaire'];
+        $this->expenseAutre         = $cached['expenseAutre'];
+        $this->totalExpenses        = $cached['totalExpenses'];
+        $this->netCashflow          = $cached['netCashflow'];
+        $this->netProfit            = $cached['netProfit'];
+        $this->expiring30Count      = $cached['expiring30Count'];
+        $this->expiring15Count      = $cached['expiring15Count'];
+        $this->expiring7Count       = $cached['expiring7Count'];
+        $this->chartLabels          = $cached['chartLabels'];
+        $this->chartProductionData  = $cached['chartProductionData'];
+        $this->chartCommissionsData = $cached['chartCommissionsData'];
+
+        return view('livewire.admin.admin-dashboard', [
+            'latestContracts'    => $cached['latestContracts'],
+            'expiringContracts'  => $cached['expiringContracts'],
+            'branchRankings'     => $cached['branchRankings'],
+            'agentRankings'      => $cached['agentRankings'],
+            'contractsByCompany' => $cached['contractsByCompany'],
+            'contractsByType'    => $cached['contractsByType'],
+        ])->layout('layouts.app');
     }
 }

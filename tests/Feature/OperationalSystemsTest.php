@@ -191,7 +191,7 @@ class OperationalSystemsTest extends TestCase
 
         // Test Livewire AdminDashboard execution and KPI computations
         $dashboard = new \App\Livewire\Admin\AdminDashboard();
-        $dashboard->loadKPIs();
+        $dashboard->render();
 
         // 4500.00 (prime_totale) - 1000.00 (reglement) = 3500.00 (totalImpayes)
         $this->assertEquals(3500.00, $dashboard->totalImpayes);
@@ -202,6 +202,9 @@ class OperationalSystemsTest extends TestCase
 
         // Test cache buster manually
         $dashboard->refreshDashboard();
+        $this->assertFalse(\Illuminate\Support\Facades\Cache::has($cacheKey));
+
+        $dashboard->render();
         $this->assertTrue(\Illuminate\Support\Facades\Cache::has($cacheKey));
 
         // Simulate new payment that triggers cache bust automatically
