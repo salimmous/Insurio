@@ -10,6 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (!Schema::hasTable('clients')) {
+            return;
+        }
+
         // 1. Update clients table
         Schema::table('clients', function (Blueprint $table) {
             $table->uuid('uuid')->nullable()->unique()->after('id');
@@ -114,6 +118,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (!Schema::hasTable('clients')) {
+            return;
+        }
+
         Schema::dropIfExists('renewals');
         Schema::dropIfExists('communications');
         Schema::dropIfExists('tasks');
