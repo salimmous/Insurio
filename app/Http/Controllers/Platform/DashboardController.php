@@ -56,7 +56,7 @@ class DashboardController extends Controller
 
         // Platform KPIs
         $activeTenantsCount = Tenant::where('status', 'active')->count();
-        $mrr = Tenant::where('status', 'active')->sum('rent_amount') ?? 0.00;
+        $mrr = Tenant::where('status', 'active')->get()->sum('rent_amount') ?? 0.00;
         $totalTenants = Tenant::count();
         $churnRate = $totalTenants > 0 ? (Tenant::where('status', 'suspended')->count() / $totalTenants) * 100 : 0;
 
