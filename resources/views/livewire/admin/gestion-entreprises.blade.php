@@ -83,7 +83,16 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4">
                                     <div class="font-semibold text-gray-900">{{ $ent->nom }}</div>
-                                    <div class="text-xs text-gray-500">{{ $ent->adresse ?? 'Pas d\'adresse renseignée' }}</div>
+                                    @if($ent->employes->isNotEmpty())
+                                        <div class="mt-1 flex flex-wrap gap-1">
+                                            @foreach($ent->employes as $emp)
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-50 text-slate-600 border border-slate-200">
+                                                    {{ $emp->nom }} {{ $emp->prenom }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    <div class="text-xs text-gray-500 mt-1">{{ $ent->adresse ?? 'Pas d\'adresse renseignée' }}</div>
                                 </td>
                                 <td class="px-6 py-4 font-mono font-bold text-gray-700 text-xs">
                                     {{ $ent->cin ?? '-' }}
@@ -145,6 +154,15 @@
                             <div><strong>Téléphone:</strong> {{ $ent->telephone ?? '-' }}</div>
                             <div><strong>E-mail:</strong> {{ $ent->email ?? '-' }}</div>
                             <div><strong>Incidents:</strong> {{ $ent->incident ? 'Oui' : 'Aucun' }}</div>
+                            @if($ent->employes->isNotEmpty())
+                                <div class="mt-1.5 flex flex-wrap gap-1">
+                                    @foreach($ent->employes as $emp)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">
+                                            {{ $emp->nom }} {{ $emp->prenom }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                         <div class="flex justify-end gap-3 text-xs mt-2 border-t pt-2 border-gray-100">
                             <button wire:click="openModal({{ $ent->id }})" class="text-indigo-600 font-semibold">Modifier</button>

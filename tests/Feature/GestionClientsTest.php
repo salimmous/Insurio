@@ -123,4 +123,34 @@ class GestionClientsTest extends TestCase
 
         $this->assertNull($company->fresh());
     }
+
+    public function test_can_link_individual_client_to_corporate_client()
+    {
+        $this->actingAs($this->admin);
+
+        // 1. Create company client
+        $company = Client::create([
+            'nom' => 'OCP Group',
+            'prenom' => '',
+            'type' => 'entreprise',
+            'cin' => 'ICE-777888',
+        ]);
+
+        // 2. Create individual client linked to the company
+        Livewire::test(GestionClients::class)
+            ->set('nom', 'Saber')
+            ->set('prenom', 'Anas')
+            ->set('entreprise_id', $company->id)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $client = Client::where('nom', 'Saber')->first();
+        $this->assertNotNull($client);
+        $this->assertEquals($company->id, $client->entreprise_id);
+        $this->assertEquals('OCP Group', $client->entreprise->nom);
+
+        // 3. Assert relationship on company
+        $this->assertEquals(1, $company->employes()->count());
+        $this->assertEquals('Saber', $company->employes->first()->nom);
+    }
 }

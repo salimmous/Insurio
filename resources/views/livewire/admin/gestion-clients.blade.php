@@ -83,7 +83,13 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4">
                                     <div class="font-semibold text-gray-900">{{ $client->nom }} {{ $client->prenom }}</div>
-                                    <div class="text-xs text-gray-500">{{ $client->adresse ?? 'Pas d\'adresse renseignée' }}</div>
+                                    @if($client->entreprise)
+                                        <div class="inline-flex items-center gap-1 px-1.5 py-0.5 mt-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                            {{ $client->entreprise->nom }}
+                                        </div>
+                                    @endif
+                                    <div class="text-xs text-gray-500 mt-0.5">{{ $client->adresse ?? 'Pas d\'adresse renseignée' }}</div>
                                 </td>
                                 <td class="px-6 py-4 font-mono font-bold text-gray-700 text-xs">
                                     {{ $client->cin ?? '-' }}
@@ -142,6 +148,9 @@
                             </div>
                         </div>
                         <div class="text-xs text-gray-600">
+                            @if($client->entreprise)
+                                <div class="mb-1"><strong>Société:</strong> {{ $client->entreprise->nom }}</div>
+                            @endif
                             <div><strong>Téléphone:</strong> {{ $client->telephone ?? '-' }}</div>
                             <div><strong>E-mail:</strong> {{ $client->email ?? '-' }}</div>
                             <div><strong>Incidents:</strong> {{ $client->incident ? 'Oui' : 'Aucun' }}</div>
@@ -216,7 +225,18 @@
                                 @error('adresse') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Société Rattachée (Facultatif)</label>
+                                <select wire:model="entreprise_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="">-- Aucune (Client Indépendant) --</option>
+                                    @foreach($entreprises as $ent)
+                                        <option value="{{ $ent->id }}">{{ $ent->nom }}</option>
+                                    @endforeach
+                                </select>
+                                @error('entreprise_id') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 flex-col">
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Solvabilité</label>
                                     <select wire:model="solvabilite" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">

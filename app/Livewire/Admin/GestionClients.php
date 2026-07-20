@@ -22,6 +22,7 @@ class GestionClients extends Component
     public $adresse = '';
     public $solvabilite = 'solvable';
     public $incident = false;
+    public $entreprise_id = null;
 
     public $isModalOpen = false;
 
@@ -34,6 +35,7 @@ class GestionClients extends Component
         'adresse' => 'nullable|string|max:500',
         'solvabilite' => 'required|in:solvable,non-solvable',
         'incident' => 'required|boolean',
+        'entreprise_id' => 'nullable|integer|exists:clients,id',
     ];
 
     public function updatingSearch()
@@ -56,6 +58,7 @@ class GestionClients extends Component
             $this->adresse = $client->adresse;
             $this->solvabilite = $client->solvabilite;
             $this->incident = (bool)$client->incident;
+            $this->entreprise_id = $client->entreprise_id;
         } else {
             $this->resetForm();
         }
@@ -80,6 +83,7 @@ class GestionClients extends Component
         $this->adresse = '';
         $this->solvabilite = 'solvable';
         $this->incident = false;
+        $this->entreprise_id = null;
     }
 
     public function save()
@@ -97,6 +101,7 @@ class GestionClients extends Component
                 'adresse' => $this->adresse,
                 'solvabilite' => $this->solvabilite,
                 'incident' => $this->incident,
+                'entreprise_id' => $this->entreprise_id ?: null,
                 'type' => 'particulier',
             ]
         );
@@ -133,8 +138,11 @@ class GestionClients extends Component
             });
         }
 
+        $entreprises = Client::where('type', 'entreprise')->orderBy('nom')->get();
+
         return view('livewire.admin.gestion-clients', [
             'clients' => $query->latest()->paginate(10),
+            'entreprises' => $entreprises,
         ])->layout('layouts.app');
     }
 }

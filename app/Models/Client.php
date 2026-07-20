@@ -19,10 +19,21 @@ class Client extends Model
         'type',
         'solvabilite',
         'incident',
+        'entreprise_id',
     ];
 
     public function contrats(): HasMany
     {
         return $this->hasMany(ContratAuto::class, 'client_id');
+    }
+
+    public function entreprise(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Client::class, 'entreprise_id')->where('type', 'entreprise');
+    }
+
+    public function employes(): HasMany
+    {
+        return $this->hasMany(Client::class, 'entreprise_id')->where('type', 'particulier');
     }
 }
