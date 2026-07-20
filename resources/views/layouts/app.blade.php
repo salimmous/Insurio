@@ -101,6 +101,22 @@
                         </a>
                     @endif
 
+                    <!-- Clients (Particuliers) -->
+                    <a href="{{ Route::has('admin.clients') ? route('admin.clients') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.clients') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
+                        <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Clients
+                    </a>
+
+                    <!-- Entreprises -->
+                    <a href="{{ Route::has('admin.entreprises') ? route('admin.entreprises') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.entreprises') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
+                        <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        Entreprises
+                    </a>
+
                     <!-- Succursales -->
                     @if(in_array('succursales', $enabledPages) && auth()->user()->hasRole('agency-admin'))
                         <a href="{{ Route::has('admin.succursales') ? route('admin.succursales') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all {{ request()->routeIs('admin.succursales') ? 'bg-[#1E293B] text-white' : 'text-slate-400 hover:bg-[#1E293B]/40 hover:text-white' }}">
@@ -216,6 +232,8 @@
                         <a href="{{ Route::has('dashboard') ? route('dashboard') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Dashboard</a>
                     @endif
                     <a href="{{ Route::has('automobile.index') ? route('automobile.index') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Registre Automobile</a>
+                    <a href="{{ Route::has('admin.clients') ? route('admin.clients') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Clients</a>
+                    <a href="{{ Route::has('admin.entreprises') ? route('admin.entreprises') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Entreprises</a>
                     @if(auth()->user()->hasRole('agency-admin'))
                         <a href="{{ Route::has('admin.succursales') ? route('admin.succursales') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Succursales</a>
                         <a href="{{ Route::has('admin.employes') ? route('admin.employes') : '#' }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Collaborateurs</a>

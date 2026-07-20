@@ -49,11 +49,12 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/automobile/creer', FormulaireContrat::class)->name('automobile.create');
         Route::get('/automobile/modifier/{contratId}', FormulaireContrat::class)->name('automobile.edit');
 
-        // Admin routes
         Route::get('/admin/succursales', \App\Livewire\Admin\GestionSuccursales::class)->name('admin.succursales');
         Route::get('/admin/employes', \App\Livewire\Admin\GestionEmployes::class)->name('admin.employes');
         Route::get('/admin/commissions', \App\Livewire\Admin\GestionCommissions::class)->name('admin.commissions');
         Route::get('/admin/charges', \App\Livewire\Admin\GestionCharges::class)->name('admin.charges');
+        Route::get('/admin/clients', \App\Livewire\Admin\GestionClients::class)->name('admin.clients');
+        Route::get('/admin/entreprises', \App\Livewire\Admin\GestionEntreprises::class)->name('admin.entreprises');
 
         // Agent routes
         Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions');
