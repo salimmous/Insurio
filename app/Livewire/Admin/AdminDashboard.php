@@ -142,7 +142,13 @@ class AdminDashboard extends Component
         if ($this->selectedBranch) {
             $latestQuery->where('succursale_id', $this->selectedBranch);
         }
-        $latestContracts = $latestQuery->limit(5)->get();
+        $latestContracts = $latestQuery->limit(5)->get()->map(function ($contract) {
+            return [
+                'attributes' => $contract->getAttributes(),
+                'client'     => $contract->client ? $contract->client->getAttributes() : null,
+                'succursale' => $contract->succursale ? $contract->succursale->getAttributes() : null,
+            ];
+        })->toArray();
 
         // 8. Expiring buckets (3 count-only queries)
         $baseExpiring = fn() => Contract::where('status', 'active');
@@ -169,7 +175,13 @@ class AdminDashboard extends Component
         if ($this->selectedBranch) {
             $expiringQuery->where('succursale_id', $this->selectedBranch);
         }
-        $expiringContracts = $expiringQuery->limit(5)->get();
+        $expiringContracts = $expiringQuery->limit(5)->get()->map(function ($contract) {
+            return [
+                'attributes' => $contract->getAttributes(),
+                'client'     => $contract->client ? $contract->client->getAttributes() : null,
+                'employe'    => $contract->employe ? $contract->employe->getAttributes() : null,
+            ];
+        })->toArray();
 
         // 10. Branch performance
         $branchRankings = Contract::select('succursale_id', DB::raw('sum(premium_amount) as total_prod'))
@@ -179,7 +191,13 @@ class AdminDashboard extends Component
             ->orderBy('total_prod', 'desc')
             ->with('succursale')
             ->limit(5)
-            ->get();
+            ->get()
+            ->map(function ($contract) {
+                return [
+                    'attributes' => $contract->getAttributes(),
+                    'succursale' => $contract->succursale ? $contract->succursale->getAttributes() : null,
+                ];
+            })->toArray();
 
         // 11. Agent performance
         $agentQuery = Contract::select('employe_id', DB::raw('sum(premium_amount) as total_prod'))
@@ -191,7 +209,12 @@ class AdminDashboard extends Component
         if ($this->selectedBranch) {
             $agentQuery->where('succursale_id', $this->selectedBranch);
         }
-        $agentRankings = $agentQuery->limit(5)->get();
+        $agentRankings = $agentQuery->limit(5)->get()->map(function ($contract) {
+            return [
+                'attributes' => $contract->getAttributes(),
+                'employe'    => $contract->employe ? $contract->employe->getAttributes() : null,
+            ];
+        })->toArray();
 
         // 12. Monthly chart
         $monthExpr = DB::getDriverName() === 'sqlite'
@@ -291,13 +314,59 @@ class AdminDashboard extends Component
         $this->chartProductionData  = $cached['chartProductionData'];
         $this->chartCommissionsData = $cached['chartCommissionsData'];
 
+        $latestContracts = collect($cached['latestContracts'] ?? [])->map(function ($data) {
+            if (!is_array($data)) return $data;
+            $contract = new Contract($data['attributes'] ?? $data);
+            $contract->exists = true;
+            if (!empty($data['client'])) {
+                $contract->setRelation('client', new Client($data['client']));
+            }
+            if (!empty($data['succursale'])) {
+                $contract->setRelation('succursale', new Succursale($data['succursale']));
+            }
+            return $contract;
+        });
+
+        $expiringContracts = collect($cached['expiringContracts'] ?? [])->map(function ($data) {
+            if (!is_array($data)) return $data;
+            $contract = new Contract($data['attributes'] ?? $data);
+            $contract->exists = true;
+            if (!empty($data['client'])) {
+                $contract->setRelation('client', new Client($data['client']));
+            }
+            if (!empty($data['employe'])) {
+                $contract->setRelation('employe', new Employe($data['employe']));
+            }
+            return $contract;
+        });
+
+        $branchRankings = collect($cached['branchRankings'] ?? [])->map(function ($data) {
+            if (!is_array($data)) return $data;
+            $contract = new Contract($data['attributes'] ?? $data);
+            $contract->exists = true;
+            if (!empty($data['succursale'])) {
+                $contract->setRelation('succursale', new Succursale($data['succursale']));
+            }
+            return $contract;
+        });
+
+        $agentRankings = collect($cached['agentRankings'] ?? [])->map(function ($data) {
+            if (!is_array($data)) return $data;
+            $contract = new Contract($data['attributes'] ?? $data);
+            $contract->exists = true;
+            if (!empty($data['employe'])) {
+                $contract->setRelation('employe', new Employe($data['employe']));
+            }
+            return $contract;
+        });
+
         return view('livewire.admin.admin-dashboard', [
-            'latestContracts'    => $cached['latestContracts'],
-            'expiringContracts'  => $cached['expiringContracts'],
-            'branchRankings'     => $cached['branchRankings'],
-            'agentRankings'      => $cached['agentRankings'],
-            'contractsByCompany' => $cached['contractsByCompany'],
-            'contractsByType'    => $cached['contractsByType'],
+            'latestContracts'    => $latestContracts,
+            'expiringContracts'  => $expiringContracts,
+            'branchRankings'     => $branchRankings,
+            'agentRankings'      => $agentRankings,
+            'contractsByCompany' => $cached['contractsByCompany'] ?? [],
+            'contractsByType'    => $cached['contractsByType'] ?? [],
         ])->layout('layouts.app');
     }
 }
