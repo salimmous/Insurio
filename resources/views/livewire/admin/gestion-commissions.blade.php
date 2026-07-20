@@ -133,12 +133,22 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right flex justify-end gap-3">
-                                    @if($com->statut === 'calculee')
-                                        <button wire:click="validerCommission({{ $com->id }})" class="text-blue-600 hover:text-blue-900 font-medium">Valider</button>
-                                    @elseif($com->statut === 'validee')
-                                        <button wire:click="payerCommission({{ $com->id }})" class="text-green-600 hover:text-green-900 font-medium">Payer</button>
+                                    @if(auth()->user()->hasRole('agency-admin'))
+                                        @if($com->statut === 'calculee')
+                                            <button wire:click="validerCommission({{ $com->id }})" class="text-blue-600 hover:text-blue-900 font-medium">Valider</button>
+                                        @elseif($com->statut === 'validee')
+                                            <button wire:click="payerCommission({{ $com->id }})" class="text-green-600 hover:text-green-900 font-medium">Payer</button>
+                                        @else
+                                            <span class="text-gray-300 text-xs font-medium">—</span>
+                                        @endif
                                     @else
-                                        <span class="text-gray-300 text-xs font-medium">—</span>
+                                        @if($com->statut === 'calculee')
+                                            <span class="text-gray-400 text-xs italic">À valider (Admin)</span>
+                                        @elseif($com->statut === 'validee')
+                                            <span class="text-gray-400 text-xs italic">À payer (Admin)</span>
+                                        @else
+                                            <span class="text-gray-300 text-xs font-medium">—</span>
+                                        @endif
                                     @endif
                                 </td>
                             </tr>
@@ -184,10 +194,18 @@
                         </div>
                         @if($com->statut === 'calculee' || $com->statut === 'validee')
                             <div class="flex justify-end gap-3 text-xs mt-2 border-t pt-2 border-gray-100">
-                                @if($com->statut === 'calculee')
-                                    <button wire:click="validerCommission({{ $com->id }})" class="text-blue-600 font-semibold">Valider la commission</button>
-                                @elseif($com->statut === 'validee')
-                                    <button wire:click="payerCommission({{ $com->id }})" class="text-green-600 font-semibold">Confirmer le paiement</button>
+                                @if(auth()->user()->hasRole('agency-admin'))
+                                    @if($com->statut === 'calculee')
+                                        <button wire:click="validerCommission({{ $com->id }})" class="text-blue-600 font-semibold">Valider la commission</button>
+                                    @elseif($com->statut === 'validee')
+                                        <button wire:click="payerCommission({{ $com->id }})" class="text-green-600 font-semibold">Confirmer le paiement</button>
+                                    @endif
+                                @else
+                                    @if($com->statut === 'calculee')
+                                        <span class="text-gray-400 italic">En attente de validation par l'Admin</span>
+                                    @elseif($com->statut === 'validee')
+                                        <span class="text-gray-400 italic">En attente de paiement par l'Admin</span>
+                                    @endif
                                 @endif
                             </div>
                         @endif

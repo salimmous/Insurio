@@ -70,6 +70,11 @@ class GestionCommissions extends Component
 
     public function validerCommission($id)
     {
+        if (!auth()->user()->hasRole('agency-admin')) {
+            $this->dispatch('swal:error', ['message' => 'Action non autorisée. Seul l\'administrateur du cabinet peut valider les commissions.']);
+            return;
+        }
+
         $commission = CommissionEmploye::findOrFail($id);
         $currentEmploye = auth()->user()->employe;
         
@@ -85,6 +90,11 @@ class GestionCommissions extends Component
 
     public function payerCommission($id)
     {
+        if (!auth()->user()->hasRole('agency-admin')) {
+            $this->dispatch('swal:error', ['message' => 'Action non autorisée. Seul l\'administrateur du cabinet peut enregistrer les paiements.']);
+            return;
+        }
+
         $commission = CommissionEmploye::findOrFail($id);
         app(CommissionService::class)->payer($commission);
         $this->loadCommissions();
