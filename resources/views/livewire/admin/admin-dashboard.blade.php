@@ -1,13 +1,13 @@
 <div class="py-6 font-sans">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-        <!-- Top Filter & Branch Selection Row -->
+        <!-- Header Controls Row -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
             <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
                 @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('comptable'))
                     <!-- Branch Filter Dropdown -->
                     <div class="min-w-[200px]">
-                        <label class="block text-[9px] font-bold text-slate-400 tracking-wider mb-1">Filtrer par Succursale</label>
+                        <label class="block text-[9px] font-bold text-slate-450 tracking-wider mb-1 uppercase">Filtrer par Succursale</label>
                         <select wire:model.live="selectedBranch" class="w-full bg-slate-50 border border-slate-200 focus:bg-white rounded-xl px-3 py-1.5 text-xs font-semibold outline-none transition-all text-slate-700">
                             <option value="">Toutes les succursales</option>
                             @foreach($branchList as $branch)
@@ -17,7 +17,7 @@
                     </div>
                 @else
                     <div>
-                        <span class="text-[9px] font-bold text-slate-400 tracking-wider block">Succursale Active</span>
+                        <span class="text-[9px] font-bold text-slate-450 tracking-wider block uppercase">Succursale Active</span>
                         <span class="text-xs font-bold text-slate-700">
                             {{ $branchList->firstWhere('id', $selectedBranch)->nom ?? 'Siège Central' }}
                         </span>
@@ -27,134 +27,150 @@
                 <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
 
                 <div>
-                    <span class="text-[9px] font-bold text-slate-400 tracking-wider block">Période Active</span>
+                    <span class="text-[9px] font-bold text-slate-450 tracking-wider block uppercase">Période Active</span>
                     <div class="flex items-center gap-1.5 mt-0.5">
                         <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-extrabold rounded-md border border-indigo-150 uppercase">Tous les contrats</span>
                     </div>
                 </div>
             </div>
             
-            <div class="text-[10px] text-slate-400 font-mono font-bold self-end md:self-center">
-                Dernier Refresh: {{ now()->format('H:i:s') }}
+            <div class="flex items-center gap-3">
+                <button wire:click="refreshDashboard" class="bg-slate-50 hover:bg-slate-100 text-slate-750 border border-slate-200 font-bold px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                    <span>🔄</span> Actualiser
+                </button>
+                <div class="text-[10px] text-slate-450 font-mono font-bold">
+                    Rafraîchi à: {{ now()->format('H:i:s') }}
+                </div>
             </div>
         </div>
 
         <!-- Connection Banner & Status -->
-        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="h-10 w-10 bg-teal-50 text-teal-650 rounded-xl flex items-center justify-center">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
+        <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="flex items-center gap-4">
+                <div class="h-12 w-12 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                    <span class="text-xl">📊</span>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="font-bold text-sm text-slate-850">Console Cabinet Active:</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-250/60 uppercase">
+                        <span class="font-extrabold text-base tracking-tight text-white">Dashboard CEO d'Agence</span>
+                        <span class="px-2 py-0.5 rounded text-[8px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest">
                             {{ App\Models\Setting::get('commission_trigger', 'vente') }}
                         </span>
                     </div>
-                    <p class="text-xs text-slate-400 mt-0.5">Calculateur financier et charges synchronisé par succursale.</p>
+                    <p class="text-xs text-slate-350 mt-1">Supervision de la production, de l'état de recouvrement des succursales et des encaissements.</p>
                 </div>
             </div>
 
             <!-- Mini stats row -->
-            <div class="flex gap-6 text-center text-xs">
+            <div class="flex gap-8 text-left">
                 <div>
-                    <span class="block font-bold text-slate-800">{{ App\Models\Succursale::count() }}</span>
-                    <span class="text-slate-400 text-[10px] font-semibold uppercase">Succursales</span>
+                    <span class="block font-black text-white text-lg font-mono">{{ App\Models\Succursale::count() }}</span>
+                    <span class="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Succursales</span>
                 </div>
                 <div>
-                    <span class="block font-bold text-slate-800">{{ App\Models\Employe::count() }}</span>
-                    <span class="text-slate-400 text-[10px] font-semibold uppercase">Employés</span>
+                    <span class="block font-black text-white text-lg font-mono">{{ App\Models\Employe::count() }}</span>
+                    <span class="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Agents Actifs</span>
                 </div>
                 <div>
-                    <span class="block font-bold text-slate-800">{{ $clientsCount }}</span>
-                    <span class="text-slate-400 text-[10px] font-semibold uppercase">Clients</span>
+                    <span class="block font-black text-white text-lg font-mono">{{ $clientsCount }}</span>
+                    <span class="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Clients CRM</span>
                 </div>
             </div>
         </div>
 
-        <!-- Financial Flow cards (+ and -) -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <!-- 1. Total Production (Premiums) -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-32 border-t-4 border-t-emerald-500">
+        <!-- Stripe-like Executive Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Revenue & Cash Flow -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
+                <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450">Chiffre d'Affaires Encaissé</span>
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Production (Primes)</span>
-                    <div class="text-2xl font-black text-slate-800 font-mono mt-2">
-                        {{ number_format($totalProduction, 2) }} <span class="text-[10px] font-bold text-slate-400">DH</span>
-                    </div>
+                    <div class="text-2xl font-black text-slate-900 font-mono tracking-tight">{{ number_format($monthlyRevenue, 2) }} DH</div>
+                    <div class="text-[10px] text-slate-400 font-mono mt-0.5">Encaissé aujourd'hui: {{ number_format($todayRevenue, 2) }} DH</div>
                 </div>
-                <span class="text-[9px] text-slate-400 font-medium">Total des primes nettes des contrats</span>
+                <span class="text-[9px] text-emerald-600 font-bold">🟢 Flux de trésorerie entrant</span>
             </div>
 
-            <!-- 2. Commissions Inflow -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-32 border-t-4 border-t-indigo-500">
+            <!-- Production Volume -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
+                <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450">Production Nette (Primes)</span>
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Commissions Cabinet</span>
-                    <div class="text-2xl font-black text-slate-800 font-mono mt-2">
-                        {{ number_format($totalCommissions, 2) }} <span class="text-[10px] font-bold text-slate-400">DH</span>
-                    </div>
+                    <div class="text-2xl font-black text-slate-900 font-mono tracking-tight">{{ number_format($totalProduction, 2) }} DH</div>
+                    <div class="text-[10px] text-slate-400 font-mono mt-0.5">Moyenne prime / contrat: {{ number_format($averagePremium, 2) }} DH</div>
                 </div>
-                <span class="text-[9px] text-slate-400 font-medium">Revenus perçus des compagnies d'assurance</span>
+                <span class="text-[9px] text-slate-400 font-medium">Contrats actifs hors taxes</span>
             </div>
 
-            <!-- 3. Expenses / Outflow -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-32 border-t-4 border-t-rose-500">
+            <!-- Commissions & Net Margin -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
+                <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450">Bénéfice Net Estimé</span>
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-rose-600">Charges Globales</span>
-                    <div class="text-2xl font-black text-slate-800 font-mono mt-2">
-                        {{ number_format($totalExpenses, 2) }} <span class="text-[10px] font-bold text-slate-400">DH</span>
+                    <div class="text-2xl font-black font-mono tracking-tight {{ $netProfit >= 0 ? 'text-emerald-700' : 'text-rose-650' }}">
+                        {{ number_format($netProfit, 2) }} DH
                     </div>
+                    <div class="text-[10px] text-slate-400 font-mono mt-0.5">Commissions: {{ number_format($totalCommissions, 2) }} DH</div>
                 </div>
-                <span class="text-[9px] text-slate-400 font-medium">Charges succursales et commissions versées</span>
+                <span class="text-[9px] text-indigo-600 font-bold">Marge brute après charges</span>
             </div>
 
-            <!-- 4. Net Profit -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-32 border-t-4 {{ $netProfit >= 0 ? 'border-t-teal-500' : 'border-t-red-500' }}">
+            <!-- Retention & Renewals -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
+                <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450">Taux de Renouvellement</span>
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider {{ $netProfit >= 0 ? 'text-teal-650' : 'text-rose-650' }}">Bénéfice Net Estimé</span>
-                    <div class="text-2xl font-black font-mono mt-2 {{ $netProfit >= 0 ? 'text-teal-650' : 'text-rose-600' }}">
-                        {{ number_format($netProfit, 2) }} <span class="text-[10px] font-bold text-slate-400">DH</span>
-                    </div>
+                    <div class="text-2xl font-black text-slate-900 font-mono tracking-tight">{{ $renewalRate }}%</div>
+                    <div class="text-[10px] text-slate-400 font-mono mt-0.5">Rétention Clientèle: {{ $customerRetention }}%</div>
                 </div>
-                <span class="text-[9px] text-slate-400 font-medium">Résultat réel (Commissions - Charges)</span>
+                <span class="text-[9px] text-slate-400 font-medium">Performances de fidélisation</span>
             </div>
+
         </div>
 
-        <!-- Renewal expiring countdown buckets -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-5 border border-slate-200 rounded-2xl shadow-sm flex justify-between items-center">
+        <!-- Secondary telemetry row (Impayés, Tickets, Sinistres, Expirations) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            
+            <div class="bg-white p-4 border border-slate-200 rounded-2xl shadow-sm flex justify-between items-center">
                 <div>
-                    <span class="text-xs font-semibold text-slate-500">Échéances sous 7 jours</span>
-                    <span class="block text-2xl font-black text-rose-650 mt-1 font-mono">{{ $expiring7Count }}</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-450">Primes Non Recouvrées</span>
+                    <span class="block text-xl font-bold text-rose-650 mt-1 font-mono">{{ number_format($totalImpayes, 2) }} DH</span>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-700 font-bold">7J</div>
+                <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-xs">🔴</div>
             </div>
-            <div class="bg-white p-5 border border-slate-200 rounded-2xl shadow-sm flex justify-between items-center">
+
+            <div class="bg-white p-4 border border-slate-200 rounded-2xl shadow-sm flex justify-between items-center">
                 <div>
-                    <span class="text-xs font-semibold text-slate-500">Échéances sous 15 jours</span>
-                    <span class="block text-2xl font-black text-amber-600 mt-1 font-mono">{{ $expiring15Count }}</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-450">Sinistres en Attente</span>
+                    <span class="block text-xl font-bold text-amber-600 mt-1 font-mono">{{ $claimsWaitingCount }}</span>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-700 font-bold">15J</div>
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">⚠️</div>
             </div>
-            <div class="bg-white p-5 border border-slate-200 rounded-2xl shadow-sm flex justify-between items-center">
+
+            <div class="bg-white p-4 border border-slate-200 rounded-2xl shadow-sm flex justify-between items-center">
                 <div>
-                    <span class="text-xs font-semibold text-slate-500">Échéances sous 30 jours</span>
-                    <span class="block text-2xl font-black text-indigo-650 mt-1 font-mono">{{ $expiring30Count }}</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-450">Contrats à Renouveler (30j)</span>
+                    <span class="block text-xl font-bold text-indigo-650 mt-1 font-mono">{{ $expiring30Count }}</span>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-700 font-bold">30J</div>
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">🔄</div>
             </div>
+
+            <div class="bg-white p-4 border border-slate-200 rounded-2xl shadow-sm flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-450">Contrats Expirés</span>
+                    <span class="block text-xl font-bold text-slate-800 mt-1 font-mono">{{ $expiredContractsCount }}</span>
+                </div>
+                <div class="w-9 h-9 rounded-xl bg-slate-50 text-slate-650 flex items-center justify-center font-bold text-xs">⚫</div>
+            </div>
+
         </div>
 
-        <!-- Main workspace -->
+        <!-- Main workspace grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Left workspace (2 Cols) -->
+            <!-- Left Side: Chart and Recent list (2 Cols) -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- SVG Performance Chart -->
+                
+                <!-- Performance Chart -->
                 <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
-                    <h2 class="font-bold text-slate-800 text-sm mb-4">Production & Commissions Mensuelles ({{ now()->year }})</h2>
+                    <h2 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4">Production & Commissions Mensuelles ({{ now()->year }})</h2>
                     <div class="flex items-end gap-2 h-48 pt-6 relative border-b border-l border-slate-200 px-4">
                         @php
                             $maxVal = max(array_merge($chartProductionData, $chartCommissionsData, [1000]));
@@ -186,8 +202,8 @@
 
                 <!-- Latest Contracts -->
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                        <h2 class="font-bold text-slate-800 text-sm">Derniers Contrats Émis</h2>
+                    <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h2 class="font-bold text-slate-850 text-xs uppercase tracking-wider">Derniers Contrats Émis</h2>
                         <a href="{{ route('automobile.index') }}" class="text-[10px] text-teal-600 hover:text-teal-950 font-bold uppercase tracking-wider">Voir registre</a>
                     </div>
                     <div class="divide-y divide-slate-100">
@@ -209,20 +225,59 @@
                         @endforelse
                     </div>
                 </div>
+
             </div>
 
-            <!-- Right workspace: Breakdown & Expiry list -->
-            <div class="lg:col-span-1 space-y-6">
-                <!-- Detailed Expenses breakdown -->
+            <!-- Right Side: Leaderboard & Charges (1 Col) -->
+            <div class="space-y-6">
+
+                <!-- Top Agents & Products Leaderboard -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm space-y-4">
+                    <h2 class="font-bold text-slate-800 text-xs uppercase tracking-wider border-b border-slate-100 pb-2">Classement & Produits Top</h2>
+                    
+                    <div class="space-y-4 text-xs font-semibold">
+                        <!-- Top Agents -->
+                        <div>
+                            <span class="text-slate-400 text-[9px] uppercase tracking-wider font-bold block mb-2">Meilleurs Agents (Commissions)</span>
+                            <div class="space-y-2">
+                                @forelse($topAgents as $agent)
+                                    <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-200/40">
+                                        <span class="text-slate-700">{{ $agent['name'] }}</span>
+                                        <span class="font-mono font-bold text-teal-650">{{ number_format($agent['total'], 2) }} DH</span>
+                                    </div>
+                                @empty
+                                    <div class="text-slate-400 text-xs py-1">Aucune commission versée.</div>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        <!-- Top Products -->
+                        <div>
+                            <span class="text-slate-400 text-[9px] uppercase tracking-wider font-bold block mb-2">Produits les plus vendus</span>
+                            <div class="space-y-2">
+                                @forelse($bestProducts as $product)
+                                    <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-200/40">
+                                        <span class="text-slate-700">{{ $product['name'] }}</span>
+                                        <span class="font-mono font-bold text-slate-800">{{ number_format($product['total'], 2) }} DH</span>
+                                    </div>
+                                @empty
+                                    <div class="text-slate-400 text-xs py-1">Aucun contrat vendu.</div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expenses breakdown -->
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                        <h2 class="font-bold text-slate-800 text-sm">Répartition des Charges</h2>
+                    <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                        <h2 class="font-bold text-slate-850 text-xs uppercase tracking-wider">Répartition des Charges ({{ number_format($totalExpenses, 2) }} DH)</h2>
                         @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('comptable'))
                             <a href="{{ route('admin.charges') }}" class="text-[10px] text-teal-600 hover:text-teal-950 font-bold uppercase tracking-wider">Gérer</a>
                         @endif
                     </div>
                     
-                    <div class="p-6 space-y-5">
+                    <div class="p-5 space-y-4">
                         <div>
                             <div class="flex justify-between items-center text-xs font-bold text-slate-755 mb-1.5">
                                 <span>🏢 Loyer / Locaux</span>
@@ -235,7 +290,7 @@
 
                         <div>
                             <div class="flex justify-between items-center text-xs font-bold text-slate-755 mb-1.5">
-                                <span>⚡ Électricité (Lydec/Redal)</span>
+                                <span>⚡ Électricité</span>
                                 <span class="font-mono">{{ number_format($this->expenseElectricite, 2) }} DH</span>
                             </div>
                             <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -245,7 +300,7 @@
 
                         <div>
                             <div class="flex justify-between items-center text-xs font-bold text-slate-755 mb-1.5">
-                                <span>💧 Eau (Lydec/Redal)</span>
+                                <span>💧 Eau / Fluides</span>
                                 <span class="font-mono">{{ number_format($this->expenseEau, 2) }} DH</span>
                             </div>
                             <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -265,92 +320,46 @@
                     </div>
                 </div>
 
-                <!-- Expiring contracts notifications -->
+                <!-- Expiring Contracts Notifications -->
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
-                        <svg class="h-5 w-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
+                        <svg class="h-4 w-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <h2 class="font-bold text-slate-800 text-sm">Alertes Échéances (30 jours)</h2>
+                        <h2 class="font-bold text-slate-850 text-xs uppercase tracking-wider">Alertes Échéances (30 jours)</h2>
                     </div>
 
-                    <div class="p-4 space-y-4">
+                    <div class="p-4 space-y-3">
                         @forelse($expiringContracts as $contrat)
                             @php
                                 $daysLeft = now()->diffInDays($contrat->end_date, false);
                             @endphp
-                            <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-xl flex justify-between items-center transition-all hover:bg-slate-100/60">
+                            <div class="bg-slate-50 border border-slate-200/60 p-3.5 rounded-xl flex justify-between items-center transition-all hover:bg-slate-100/60">
                                 <div class="space-y-1">
                                     <div class="font-bold text-slate-850 text-xs font-mono">#{{ $contrat->contract_number }}</div>
                                     <div class="text-[10px] text-slate-500 font-sans truncate max-w-[140px]">{{ $contrat->client->first_name ?? '' }} {{ $contrat->client->last_name ?? '' }}</div>
                                     <div class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Agent: {{ $contrat->employe->nom_complet ?? 'N/A' }}</div>
                                 </div>
                                 <div class="text-right flex flex-col items-end gap-1.5">
-                                    <span class="inline-flex items-center px-2 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wide {{ $daysLeft <= 7 ? 'bg-rose-50 text-rose-700 border border-rose-250/60' : 'bg-amber-50 text-amber-700 border border-amber-250/60' }}">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide {{ $daysLeft <= 7 ? 'bg-rose-50 text-rose-700 border border-rose-250/60' : 'bg-amber-50 text-amber-700 border border-amber-250/60' }}">
                                         -{{ $daysLeft }} J
                                     </span>
-                                    <button wire:click="$dispatch('triggerWhatsAppReminder', { contractId: {{ $contrat->id }} })" class="inline-flex items-center px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold transition-all">
+                                    <button wire:click="$dispatch('triggerWhatsAppReminder', { contractId: {{ $contrat->id }} })" class="inline-flex items-center px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold transition-all">
                                         WhatsApp
                                     </button>
                                 </div>
                             </div>
                         @empty
-                            <div class="p-8 text-center text-slate-400 text-sm">
+                            <div class="p-6 text-center text-slate-400 text-xs">
                                 Aucun contrat arrivant à échéance.
                             </div>
                         @endforelse
                     </div>
                 </div>
 
-                <!-- Contracts by Insurer -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                        <h2 class="font-bold text-slate-800 text-sm">Contrats par Compagnie</h2>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        @forelse($contractsByCompany as $item)
-                            <div>
-                                <div class="flex justify-between items-center text-xs font-bold text-slate-755 mb-1.5">
-                                    <span>{{ $item['label'] }}</span>
-                                    <span class="font-mono">{{ $item['value'] }} contrats</span>
-                                </div>
-                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                    <div class="bg-emerald-500 h-full rounded-full" style="width: {{ $activeContractsCount > 0 ? ($item['value'] / $activeContractsCount) * 100 : 0 }}%"></div>
-                                </div>
-                            </div>
-                        @empty
-                            <p class="text-xs text-slate-400 text-center py-4">Aucune donnée disponible.</p>
-                        @endforelse
-                    </div>
-                </div>
-
-                <!-- Contracts by Type -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                        <h2 class="font-bold text-slate-800 text-sm">Contrats par Produit</h2>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        @forelse($contractsByType as $item)
-                            <div>
-                                <div class="flex justify-between items-center text-xs font-bold text-slate-755 mb-1.5">
-                                    <span>{{ $item['label'] }}</span>
-                                    <span class="font-mono">{{ $item['value'] }} contrats</span>
-                                </div>
-                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                    <div class="bg-indigo-500 h-full rounded-full" style="width: {{ $activeContractsCount > 0 ? ($item['value'] / $activeContractsCount) * 100 : 0 }}%"></div>
-                                </div>
-                            </div>
-                        @empty
-                            <p class="text-xs text-slate-400 text-center py-4">Aucune donnée disponible.</p>
-                        @endforelse
-                    </div>
-                </div>
             </div>
 
         </div>
 
     </div>
-
-    <!-- WhatsApp Reminder Modal -->
-    <livewire:admin.send-whatsapp-reminder />
 </div>

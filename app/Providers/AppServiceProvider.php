@@ -67,5 +67,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(ContractCreated::class, CreateRenewalReminder::class);
         Event::listen(ContractRenewed::class, [LogContractActivity::class, 'handleRenewed']);
         Event::listen(PaymentReceived::class, InvalidateDashboardCache::class);
+        Event::listen(\App\Events\ContractExpiringEvent::class, \App\Listeners\ContractExpiringListener::class);
     }
 }

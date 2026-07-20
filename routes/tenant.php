@@ -53,6 +53,7 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/employes', \App\Livewire\Admin\GestionEmployes::class)->name('admin.employes')->middleware('can:expenses.view');
         Route::get('/admin/commissions', \App\Livewire\Admin\GestionCommissions::class)->name('admin.commissions')->middleware('can:commissions.view');
         Route::get('/admin/charges', \App\Livewire\Admin\GestionCharges::class)->name('admin.charges')->middleware('can:expenses.view');
+        Route::get('/admin/automation', \App\Livewire\Admin\AutomationControl::class)->name('admin.automation')->middleware('can:expenses.view');
         Route::get('/admin/clients', \App\Livewire\Admin\GestionClients::class)->name('admin.clients')->middleware('can:clients.view');
         Route::get('/admin/clients/{clientId}', \App\Livewire\Admin\ClientProfile::class)->name('admin.clients.profile')->middleware('can:clients.view');
         Route::get('/admin/tasks', \App\Livewire\Admin\TaskManager::class)->name('admin.tasks')->middleware('can:clients.view');

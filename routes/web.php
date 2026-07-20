@@ -31,6 +31,9 @@ Route::middleware(['auth:platform', 'central'])->group(function () {
     Route::get('/super-admin/charges', [PlatformExpenseController::class, 'index'])->name('platform.expenses.index');
     Route::post('/super-admin/charges', [PlatformExpenseController::class, 'store'])->name('platform.expenses.store');
     Route::delete('/super-admin/charges/{id}', [PlatformExpenseController::class, 'destroy'])->name('platform.expenses.destroy');
+
+    // Generic platform modules navigation routing
+    Route::get('/super-admin/module/{moduleName}', [PlatformDashboardController::class, 'showModule'])->name('platform.module');
 });
 
 // Load Breeze auth routes on central domain ONLY in testing environment to make scaffolded tests pass

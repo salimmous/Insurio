@@ -24,6 +24,9 @@
             </div>
         </div>
         <div class="flex gap-3">
+            <button wire:click="$set('showAiPanel', true)" class="bg-indigo-650 hover:bg-indigo-750 text-white font-semibold px-4 py-2 rounded-xl transition-all text-sm flex items-center gap-1.5 shadow-sm border border-indigo-700">
+                <span>✨</span> Copilot AI
+            </button>
             <a href="{{ route('admin.clients') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2 rounded-xl transition-all border border-slate-200/40 text-sm">
                 Retour à la liste
             </a>
@@ -356,5 +359,64 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- AI Copilot Panel Drawer -->
+    <div x-data="{ open: @entangle('showAiPanel') }" x-show="open" class="fixed inset-0 overflow-hidden z-50" style="display: none;">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute inset-0 bg-slate-900/55 backdrop-blur-xs transition-opacity" @click="open = false"></div>
+            
+            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                <div class="pointer-events-auto w-screen max-w-md bg-white shadow-xl flex flex-col h-full border-l border-slate-200">
+                    <div class="px-6 py-4 bg-slate-900 text-white flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">✨</span>
+                            <span class="font-extrabold text-sm tracking-tight text-white">Copilot AI - Insurio</span>
+                        </div>
+                        <button @click="open = false" class="text-slate-400 hover:text-white">✕</button>
+                    </div>
+
+                    <!-- Chat / Suggestion space -->
+                    <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50">
+                        <div class="bg-indigo-50 border border-indigo-200/60 p-4 rounded-2xl text-xs text-indigo-950 font-medium leading-relaxed">
+                            Bonjour ! Je suis votre Copilot. Je peux analyser le profil de <strong>{{ $client->first_name }} {{ $client->last_name }}</strong>, rédiger des messages de relance personnalisés, ou vous conseiller sur des opportunités de multi-équipement.
+                        </div>
+
+                        <!-- Suggestions Quick Buttons -->
+                        <div class="flex flex-wrap gap-2">
+                            <button wire:click="$set('aiQuery', 'opportunité de vente croisée')" class="bg-white border border-slate-200 hover:bg-slate-50 text-[10px] font-bold text-slate-700 px-3 py-1.5 rounded-full transition-all">
+                                💡 Opportunités Cross-sell
+                            </button>
+                            <button wire:click="$set('aiQuery', 'rédiger un message de relance whatsapp')" class="bg-white border border-slate-200 hover:bg-slate-50 text-[10px] font-bold text-slate-700 px-3 py-1.5 rounded-full transition-all">
+                                📲 WhatsApp Relance
+                            </button>
+                            <button wire:click="$set('aiQuery', 'rédiger un email de renouvellement')" class="bg-white border border-slate-200 hover:bg-slate-50 text-[10px] font-bold text-slate-700 px-3 py-1.5 rounded-full transition-all">
+                                ✉️ Relance Email
+                            </button>
+                        </div>
+
+                        <!-- Result display -->
+                        @if($aiResult)
+                            <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-3">
+                                <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450">RÉPONSE DU COPILOT</span>
+                                <div class="text-xs text-slate-700 whitespace-pre-line leading-relaxed font-medium">
+                                    {!! $aiResult !!}
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Input form -->
+                    <div class="p-4 border-t border-slate-200 bg-white">
+                        <form wire:submit.prevent="askAiCopilot" class="flex gap-2">
+                            <input type="text" wire:model="aiQuery" placeholder="Posez une question au Copilot..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:bg-white transition-all text-slate-700">
+                            <button type="submit" class="bg-indigo-650 hover:bg-indigo-750 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-sm">
+                                Envoyer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

@@ -348,10 +348,10 @@
                     {{ $slot }}
                 </main>
             </div>
-            
             <div class="hidden">
                 <livewire:layout.navigation />
             </div>
         </div>
+        <livewire:global-command-palette />
     </body>
 </html>

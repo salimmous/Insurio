@@ -20,6 +20,11 @@ class ClientProfile extends Component
     // Notes tab
     public $clientNotes = '';
 
+    // Copilot AI properties
+    public $showAiPanel = false;
+    public $aiQuery = '';
+    public $aiResult = '';
+
     // Communication form
     public $communicationType = 'whatsapp';
     public $communicationMessage = '';
@@ -148,6 +153,16 @@ class ClientProfile extends Component
             'message' => $message,
             'user_id' => auth()->id(),
         ]);
+    }
+
+    public function askAiCopilot()
+    {
+        $this->validate([
+            'aiQuery' => 'required|string|min:3|max:2000',
+        ]);
+
+        $this->aiResult = \App\Services\AiCopilotService::generateClientAdvice($this->client, $this->aiQuery);
+        $this->aiQuery = '';
     }
 
     public function render()
