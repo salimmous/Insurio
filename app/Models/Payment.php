@@ -44,6 +44,8 @@ class Payment extends Model
         'attachments',
         'created_by',
         'approved_by',
+        'status',
+        'reference',
     ];
 
     protected $casts = [
@@ -138,7 +140,10 @@ class Payment extends Model
         // If a payment is marked as 'paid', we sync it with the legacy 'reglements' table
         // so that existing triggers (like commissions and timelines) run successfully.
         if ($payment->payment_status === 'paid') {
-            $existing = Reglement::where('reference_paiement', $payment->payment_number)->first();
+            $existing = Reglement::where(function ($query) use ($payment) {
+                $query->where('reference_paiement', $payment->payment_number)
+                      ->orWhere('reference_paiement', $payment->reference_number ?: $payment->payment_number);
+            })->first();
             
             if (!$existing) {
                 Reglement::create([
@@ -237,5 +242,25 @@ class Payment extends Model
     public function getMontantAttribute()
     {
         return $this->amount;
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->payment_status;
+    }
+
+    public function setStatusAttribute($value)
+    {
+        $this->payment_status = $value;
+    }
+
+    public function getReferenceAttribute()
+    {
+        return $this->reference_number;
+    }
+
+    public function setReferenceAttribute($value)
+    {
+        $this->reference_number = $value;
     }
 }

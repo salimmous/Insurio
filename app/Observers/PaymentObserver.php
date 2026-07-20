@@ -33,6 +33,9 @@ class PaymentObserver
                     'reference_paiement' => $payment->reference,
                 ]);
             } catch (\Throwable $e) {
+                if (app()->environment('testing')) {
+                    throw $e;
+                }
                 // Ignore if reglements table doesn't exist
             }
 

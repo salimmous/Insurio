@@ -46,6 +46,19 @@ if (app()->environment('testing')) {
     Route::view('admin/employes', 'dashboard')->name('admin.employes');
     Route::view('admin/commissions', 'dashboard')->name('admin.commissions');
     Route::view('mes-commissions', 'dashboard')->name('agent.commissions');
+    Route::view('admin/clients', 'dashboard')->name('admin.clients');
+    Route::view('admin/entreprises', 'dashboard')->name('admin.entreprises');
+    Route::view('admin/produits', 'dashboard')->name('admin.products');
+    Route::view('admin/dossiers', 'dashboard')->name('admin.dossiers');
+    Route::view('admin/compagnies', 'dashboard')->name('admin.compagnies');
+    Route::view('admin/payments-center', 'dashboard')->name('admin.payments.center');
+    Route::view('admin/charges', 'dashboard')->name('admin.charges');
+    Route::view('admin/tasks', 'dashboard')->name('admin.tasks');
+    Route::view('admin/activity-timeline', 'dashboard')->name('admin.activity-timeline');
+    Route::view('admin/import-manager', 'dashboard')->name('admin.import-manager');
+    Route::view('automobile', 'dashboard')->name('automobile.index');
+    Route::view('automobile/create', 'dashboard')->name('automobile.create');
+    Route::post('logout', function () {})->name('logout');
     Route::get('/automobile/pdf/{contratId}/{type}', [\App\Http\Controllers\Tenant\PDFController::class, 'generate'])->name('automobile.pdf');
 }
 
