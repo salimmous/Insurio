@@ -8,7 +8,7 @@ use App\Models\Contract;
 
 class PaymentObserver
 {
-    protected static bool $syncing = false;
+    public static bool $syncing = false;
 
     public function created(Payment $payment): void
     {
@@ -34,6 +34,12 @@ class PaymentObserver
                 ]);
             } catch (\Throwable $e) {
                 // Ignore if reglements table doesn't exist
+            }
+
+            // Dispatch event for Phase 3 components (e.g. cache invalidation)
+            $contract = $payment->contract ?? Contract::find($payment->contract_id);
+            if ($contract) {
+                \App\Events\PaymentReceived::dispatch($payment, $contract);
             }
         } finally {
             self::$syncing = false;

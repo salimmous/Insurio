@@ -154,4 +154,66 @@ class OperationalSystemsTest extends TestCase
 
         $this->assertTrue(Renewal::where('contract_id', $contract->id)->exists());
     }
+
+    public function test_dashboard_caching_and_subqueries()
+    {
+        $client = Client::create([
+            'first_name' => 'Sara',
+            'last_name' => 'El',
+            'cin' => 'EE112233',
+            'client_type' => 'individual',
+        ]);
+
+        $contract = Contract::create([
+            'client_id' => $client->id,
+            'contract_number' => 'POL-DASH-777',
+            'policy_number' => 'POL-DASH-777',
+            'insurer_id' => 1,
+            'insurance_product_id' => 1,
+            'premium_amount' => 4000.00,
+            'start_date' => now(),
+            'end_date' => now()->addYear(),
+            'status' => 'active',
+            'commission_rate' => 10.0,
+            'compagnie_id' => 1,
+            'statut' => 'actif',
+            'prime_totale' => 4500.00,
+        ]);
+
+        // Add a payment (reglement)
+        Reglement::create([
+            'contrat_id' => $contract->id,
+            'montant' => 1000.00,
+            'date_reglement' => now(),
+            'mode_reglement' => 'especes',
+            'reference_paiement' => 'REF-111',
+        ]);
+
+        // Test Livewire AdminDashboard execution and KPI computations
+        $dashboard = new \App\Livewire\Admin\AdminDashboard();
+        $dashboard->loadKPIs();
+
+        // 4500.00 (prime_totale) - 1000.00 (reglement) = 3500.00 (totalImpayes)
+        $this->assertEquals(3500.00, $dashboard->totalImpayes);
+
+        // Verify cache keys exist under non-tagging driver
+        $cacheKey = 'dashboard_kpis_' . tenant('id') . '_branch_all';
+        $this->assertTrue(\Illuminate\Support\Facades\Cache::has($cacheKey));
+
+        // Test cache buster manually
+        $dashboard->refreshDashboard();
+        $this->assertTrue(\Illuminate\Support\Facades\Cache::has($cacheKey));
+
+        // Simulate new payment that triggers cache bust automatically
+        Payment::create([
+            'client_id' => $client->id,
+            'contract_id' => $contract->id,
+            'amount' => 500.00,
+            'payment_method' => 'cash',
+            'status' => 'paid',
+        ]);
+
+        // Dashboard cache should be bust/forgotten after payment is saved
+        $this->assertFalse(\Illuminate\Support\Facades\Cache::has($cacheKey));
+    }
 }

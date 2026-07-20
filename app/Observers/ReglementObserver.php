@@ -7,15 +7,13 @@ use App\Models\Reglement;
 
 class ReglementObserver
 {
-    protected static bool $syncing = false;
-
     public function created(Reglement $reglement): void
     {
-        if (self::$syncing) {
+        if (PaymentObserver::$syncing) {
             return;
         }
 
-        self::$syncing = true;
+        PaymentObserver::$syncing = true;
         try {
             $modeMap = [
                 'especes' => 'cash',
@@ -51,7 +49,7 @@ class ReglementObserver
                 }
             }
         } finally {
-            self::$syncing = false;
+            PaymentObserver::$syncing = false;
         }
     }
 }
