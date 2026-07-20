@@ -219,4 +219,19 @@ class OperationalSystemsTest extends TestCase
         // Dashboard cache should be bust/forgotten after payment is saved
         $this->assertFalse(\Illuminate\Support\Facades\Cache::has($cacheKey));
     }
+
+    public function test_livewire_update_get_route_redirects()
+    {
+        // On central domain
+        $response = $this->get('/livewire/update');
+        $response->assertRedirect('/');
+
+        // On tenant domain
+        $tenant = Tenant::first();
+        if ($tenant) {
+            $domain = $tenant->domains()->first()->domain;
+            $response = $this->get("http://{$domain}/livewire/update");
+            $response->assertRedirect('/');
+        }
+    }
 }

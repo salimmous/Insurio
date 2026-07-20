@@ -45,3 +45,7 @@ if (app()->environment('testing')) {
     Route::view('mes-commissions', 'dashboard')->name('agent.commissions');
     Route::get('/automobile/pdf/{contratId}/{type}', [\App\Http\Controllers\Tenant\PDFController::class, 'generate'])->name('automobile.pdf');
 }
+
+Route::get('livewire/update', function () {
+    return redirect('/');
+});

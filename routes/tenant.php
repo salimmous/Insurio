@@ -100,4 +100,8 @@ Route::middleware($tenantMiddleware)->group(function () {
 
     // Tenant Authentication Routes (Volt/Breeze)
     require base_path('routes/auth.php');
+
+    Route::get('livewire/update', function () {
+        return redirect('/');
+    });
 });
