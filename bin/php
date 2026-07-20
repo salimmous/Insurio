@@ -1,0 +1,18 @@
+#!/bin/bash
+# cPanel Alt-PHP 8.4 CLI Wrapper with required extensions enabled dynamically
+exec /opt/alt/php84/usr/bin/php \
+  -d extension=mbstring.so \
+  -d extension=phar.so \
+  -d extension=dom.so \
+  -d extension=fileinfo.so \
+  -d extension=gd.so \
+  -d extension=xmlreader.so \
+  -d extension=xmlwriter.so \
+  -d extension=zip.so \
+  -d extension=pdo.so \
+  -d extension=pdo_sqlite.so \
+  -d extension=sqlite3.so \
+  -d extension=pdo_mysql.so \
+  -d extension=nd_pdo_mysql.so \
+  -d extension=mysqlnd.so \
+  "$@"

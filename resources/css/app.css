@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tenant White-Label Theme Customizations Overrides */
+:root {
+    --color-accent: #0EA5A0;
+    --color-accent-hover: #0D9488;
+}
+
+/* Background Overrides */
+.bg-teal-50 {
+    background-color: color-mix(in srgb, var(--color-accent) 8%, white) !important;
+}
+.bg-teal-100 {
+    background-color: color-mix(in srgb, var(--color-accent) 15%, white) !important;
+}
+.bg-teal-600, .bg-teal-650, .bg-teal-700 {
+    background-color: var(--color-accent) !important;
+}
+.hover\:bg-teal-700:hover, .hover\:bg-teal-800:hover, .hover\:bg-teal-950:hover {
+    background-color: var(--color-accent-hover) !important;
+}
+
+/* Text Overrides */
+.text-teal-600, .text-teal-650, .text-teal-700 {
+    color: var(--color-accent) !important;
+}
+.text-teal-800, .text-teal-900 {
+    color: color-mix(in srgb, var(--color-accent) 80%, black) !important;
+}
+.hover\:text-teal-950:hover {
+    color: var(--color-accent-hover) !important;
+}
+
+/* Border Overrides */
+.border-teal-100 {
+    border-color: color-mix(in srgb, var(--color-accent) 20%, white) !important;
+}
+.border-teal-200, .border-teal-250 {
+    border-color: color-mix(in srgb, var(--color-accent) 30%, white) !important;
+}
+.border-teal-500, .border-teal-600 {
+    border-color: var(--color-accent) !important;
+}
+.border-t-teal-500, .border-t-teal-600 {
+    border-top-color: var(--color-accent) !important;
+}
+
+/* Form inputs & Focus States */
+.focus\:ring-teal-500:focus {
+    --tw-ring-color: var(--color-accent) !important;
+}
+.focus\:border-teal-500:focus {
+    border-color: var(--color-accent) !important;
+}
+
+/* Gradients */
+.from-teal-600 {
+    --tw-gradient-from: var(--color-accent) !important;
+    --tw-gradient-to: var(--color-accent-hover) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.to-teal-700 {
+    --tw-gradient-to: var(--color-accent-hover) !important;
+}

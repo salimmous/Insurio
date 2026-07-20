@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Http\Controllers\Tenant;
+
+use App\Http\Controllers\Controller;
+use App\Models\ContratAuto;
+use App\Models\Setting;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+
+class PDFController extends Controller
+{
+    public function generate(int $contratId, string $type)
+    {
+        $contrat = ContratAuto::with(['client', 'vehicule', 'compagnie', 'succursale'])->findOrFail($contratId);
+
+        // Get tenant settings for header
+        $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Assurance');
+        $agencyLogo = tenant('logo_path') ? storage_path('app/public/' . tenant('logo_path')) : Setting::get('agency_logo', '');
+        $agencyAddress = Setting::get('agency_address', 'Casablanca, Maroc');
+        $agencyPhone = Setting::get('agency_phone', '+212 5 22 00 00 00');
+        $agencyEmail = Setting::get('agency_email', 'contact@insurio.com');
+
+        $data = [
+            'contrat' => $contrat,
+            'type' => $type,
+            'agencyName' => $agencyName,
+            'agencyLogo' => $agencyLogo,
+            'agencyAddress' => $agencyAddress,
+            'agencyPhone' => $agencyPhone,
+            'agencyEmail' => $agencyEmail,
+            'title' => $this->getTitle($type),
+        ];
+
+        // Load the blade view based on type
+        $pdf = Pdf::loadView('pdf.document', $data);
+
+        return $pdf->download(strtolower($type) . '_' . $contrat->numero_contrat . '.pdf');
+    }
+
+    private function getTitle(string $type): string
+    {
+        return match ($type) {
+            'carte-verte' => 'Carte Verte d\'Assurance',
+            'attestation' => 'Attestation d\'Assurance Automobile',
+            'police' => 'Police d\'Assurance Complète',
+            'quittance' => 'Quittance de Paiement',
+            'recu' => 'Reçu Encaissement',
+            'rappel' => 'Avis d' . "'" . 'Echéance & Rappel Client',
+            default => 'Document d\'Assurance',
+        };
+    }
+}
