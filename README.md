@@ -4,11 +4,15 @@ Insurio est une plateforme SaaS moderne de gestion d'assurances conçue pour les
 
 ## Fonctionnalités Principales
 
-- **Multi-Tenancy** : Isolation complète des données des cabinets.
+- **Multi-Tenancy** : Isolation complète des données des cabinets (Multi-Database via Stancl Tenancy).
 - **Identité Visuelle & Personnalisation (White-Label)** : Modification des logos, favicons, et couleurs d'accentuation CSS par agence.
 - **Gestion des Contrats** : Registre d'assurance complet, avenants, résiliations et calculs de primes proratisés.
 - **Suivi Financier** : Gestion des commissions (agents et apporteurs) et des charges (loyer, charges, salaires).
-- **Console d'Administration Platform (Insurio Central)** : Gestion centrale des abonnements et licences.
+- **Console Centrale Super Admin (Landlord Command Center)** : Dashboard Stripe-like avec MRR/ARR, factures, paiements, et télémétrie réseau en temps réel à travers 24 sous-modules.
+- **CRM Client Profile (360° View)** : Profil interactif par client avec timeline, documents, paiements, et notes.
+- **Moteur d'Automatisation Event-Driven** : Règles d'automatisation sur expiration de contrats (WhatsApp, email, tâches) avec commande CRON `platform:check-expirations`.
+- **Copilot AI** : Assistant IA contextuel intégré au profil CRM (Gemini API + fallback offline).
+- **Command Palette (Ctrl+K)** : Recherche globale instantanée de clients, contrats et pages depuis n'importe quel écran.
 
 ## Installation & Déploiement
 
@@ -63,92 +67,111 @@ graph TD
 
 ```directory
 ├── app/
-│   ├── Console/                # Commandes de console & planifications
+│   ├── Console/
+│   │   └── Commands/
+│   │       └── CheckContractExpirations.php  # CRON: vérification multi-tenant des contrats expirants
+│   ├── Events/
+│   │   └── ContractExpiringEvent.php         # Événement déclenché par le moteur d'automatisation
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   │   └── Platform/       # Contrôleurs Landlord (Registre central, Impersonation)
+│   │   │   └── Platform/       # Contrôleurs Landlord (Console centrale, Impersonation)
 │   │   │       ├── AuthController.php
-│   │   │       ├── DashboardController.php
+│   │   │       ├── DashboardController.php   # Métriques MRR/ARR + showModule()
 │   │   │       └── ExpenseController.php
 │   │   └── Middleware/
-│   │       └── CheckTenantSubscription.php # Middleware de blocage d'abonnement
+│   │       └── CheckTenantSubscription.php    # Middleware de blocage d'abonnement
+│   ├── Listeners/
+│   │   └── ContractExpiringListener.php      # Invoque AutomationService sur événement
 │   ├── Livewire/
 │   │   ├── Admin/              # Gestion d'agence au niveau Tenant (Livewire)
-│   │   │   ├── AdminDashboard.php
+│   │   │   ├── AdminDashboard.php            # CEO Dashboard (revenus, rétention, top agents)
+│   │   │   ├── AutomationControl.php         # Dashboard des règles d'automatisation
+│   │   │   ├── ClientProfile.php             # CRM 360° View + Copilot AI
 │   │   │   ├── GestionAgence.php
-│   │   │   ├── GestionCharges.php     # Interface de gestion comptable locale
+│   │   │   ├── GestionCharges.php
 │   │   │   ├── GestionCommissions.php
 │   │   │   ├── GestionEmployes.php
 │   │   │   └── GestionSuccursales.php
-│   │   └── Automobile/         # Opérations d'assurance automobile
-│   │       ├── FormulaireContrat.php
-│   │       └── ListeContrats.php
+│   │   ├── Automobile/         # Opérations d'assurance automobile
+│   │   │   ├── FormulaireContrat.php
+│   │   │   └── ListeContrats.php
+│   │   └── GlobalCommandPalette.php          # Ctrl+K recherche globale
 │   ├── Models/
 │   │   ├── Landlord/           # Modèles de base de données centrale
+│   │   │   ├── FeatureFlag.php
+│   │   │   ├── Invoice.php
 │   │   │   ├── PlatformActivityLog.php
 │   │   │   ├── PlatformAdmin.php
-│   │   │   └── PlatformExpense.php
+│   │   │   ├── PlatformExpense.php
+│   │   │   ├── PlatformPayment.php
+│   │   │   ├── PlatformWebhook.php
+│   │   │   ├── Subscription.php
+│   │   │   ├── SupportTicket.php
+│   │   │   └── SystemBackup.php
 │   │   ├── Scopes/
-│   │   │   └── SuccursaleScope.php    # Scope SQL d'isolation par succursale
-│   │   ├── AgenceBranch.php
-│   │   ├── AgencyExpense.php
+│   │   │   └── SuccursaleScope.php
+│   │   ├── AutomationRule.php                # Règle d'automatisation (trigger + actions)
 │   │   ├── Client.php
 │   │   ├── ContratAuto.php
 │   │   ├── Employe.php
 │   │   ├── Reglement.php
 │   │   ├── Succursale.php
-│   │   ├── Tenant.php          # Modèle personnalisé pour Stancl Tenancy
+│   │   ├── Tenant.php
 │   │   └── User.php
-│   ├── Providers/              # Fournisseurs de services de l'application
-│   └── Tenancy/                # Gestionnaire de bases de données cPanel
+│   ├── Providers/
+│   ├── Services/
+│   │   ├── AiCopilotService.php              # Bridge Gemini API + fallback offline
+│   │   └── AutomationService.php             # Exécution multi-actions (WhatsApp, email, tâche)
+│   └── Tenancy/
 │       └── CPanelMySQLDatabaseManager.php
 │
-├── bootstrap/                  # Fichiers de démarrage du framework
-│
-├── config/                     # Configuration de base du framework Laravel
-│   ├── tenancy.php             # Paramètres Stancl Tenancy
-│   └── app.php
-│
 ├── database/
-│   ├── migrations/             # Migrations Landlord (Base de données centrale)
+│   ├── migrations/             # Migrations Landlord
 │   │   ├── 2019_09_15_000010_create_tenants_table.php
 │   │   ├── 2019_09_15_000020_create_domains_table.php
 │   │   ├── 2026_07_20_000003_create_platform_expenses_table.php
-│   │   └── 2026_07_20_000004_create_agency_expenses_table.php
-│   └── migrations/tenant/      # Migrations Tenant (Exécutées via tenants:migrate)
+│   │   ├── 2026_07_20_000004_create_agency_expenses_table.php
+│   │   └── 2026_07_20_170000_create_landlord_billing_and_support_tables.php
+│   └── migrations/tenant/      # Migrations Tenant
 │       ├── 2026_07_20_000001_create_succursales_and_employes_tables.php
-│       └── 2026_07_20_000004_create_agency_expenses_table.php
+│       ├── 2026_07_20_000004_create_agency_expenses_table.php
+│       └── 2026_07_20_170100_create_automation_rules_table.php
 │
-├── public/                     # Fichiers publics (Vite builds & htaccess)
-│
-├── resources/
-│   ├── css/
-│   ├── js/
-│   └── views/
-│       ├── errors/
-│       │   └── suspended.blade.php  # Vue de blocage d'abonnement
-│       ├── livewire/
-│       │   ├── admin/
-│       │   │   ├── admin-dashboard.blade.php  # Tableau de bord des charges & bénéfices
-│       │   │   └── gestion-charges.blade.php  # UI de comptabilité d'agence
-│       │   └── layout/
-│       │       └── navigation.blade.php       # Barre de navigation latérale et supérieure
-│       └── platform/
-│           ├── dashboard.blade.php            # Accueil du portail Super Admin
-│           ├── tenants/
-│           │   └── edit.blade.php             # Gestion d'un cabinet & configuration DNS
-│           └── expenses/
-│               └── index.blade.php            # Registre des charges du Landlord
+├── resources/views/
+│   ├── errors/
+│   │   └── suspended.blade.php
+│   ├── layouts/
+│   │   ├── app.blade.php                     # Layout tenant (sidebar + command palette)
+│   │   └── platform.blade.php                # Layout landlord (console centrale)
+│   ├── livewire/
+│   │   ├── admin/
+│   │   │   ├── admin-dashboard.blade.php      # CEO Dashboard UI
+│   │   │   ├── automation-control.blade.php   # Gestion des règles d'automatisation
+│   │   │   ├── client-profile.blade.php       # CRM 360° + Copilot AI drawer
+│   │   │   └── gestion-charges.blade.php
+│   │   ├── global-command-palette.blade.php   # Ctrl+K modal de recherche
+│   │   └── layout/
+│   │       └── navigation.blade.php
+│   └── platform/
+│       ├── dashboard.blade.php               # Console centrale Stripe-like
+│       ├── module.blade.php                  # Template dynamique pour les 24 sous-modules
+│       ├── tenants/
+│       │   └── edit.blade.php
+│       └── expenses/
+│           └── index.blade.php
 │
 ├── routes/
-│   ├── web.php                 # Routes centrales (Landlord)
-│   └── tenant.php              # Routes isolées (Tenant)
+│   ├── web.php                 # Routes centrales + /super-admin/module/{moduleName}
+│   └── tenant.php              # Routes isolées + /admin/automation + /admin/clients/{id}
 │
-├── tests/
-│   ├── Feature/
-│   │   ├── AdministrationTest.php # Tests d'intégration Tenant
-│   │   └── PlatformTest.php       # Tests d'intégration Landlord
-│   └── TestCase.php
+├── tests/Feature/
+│   ├── AdministrationTest.php
+│   ├── AutomationEngineTest.php              # Tests du moteur d'automatisation
+│   └── PlatformTest.php
+│
+├── documentation/              # Historique détaillé des mises à jour
+│   ├── changelog-2026-07-20.md
+│   └── changelog-2026-07-21.md
 │
 └── deploy.sh                   # Script de déploiement automatique sur cPanel
 ```
@@ -248,21 +271,28 @@ $builder->where('succursale_id', $employe->succursale_id);
 ## 5. Principaux Registres de Routes
 
 ### Portail Central (Landlord)
-*   `GET /super-admin/dashboard` - Console centrale Super Admin.
+*   `GET /super-admin/dashboard` - Console centrale Super Admin (métriques MRR/ARR).
+*   `GET /super-admin/module/{moduleName}` - Accès aux 24 sous-modules (agences, abonnements, factures, etc.).
 *   `GET /super-admin/tenants/{tenantId}/modifier` - Paramètres de licence et attribution de domaines de succursales.
 *   `POST /super-admin/tenants/{tenantId}/succursales` - Ajout et provisionnement direct d'une succursale.
 *   `GET /super-admin/charges` - Registre comptable central de la plateforme.
 
 ### Espaces Agences (Tenant)
-*   `GET /dashboard` - Vue analytique et calcul du Cashflow Net (`Entrées (+)` - `Sorties (-)`).
+*   `GET /dashboard` - CEO Dashboard (revenus, rétention, top agents, top produits).
 *   `GET /admin/charges` - Interface Livewire de comptabilité locale.
+*   `GET /admin/clients/{id}` - Profil CRM 360° du client (avec Copilot AI).
+*   `GET /admin/automation` - Gestion des règles d'automatisation.
+
+### Raccourcis Clavier
+*   `Ctrl+K` / `Cmd+K` - Command Palette (recherche globale clients, contrats, pages).
 
 ---
 
 ## Historique des Mises à Jour (Changelog)
 
 Les modifications importantes de la plateforme sont suivies par date :
-*   **[20 Juillet 2026]** : Corrections de bugs de production (variables indéfinies, typages, MySQL Central), optimisation du positionnement du badge de notification, configuration complète de Corbell AI (49k+ méthodes graphées), nettoyage de la barre d'actions du registre Automobile, ajout d'alertes visuelles et de filtres pour les contrats expirant dans moins de 7 jours. Voir le rapport détaillé : [changelog-2026-07-20.md](file:///Users/salim/Downloads/asusrence/documentation/changelog-2026-07-20.md).
+*   **[21 Juillet 2026]** : Transformation majeure d'Insurio en Operating System d'assurance — Console centrale Stripe-like (MRR/ARR, 24 modules), CEO Dashboard avancé, CRM 360° avec profil client interactif, moteur d'automatisation event-driven, Copilot AI (Gemini API), et Command Palette globale (Ctrl+K). 71 tests passés, 274 assertions. Voir le rapport détaillé : [changelog-2026-07-21.md](documentation/changelog-2026-07-21.md).
+*   **[20 Juillet 2026]** : Corrections de bugs de production (variables indéfinies, typages, MySQL Central), optimisation du positionnement du badge de notification, configuration complète de Corbell AI (49k+ méthodes graphées), nettoyage de la barre d'actions du registre Automobile, ajout d'alertes visuelles et de filtres pour les contrats expirant dans moins de 7 jours. Voir le rapport détaillé : [changelog-2026-07-20.md](documentation/changelog-2026-07-20.md).
 
 ---
 
