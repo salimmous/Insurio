@@ -6,7 +6,7 @@ use App\Models\Contract;
 use App\Services\WhatsApp\WhatsAppProvider;
 use Livewire\Component;
 
-class SendWhatsAppReminder extends Component
+class SendWhatsappReminder extends Component
 {
     public $contractId;
     public $phoneNumber;
