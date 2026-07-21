@@ -23,7 +23,7 @@ ssh sc7mosa1422 << 'EOF'
   
   if [ -f "composer.json" ]; then
     echo "📦 Installing Composer dependencies (no-scripts)..."
-    composer install --no-dev --optimize-autoloader --no-scripts
+    composer install --no-dev --optimize-autoloader --classmap-authoritative --no-scripts
   fi
 
   if [ -f "artisan" ]; then
