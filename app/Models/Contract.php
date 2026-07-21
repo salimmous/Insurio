@@ -43,6 +43,8 @@ class Contract extends Model
         'attestation',
         'quittance',
         'souscripteur',
+        'co_assurance_part',
+        'flotte_nom',
         
         // Keep old fillables for backward compatibility
         'numero_contrat',

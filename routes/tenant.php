@@ -55,6 +55,9 @@ Route::middleware($tenantMiddleware)->group(function () {
         ->middleware('auth')
         ->name('force-password-change');
 
+    // Public Client Portal / Verification link
+    Route::get('/c/{token}', [\App\Http\Controllers\Tenant\ClientPortalController::class, 'show'])->name('tenant.client-portal');
+
     Route::middleware([
         'auth',
         AccountLockout::class,
@@ -83,6 +86,7 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/tasks', \App\Livewire\Admin\TaskManager::class)->name('admin.tasks')->middleware('can:clients.view');
         Route::get('/admin/entreprises', \App\Livewire\Admin\GestionEntreprises::class)->name('admin.entreprises')->middleware('can:clients.view');
         Route::get('/admin/produits', \App\Livewire\Admin\GestionProducts::class)->name('admin.products')->middleware('can:contracts.view');
+        Route::get('/admin/rapports-bi', \App\Livewire\Admin\RapportsBI::class)->name('admin.rapports-bi')->middleware('can:clients.view');
         Route::get('/admin/activity-timeline', \App\Livewire\Admin\ActivityTimeline::class)->name('admin.activity-timeline')->middleware('can:clients.view');
         Route::get('/admin/import-manager', \App\Livewire\Admin\ImportManager::class)->name('admin.import-manager')->middleware('can:clients.create');
         Route::get('/admin/compagnies', \App\Livewire\Admin\GestionInsurers::class)->name('admin.compagnies')->middleware('can:contracts.view');
