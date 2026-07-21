@@ -12,6 +12,7 @@ class Product extends Model
         'code',
         'nom',
         'description',
+        'marge_pourcentage',
         'statut',
     ];
 

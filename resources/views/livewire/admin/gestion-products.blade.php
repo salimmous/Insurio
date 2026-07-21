@@ -59,6 +59,7 @@
                             <th class="px-6 py-3">Code Produit</th>
                             <th class="px-6 py-3">Nom</th>
                             <th class="px-6 py-3">Description</th>
+                            <th class="px-6 py-3">Marge (%)</th>
                             <th class="px-6 py-3">Statut</th>
                             <th class="px-6 py-3 text-right">Actions</th>
                         </tr>
@@ -75,6 +76,9 @@
                                 <td class="px-6 py-4 text-gray-500 max-w-xs truncate">
                                     {{ $product->description ?? '-' }}
                                 </td>
+                                <td class="px-6 py-4 font-mono font-bold text-teal-600 text-xs">
+                                    {{ $product->marge_pourcentage !== null && $product->marge_pourcentage > 0 ? number_format($product->marge_pourcentage, 2) . '%' : '-' }}
+                                </td>
                                 <td class="px-6 py-4">
                                     @if($product->statut === 'actif')
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">Actif</span>
@@ -89,7 +93,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-10 text-center text-gray-400">
+                                <td colspan="6" class="px-6 py-10 text-center text-gray-400">
                                     Aucun produit enregistré.
                                 </td>
                             </tr>
@@ -107,7 +111,10 @@
                                 <span class="font-mono text-xs font-bold text-indigo-600 mr-2">[{{ $product->code }}]</span>
                                 <span class="font-bold text-gray-800">{{ $product->nom }}</span>
                             </div>
-                            <div class="flex gap-1">
+                            <div class="flex items-center gap-1.5">
+                                @if($product->marge_pourcentage !== null && $product->marge_pourcentage > 0)
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-teal-50 text-teal-700 border border-teal-200">{{ number_format($product->marge_pourcentage, 2) }}%</span>
+                                @endif
                                 @if($product->statut === 'actif')
                                     <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Actif</span>
                                 @else
@@ -169,13 +176,23 @@
                                 @error('description') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Statut</label>
-                                <select wire:model="statut" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="actif">Actif</option>
-                                    <option value="inactif">Inactif</option>
-                                </select>
-                                @error('statut') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="col-span-1">
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Statut</label>
+                                    <select wire:model="statut" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                        <option value="actif">Actif</option>
+                                        <option value="inactif">Inactif</option>
+                                    </select>
+                                    @error('statut') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Marge (%)</label>
+                                    <div class="relative">
+                                        <input type="number" step="0.01" min="0" max="100" wire:model="marge_pourcentage" placeholder="ex: 15.00" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 pr-8 font-mono">
+                                        <span class="absolute right-3 top-2 text-xs font-bold text-gray-400 pointer-events-none">%</span>
+                                    </div>
+                                    @error('marge_pourcentage') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                </div>
                             </div>
 
                             <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 -mx-6 -mb-6 border-t border-gray-150">

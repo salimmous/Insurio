@@ -17,6 +17,7 @@ class GestionProducts extends Component
     public $code = '';
     public $nom = '';
     public $description = '';
+    public $marge_pourcentage = '';
     public $statut = 'actif';
 
     public $isModalOpen = false;
@@ -27,6 +28,7 @@ class GestionProducts extends Component
             'code' => 'required|string|max:50|unique:products,code,' . $this->productId,
             'nom' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
+            'marge_pourcentage' => 'nullable|numeric|min:0|max:100',
             'statut' => 'required|in:actif,inactif',
         ];
     }
@@ -46,6 +48,7 @@ class GestionProducts extends Component
             $this->code = $product->code;
             $this->nom = $product->nom;
             $this->description = $product->description;
+            $this->marge_pourcentage = $product->marge_pourcentage !== null ? (float)$product->marge_pourcentage : '';
             $this->statut = $product->statut;
         } else {
             $this->resetForm();
@@ -66,6 +69,7 @@ class GestionProducts extends Component
         $this->code = '';
         $this->nom = '';
         $this->description = '';
+        $this->marge_pourcentage = '';
         $this->statut = 'actif';
     }
 
@@ -79,6 +83,7 @@ class GestionProducts extends Component
                 'code' => strtoupper($this->code),
                 'nom' => $this->nom,
                 'description' => $this->description,
+                'marge_pourcentage' => is_numeric($this->marge_pourcentage) ? (float)$this->marge_pourcentage : 0,
                 'statut' => $this->statut,
             ]
         );
