@@ -292,19 +292,34 @@ class GestionAgence extends Component
             'consultation'
         ])->get();
 
+        $clientsCount = class_exists(\App\Models\Client::class) ? \App\Models\Client::count() : 0;
+        $contractsCount = class_exists(\App\Models\Contract::class) ? \App\Models\Contract::count() : 0;
+        $sinistresCount = class_exists(\App\Models\Sinistre::class) ? \App\Models\Sinistre::count() : 0;
+        $paymentsCount = class_exists(\App\Models\Payment::class) ? \App\Models\Payment::count() : 0;
+        $documentsCount = class_exists(\App\Models\Document::class) ? \App\Models\Document::count() : 0;
+        $employeesCount = \App\Models\User::count();
+        $branchesCount = class_exists(\App\Models\Succursale::class) ? \App\Models\Succursale::count() : 1;
+        $todayActivityCount = ActivityLog::whereDate('created_at', now()->today())->count();
+
         $subscription = [
             'plan' => Setting::get('subscription_plan', 'Enterprise Insurance Suite'),
             'status' => Setting::get('subscription_status', 'Actif'),
-            'price' => Setting::get('subscription_price', '2,400 MAD / mois'),
+            'price' => Setting::get('subscription_price', 'Licence Illimitée'),
             'expires_at' => Setting::get('subscription_expires_at', '31/12/2027'),
-            'max_users' => Setting::get('subscription_max_users', 'Unlimited'),
+            'max_users' => 'Illimité',
             'license_key' => 'INS-ENT-2026-9841-MAROC',
-            'storage_used' => '1.4 GB / 25 GB (6%)',
-            'employees_count' => \App\Models\User::count(),
-            'branches_count' => \App\Models\Succursale::count(),
+            'storage_used' => '1.4 GB',
+            'clients_count' => $clientsCount,
+            'contracts_count' => $contractsCount,
+            'sinistres_count' => $sinistresCount,
+            'payments_count' => $paymentsCount,
+            'documents_count' => $documentsCount,
+            'employees_count' => $employeesCount,
+            'branches_count' => $branchesCount,
+            'today_activity_count' => $todayActivityCount,
         ];
 
-        $recentLogs = ActivityLog::latest()->take(10)->get();
+        $recentLogs = ActivityLog::with('user')->latest()->take(10)->get();
 
         return view('livewire.admin.gestion-agence', compact('roles', 'subscription', 'recentLogs'))
             ->layout('layouts.app');
