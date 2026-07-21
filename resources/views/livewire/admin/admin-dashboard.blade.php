@@ -1,5 +1,5 @@
-<div class="p-6 space-y-6 font-sans">
-    <div>
+<div class="max-w-[1600px] mx-auto p-6 space-y-6 font-sans">
+    <div class="space-y-6">
 
         <!-- Header Controls Row -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
@@ -35,7 +35,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <button wire:click="refreshDashboard" class="bg-slate-50 hover:bg-slate-100 text-slate-750 border border-slate-200 font-bold px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                <button wire:click="refreshDashboard" class="bg-slate-50 hover:bg-slate-100 text-slate-750 border border-slate-200 font-bold px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-sm">
                     <span>🔄</span> Actualiser
                 </button>
                 <div class="text-[10px] text-slate-450 font-mono font-bold">
@@ -45,9 +45,9 @@
         </div>
 
         <!-- Connection Banner & Status -->
-        <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex items-center gap-4">
-                <div class="h-12 w-12 bg-teal-500/10 text-teal-400 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                <div class="h-12 w-12 bg-teal-500/10 text-teal-400 rounded-xl flex items-center justify-center border border-teal-500/20 shadow-inner">
                     <span class="text-xl">🏢</span>
                 </div>
                 <div>
@@ -62,33 +62,37 @@
             </div>
 
             <!-- Mini stats row -->
-            <div class="flex flex-wrap gap-6 text-left">
+            <div class="flex flex-wrap items-center gap-6 text-left bg-slate-800/80 p-3 px-5 rounded-xl border border-slate-700/60">
                 <div>
                     <span class="block font-black text-white text-sm font-mono">{{ number_format($totalProduction, 2) }} DH</span>
                     <span class="text-slate-400 text-[8px] font-bold uppercase tracking-widest">Production</span>
                 </div>
+                <div class="h-6 w-px bg-slate-700"></div>
                 <div>
                     <span class="block font-black text-white text-sm font-mono">{{ number_format($totalExpenses, 2) }} DH</span>
                     <span class="text-slate-400 text-[8px] font-bold uppercase tracking-widest">Charges</span>
                 </div>
-                <div class="px-3 py-1 rounded-xl bg-teal-500/10 border border-teal-500/20">
+                <div class="h-6 w-px bg-slate-700"></div>
+                <div class="px-3 py-1 rounded-lg bg-teal-500/10 border border-teal-500/20">
                     <span class="block font-black text-teal-300 text-sm font-mono">{{ number_format($netProfit, 2) }} DH</span>
                     <span class="text-teal-400 text-[8px] font-bold uppercase tracking-widest">Bénéfice</span>
                 </div>
             </div>
         </div>
 
-        <!-- Tab Switcher -->
-        <div class="flex border-b border-slate-200 bg-white p-2 rounded-2xl border">
-            <button wire:click="setTab('portfolio')" class="flex-1 py-2 px-4 text-xs font-bold uppercase tracking-wider rounded-xl transition-all {{ $activeDashboardTab === 'portfolio' ? 'bg-[#1E293B] text-white' : 'text-slate-500 hover:bg-slate-100' }}">
-                💼 Portefeuille (Portfolio)
-            </button>
-            <button wire:click="setTab('executive')" class="flex-1 py-2 px-4 text-xs font-bold uppercase tracking-wider rounded-xl transition-all {{ $activeDashboardTab === 'executive' ? 'bg-[#1E293B] text-white' : 'text-slate-500 hover:bg-slate-100' }}">
-                📈 CEO & Finance
-            </button>
-            <button wire:click="setTab('operations')" class="flex-1 py-2 px-4 text-xs font-bold uppercase tracking-wider rounded-xl transition-all {{ $activeDashboardTab === 'operations' ? 'bg-[#1E293B] text-white' : 'text-slate-500 hover:bg-slate-100' }}">
-                ⚡ Command Center
-            </button>
+        <!-- Segmented Tab Switcher Pills -->
+        <div class="flex items-center">
+            <div class="inline-flex bg-slate-200/70 p-1.5 rounded-2xl gap-1.5 border border-slate-200/80 shadow-inner">
+                <button wire:click="setTab('portfolio')" class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 {{ $activeDashboardTab === 'portfolio' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60' }}">
+                    <span>💼</span> Portefeuille (Portfolio)
+                </button>
+                <button wire:click="setTab('executive')" class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 {{ $activeDashboardTab === 'executive' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60' }}">
+                    <span>📈</span> CEO & Finance
+                </button>
+                <button wire:click="setTab('operations')" class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 {{ $activeDashboardTab === 'operations' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60' }}">
+                    <span>⚡</span> Command Center
+                </button>
+            </div>
         </div>
 
         <!-- PORTFOLIO VIEW -->
