@@ -175,7 +175,7 @@
         </a>
 
         <!-- Assureurs -->
-        @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner') || auth()->user()->hasRole('Super Admin'))
+        @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner'))
             <a href="{{ Route::has('admin.compagnies') ? route('admin.compagnies') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.compagnies*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
@@ -368,7 +368,7 @@
         </a>
 
         <!-- Journal d'activité -->
-        @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner') || auth()->user()->hasRole('Super Admin'))
+        @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner'))
             <a href="{{ Route::has('admin.activity-timeline') ? route('admin.activity-timeline') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.activity-timeline*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
@@ -386,7 +386,7 @@
         @endif
 
         <!-- Importation Excel -->
-        @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner') || auth()->user()->hasRole('Super Admin'))
+        @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner'))
             <a href="{{ Route::has('admin.import-manager') ? route('admin.import-manager') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.import-manager*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
