@@ -4,7 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use App\Http\View\Composers\SidebarComposer;
 use App\Events\ContractCreated;
 use App\Events\ContractRenewed;
@@ -34,6 +37,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ── Security Rate Limiters ────────────────────────────────────────────
+        RateLimiter::for('login', function (Request $request) {
+            return Limit::perMinutes(1, 10)
+                ->by($request->input('email', '') . '|' . $request->ip())
+                ->response(function () {
+                    return back()->withErrors(['email' => 'Too many login attempts. Please try again in a minute.']);
+                });
+        });
+
+        RateLimiter::for('two-factor', function (Request $request) {
+            return Limit::perMinutes(15, 5)
+                ->by(optional($request->user())->id . '|' . $request->ip());
+        });
+
+        RateLimiter::for('password-reset', function (Request $request) {
+            return Limit::perHour(3)
+                ->by($request->input('email', ''));
+        });
+
         if (!app()->environment('local', 'testing')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
@@ -79,6 +101,12 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(ContractRenewed::class, [LogContractActivity::class, 'handleRenewed']);
         Event::listen(PaymentReceived::class, InvalidateDashboardCache::class);
         Event::listen(\App\Events\ContractExpiringEvent::class, \App\Listeners\ContractExpiringListener::class);
+
+        // ── Phase 6: Security Event Audit ────────────────────────────────────
+        $securityObserver = app(\App\Observers\SecurityEventObserver::class);
+        Event::listen(\Illuminate\Auth\Events\Login::class, [$securityObserver, 'handleLogin']);
+        Event::listen(\Illuminate\Auth\Events\Failed::class, [$securityObserver, 'handleFailed']);
+        Event::listen(\Illuminate\Auth\Events\Logout::class, [$securityObserver, 'handleLogout']);
 
         // Bind Sidebar Telemetry Composer
         View::composer('layouts.partials.sidebar-content', SidebarComposer::class);

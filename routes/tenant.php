@@ -23,7 +23,8 @@ use App\Livewire\Automobile\FormulaireContrat;
 $tenantMiddleware = [
     InitializeTenancyByDomain::class,
     'web',
-    \App\Http\Middleware\CheckTenantSubscription::class,
+    CheckTenantSubscription::class,
+    SecurityHeaders::class,
 ];
 
 if (!app()->environment('testing')) {
@@ -39,7 +40,16 @@ Route::middleware($tenantMiddleware)->group(function () {
         return view('tenant.landing');
     });
 
-    Route::middleware(['auth'])->group(function () {
+    // MFA Challenge — inside tenant, outside auth middleware
+    Route::get('/two-factor-challenge', \App\Livewire\Auth\TwoFactorChallenge::class)
+        ->middleware('auth')
+        ->name('two-factor-challenge');
+
+    Route::get('/force-password-change', \App\Livewire\Auth\ForcePasswordChange::class)
+        ->middleware('auth')
+        ->name('force-password-change');
+
+    Route::middleware(['auth', AccountLockout::class, SessionTimeout::class, RequireTwoFactor::class, RequirePasswordChange::class])->group(function () {
         Route::get('dashboard', \App\Livewire\Admin\AdminDashboard::class)->name('dashboard');
         Route::view('profile', 'profile')->name('profile');
         Route::get('settings', \App\Livewire\Admin\GestionAgence::class)->name('settings');
@@ -70,6 +80,9 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/vault', \App\Livewire\Admin\DocumentVault::class)->name('admin.vault')->middleware('can:clients.view');
         Route::get('/admin/agenda', \App\Livewire\Admin\AgendaCenter::class)->name('admin.agenda')->middleware('can:clients.view');
         Route::get('/admin/communications', \App\Livewire\Admin\CommunicationCenter::class)->name('admin.communications')->middleware('can:clients.view');
+
+        // Security Center
+        Route::get('/admin/security', \App\Livewire\Admin\SecurityCenter::class)->name('admin.security');
 
         // Agent routes
         Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions')->middleware('can:commissions.view');
