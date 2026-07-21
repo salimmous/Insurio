@@ -34,15 +34,25 @@
                     <a href="{{ $result['url'] }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors group">
                         <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
-                            {{ $result['type'] === 'client' ? 'bg-blue-50 text-blue-600' : 'bg-teal-50 text-teal-600' }}">
+                            {{ $result['type'] === 'client' ? 'bg-blue-50 text-blue-600' : '' }}
+                            {{ $result['type'] === 'contract' ? 'bg-teal-50 text-teal-600' : '' }}
+                            {{ $result['type'] === 'payment' ? 'bg-amber-50 text-amber-600' : '' }}
+                            {{ $result['type'] === 'dossier' ? 'bg-indigo-50 text-indigo-600' : '' }}
+                            {{ $result['type'] === 'vehicule' ? 'bg-emerald-50 text-emerald-600' : '' }}">
                             @if($result['type'] === 'client')
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
-                            @else
+                            @elseif($result['type'] === 'contract')
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
+                            @elseif($result['type'] === 'payment')
+                                <span class="text-xs">💰</span>
+                            @elseif($result['type'] === 'dossier')
+                                <span class="text-xs">📁</span>
+                            @else
+                                <span class="text-xs">🚗</span>
                             @endif
                         </div>
                         <div class="min-w-0 flex-1">
@@ -50,8 +60,16 @@
                             <div class="text-[10px] text-slate-400 truncate">{{ $result['sub'] }}</div>
                         </div>
                         <span class="text-[9px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded-full
-                            {{ $result['type'] === 'client' ? 'bg-blue-100 text-blue-600' : 'bg-teal-100 text-teal-600' }}">
-                            {{ $result['type'] === 'client' ? 'Client' : 'Contrat' }}
+                            {{ $result['type'] === 'client' ? 'bg-blue-100 text-blue-600' : '' }}
+                            {{ $result['type'] === 'contract' ? 'bg-teal-100 text-teal-600' : '' }}
+                            {{ $result['type'] === 'payment' ? 'bg-amber-100 text-amber-600' : '' }}
+                            {{ $result['type'] === 'dossier' ? 'bg-indigo-100 text-indigo-600' : '' }}
+                            {{ $result['type'] === 'vehicule' ? 'bg-emerald-100 text-emerald-600' : '' }}">
+                            @if($result['type'] === 'client') Client
+                            @elseif($result['type'] === 'contract') Contrat
+                            @elseif($result['type'] === 'payment') Règlement
+                            @elseif($result['type'] === 'dossier') Sinistre
+                            @else Véhicule @endif
                         </span>
                     </a>
                 @endforeach

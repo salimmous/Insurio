@@ -6,20 +6,33 @@
                 {{ substr($client->first_name, 0, 1) }}{{ substr($client->last_name, 0, 1) }}
             </div>
             <div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
                     <h1 class="text-2xl font-bold text-slate-800">{{ $client->first_name }} {{ $client->last_name }}</h1>
                     @if($client->client_type === 'company')
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">Entreprise</span>
                     @else
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-100">Particulier</span>
                     @endif
+                    
+                    <!-- Risk Score Badge -->
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-extrabold border
+                        {{ $riskScore === 'A' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : '' }}
+                        {{ $riskScore === 'B' ? 'bg-blue-50 text-blue-700 border-blue-200' : '' }}
+                        {{ $riskScore === 'C' ? 'bg-amber-50 text-amber-700 border-amber-200' : '' }}
+                        {{ $riskScore === 'D' ? 'bg-rose-50 text-rose-700 border-rose-200' : '' }}">
+                        Score Risque: {{ $riskScore }}
+                    </span>
                 </div>
-                <div class="text-sm text-slate-500 mt-1 flex items-center gap-4">
+                <div class="text-sm text-slate-500 mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
                     <span class="font-mono">ID: {{ $client->uuid ?? $client->id }}</span>
                     <span>•</span>
                     <span>CIN: {{ $client->cin ?? '-' }}</span>
                     <span>•</span>
                     <span>Ville: {{ $client->city ?? '-' }}</span>
+                    <span>•</span>
+                    <span class="text-slate-700 font-semibold">CLV: <span class="font-mono">{{ number_format($customerLifetimeValue, 2) }} DH</span></span>
+                    <span>•</span>
+                    <span class="text-rose-650 font-semibold">Solde dû: <span class="font-mono">{{ number_format($outstandingBalance, 2) }} DH</span></span>
                 </div>
             </div>
         </div>

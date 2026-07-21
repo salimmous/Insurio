@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Cache;
 
 class AdminDashboard extends Component
 {
+    public $activeDashboardTab = 'portfolio';
     public $totalProduction = 0.00;
     public $totalCommissions = 0.00;
     public $activeContractsCount = 0;
@@ -358,8 +359,12 @@ class AdminDashboard extends Component
         ];
     }
 
-
-
+    public function setTab($tab)
+    {
+        if (in_array($tab, ['portfolio', 'executive', 'operations'])) {
+            $this->activeDashboardTab = $tab;
+        }
+    }
 
     public function render()
     {

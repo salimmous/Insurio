@@ -17,6 +17,11 @@ class ClientProfile extends Component
     public $client;
     public $activeTab = 'contracts';
     
+    // Core KPIs
+    public $riskScore = 'A';
+    public $customerLifetimeValue = 0.00;
+    public $outstandingBalance = 0.00;
+    
     // Notes tab
     public $clientNotes = '';
 
@@ -45,6 +50,20 @@ class ClientProfile extends Component
             ->firstOrFail();
 
         $this->clientNotes = $this->client->notes;
+
+        $claimsCount = \App\Models\Dossier::where('client_id', $this->client->id)->where('type', 'claim')->count();
+        if ($claimsCount === 0) {
+            $this->riskScore = 'A';
+        } elseif ($claimsCount === 1) {
+            $this->riskScore = 'B';
+        } elseif ($claimsCount === 2) {
+            $this->riskScore = 'C';
+        } else {
+            $this->riskScore = 'D';
+        }
+
+        $this->customerLifetimeValue = (float) \App\Models\Contract::where('client_id', $this->client->id)->sum('premium_amount');
+        $this->outstandingBalance = (float) \App\Models\Payment::where('client_id', $this->client->id)->whereNotIn('payment_status', ['paid', 'cancelled'])->sum('remaining_amount');
     }
 
     public function saveNotes()

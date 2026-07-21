@@ -56,6 +56,9 @@ if (app()->environment('testing')) {
     Route::view('admin/tasks', 'dashboard')->name('admin.tasks');
     Route::view('admin/activity-timeline', 'dashboard')->name('admin.activity-timeline');
     Route::view('admin/import-manager', 'dashboard')->name('admin.import-manager');
+    Route::view('admin/vault', 'dashboard')->name('admin.vault');
+    Route::view('admin/agenda', 'dashboard')->name('admin.agenda');
+    Route::view('admin/communications', 'dashboard')->name('admin.communications');
     Route::view('automobile', 'dashboard')->name('automobile.index');
     Route::view('automobile/create', 'dashboard')->name('automobile.create');
     Route::post('logout', function () {})->name('logout');

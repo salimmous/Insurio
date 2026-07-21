@@ -60,7 +60,52 @@ class GlobalSearch extends Component
                 'url'   => route('automobile.edit', $c->id),
             ]);
 
-        $this->results = $clients->merge($contracts)->take(10)->values()->toArray();
+        // Search payments
+        $payments = \App\Models\Payment::where(function ($query) use ($q) {
+                $query->where('payment_number', 'like', $q)
+                      ->orWhere('cheque_number', 'like', $q);
+            })
+            ->limit(5)
+            ->get()
+            ->map(fn($p) => [
+                'type'  => 'payment',
+                'icon'  => 'currency-dollar',
+                'label' => 'Règlement #' . $p->payment_number,
+                'sub'   => number_format($p->amount, 2) . ' DH',
+                'url'   => route('admin.payments.workspace', $p->id),
+            ]);
+
+        // Search dossiers (claims)
+        $dossiers = \App\Models\Dossier::where(function ($query) use ($q) {
+                $query->where('dossier_number', 'like', $q);
+            })
+            ->limit(5)
+            ->get()
+            ->map(fn($d) => [
+                'type'  => 'dossier',
+                'icon'  => 'folder',
+                'label' => 'Dossier #' . $d->dossier_number,
+                'sub'   => strtoupper($d->type) . ' - ' . $d->status,
+                'url'   => route('admin.dossiers.workspace', $d->id),
+            ]);
+
+        // Search vehicles
+        $vehicules = \App\Models\Vehicule::where(function ($query) use ($q) {
+                $query->where('matricule', 'like', $q)
+                      ->orWhere('marque', 'like', $q)
+                      ->orWhere('modele', 'like', $q);
+            })
+            ->limit(5)
+            ->get()
+            ->map(fn($v) => [
+                'type'  => 'vehicule',
+                'icon'  => 'truck',
+                'label' => 'Véhicule ' . $v->matricule,
+                'sub'   => $v->marque . ' ' . $v->modele,
+                'url'   => route('automobile.index'),
+            ]);
+
+        $this->results = $clients->concat($contracts)->concat($payments)->concat($dossiers)->concat($vehicules)->take(12)->values()->toArray();
         $this->isOpen  = count($this->results) > 0;
     }
 
