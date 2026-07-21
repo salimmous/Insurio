@@ -5,8 +5,8 @@
             <img src="{{ asset('storage/' . tenant('logo_path')) }}" class="h-9 max-w-full object-contain shrink-0">
         @else
             <div class="h-9 w-9 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center font-bold shrink-0">
-                <svg class="h-5 w-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <svg class="h-5 w-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
             </div>
             <span class="text-base font-bold text-white tracking-wide truncate" x-show="!sidebarCollapsed">
@@ -17,7 +17,7 @@
 
     <!-- Mobile Close Drawer Button -->
     <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white p-1 rounded-lg">
-        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
     </button>
@@ -34,12 +34,12 @@
         <a href="{{ Route::has('dashboard') ? route('dashboard') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('dashboard') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+            <!-- Lucide: LayoutDashboard -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h6v8H4zM14 4h6v4h-6zM4 16h6v4H4zM14 12h6v8h-6z" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Dashboard</span>
 
-            <!-- Tooltip for Collapsed Mode -->
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
                 Dashboard
             </div>
@@ -56,8 +56,12 @@
         <a href="{{ Route::has('admin.clients') ? route('admin.clients') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.clients*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.clients*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <!-- Lucide: Users -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.clients*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Clients</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -69,8 +73,12 @@
         <a href="{{ Route::has('admin.entreprises') ? route('admin.entreprises') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.entreprises*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.entreprises*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <!-- Lucide: Building2 -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.entreprises*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+                <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+                <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+                <path d="M10 6h4M10 10h4M10 14h4M10 18h4" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Entreprises</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -82,8 +90,10 @@
         <a href="{{ Route::has('admin.communications') ? route('admin.communications') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.communications*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.communications*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            <!-- Lucide: MessageCircleMore -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.communications*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                <path d="M8 12h.01M12 12h.01M16 12h.01" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Communications</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -96,8 +106,10 @@
             <a href="{{ Route::has('admin.products') ? route('admin.products') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.products*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.products*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <!-- Lucide: Package -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.products*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" />
+                    <path d="m12 22 10-5.83M12 12l8.73-5M12 12v10M12 12-8.73-5" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Produits</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -107,7 +119,7 @@
         @endif
     </div>
 
-    <!-- SECTION: ASSURANCE (INSURANCE) -->
+    <!-- SECTION: ASSURANCE -->
     <div class="space-y-1">
         <div class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider" x-show="!sidebarCollapsed">
             Assurance
@@ -118,8 +130,12 @@
             <a href="{{ Route::has('automobile.index') ? route('automobile.index') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('automobile.*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('automobile.*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <!-- Lucide: FileBadge -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('automobile.*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3" />
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                    <circle cx="5" cy="14" r="3" />
+                    <path d="m7 16.5 2 4.5-4-1-4 1 2-4.5" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Production Assurance</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -132,8 +148,9 @@
         <a href="{{ Route::has('admin.dossiers') ? route('admin.dossiers') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.dossiers*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.dossiers*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            <!-- Lucide: FolderOpen -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.dossiers*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 14 1.5-2.9A2 2 0 0 1 9.3 10H20a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 2h5a2 2 0 0 1 2 2v2" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Dossiers & Sinistres</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -145,8 +162,11 @@
         <a href="{{ Route::has('admin.vault') ? route('admin.vault') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.vault*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.vault*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
+            <!-- Lucide: Archive -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.vault*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="5" x="2" y="3" rx="1" />
+                <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
+                <path d="M10 12h4" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Coffre-fort Documents</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -159,8 +179,14 @@
             <a href="{{ Route::has('admin.compagnies') ? route('admin.compagnies') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.compagnies*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.compagnies*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1" />
+                <!-- Lucide: Landmark -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.compagnies*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" x2="21" y1="22" y2="22" />
+                    <line x1="6" x2="6" y1="18" y2="11" />
+                    <line x1="10" x2="10" y1="18" y2="11" />
+                    <line x1="14" x2="14" y1="18" y2="11" />
+                    <line x1="18" x2="18" y1="18" y2="11" />
+                    <polygon points="12 2 20 7 4 7 12 2" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Assureurs</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -180,8 +206,10 @@
         <a href="{{ Route::has('admin.payments.center') ? route('admin.payments.center') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.payments.center*') && request('tab') !== 'cheques' && !request()->routeIs('admin.payments.workspace*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.payments.center*') && request('tab') !== 'cheques' ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <!-- Lucide: Wallet -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.payments.center*') && request('tab') !== 'cheques' ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3v4a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V7" />
+                <path d="M18 12h.01" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Centre de Paiements</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -193,8 +221,10 @@
         <a href="{{ Route::has('admin.payments.center') ? route('admin.payments.center') . '?tab=cheques' : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.payments.center*') && request('tab') === 'cheques' ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.payments.center*') && request('tab') === 'cheques' ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+            <!-- Lucide: Ticket -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.payments.center*') && request('tab') === 'cheques' ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                <path d="M13 5v14" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Chèques</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -207,8 +237,11 @@
             <a href="{{ Route::has('admin.charges') ? route('admin.charges') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.charges*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.charges*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <!-- Lucide: Banknote -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.charges*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="12" x="2" y="6" rx="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <path d="M6 12h.01M18 12h.01" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Dépenses & Charges</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -222,8 +255,10 @@
             <a href="{{ Route::has('admin.commissions') ? route('admin.commissions') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.commissions*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.commissions*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <!-- Lucide: BadgeDollarSign -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.commissions*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.78 4.78 4 4 0 0 1-6.74 0 4 4 0 0 1-4.78-4.78 4 4 0 0 1 0-6.74Z" />
+                    <path d="M12 8v8M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-1.5 2-2.5 2s-2.5.5-2.5 2a2.5 2.5 0 0 0 5 0" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Commissions Admin</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -237,8 +272,10 @@
             <a href="{{ Route::has('agent.commissions') ? route('agent.commissions') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('agent.commissions*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('agent.commissions*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <!-- Lucide: BadgeDollarSign -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('agent.commissions*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.78 4.78 4 4 0 0 1-6.74 0 4 4 0 0 1-4.78-4.78 4 4 0 0 1 0-6.74Z" />
+                    <path d="M12 8v8M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-1.5 2-2.5 2s-2.5.5-2.5 2a2.5 2.5 0 0 0 5 0" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Mes Commissions</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -260,8 +297,10 @@
                 <a href="{{ Route::has('admin.succursales') ? route('admin.succursales') : '#' }}" 
                    class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.succursales*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                    <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.succursales*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    <!-- Lucide: Building -->
+                    <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.succursales*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+                        <path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01" />
                     </svg>
                     <span class="ml-3 truncate" x-show="!sidebarCollapsed">Succursales</span>
                     <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -275,8 +314,10 @@
                 <a href="{{ Route::has('admin.employes') ? route('admin.employes') : '#' }}" 
                    class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.employes*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                    <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.employes*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <!-- Lucide: UserRound -->
+                    <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.employes*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="5" />
+                        <path d="M20 21a8 8 0 0 0-16 0" />
                     </svg>
                     <span class="ml-3 truncate" x-show="!sidebarCollapsed">Collaborateurs</span>
                     <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -297,8 +338,10 @@
         <a href="{{ Route::has('admin.tasks') ? route('admin.tasks') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.tasks*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.tasks*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            <!-- Lucide: KanbanSquare -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.tasks*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M8 7v7M12 7v4M16 7v9" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Tâches Kanban</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -310,8 +353,13 @@
         <a href="{{ Route::has('admin.agenda') ? route('admin.agenda') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.agenda*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.agenda*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <!-- Lucide: CalendarDays -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.agenda*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                <line x1="16" x2="16" y1="2" y2="6" />
+                <line x1="8" x2="8" y1="2" y2="6" />
+                <line x1="3" x2="21" y1="10" y2="10" />
+                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Agenda & Calendrier</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -324,8 +372,11 @@
             <a href="{{ Route::has('admin.activity-timeline') ? route('admin.activity-timeline') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.activity-timeline*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.activity-timeline*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <!-- Lucide: History -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.activity-timeline*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M12 7v5l4 2" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Journal d'activité</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -339,8 +390,11 @@
             <a href="{{ Route::has('admin.import-manager') ? route('admin.import-manager') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.import-manager*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.import-manager*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                <!-- Lucide: FileSpreadsheet -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.import-manager*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                    <path d="M8 13h8M8 17h8M12 9v10" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Importation Excel</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -361,9 +415,10 @@
             <a href="{{ Route::has('settings') ? route('settings') : '#' }}" 
                class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('settings*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('settings*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <!-- Lucide: Settings -->
+                <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('settings*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                    <circle cx="12" cy="12" r="3" />
                 </svg>
                 <span class="ml-3 truncate" x-show="!sidebarCollapsed">Paramètres Agence</span>
                 <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -376,8 +431,10 @@
         <a href="{{ Route::has('admin.security') ? route('admin.security') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.security*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.security*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            <!-- Lucide: ShieldCheck -->
+            <svg class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.security*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+                <path d="m9 12 2 2 4-4" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Centre Sécurité</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -421,8 +478,11 @@
         <button type="submit" 
                 class="w-full flex items-center text-xs font-semibold rounded-xl text-rose-400 hover:bg-rose-950/30 hover:text-rose-300 transition-all duration-200 py-2 relative group"
                 :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3'">
-            <svg class="h-5 w-5 shrink-0 text-rose-400 group-hover:text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            <!-- Lucide: LogOut -->
+            <svg class="h-5 w-5 shrink-0 text-rose-400 group-hover:text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Déconnexion</span>
 

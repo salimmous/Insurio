@@ -148,5 +148,6 @@
             </div>
         </div>
         <livewire:global-command-palette />
+        <livewire:admin.super-admin-support-panel />
     </body>
 </html>
