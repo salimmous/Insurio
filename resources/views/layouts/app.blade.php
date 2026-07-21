@@ -14,18 +14,43 @@
         <!-- Favicon -->
         <link class="js-favicon" rel="icon" type="image/x-icon" href="{{ tenant('favicon_path') ? asset('storage/' . tenant('favicon_path')) : asset('favicon.ico') }}">
 
-        <!-- Dynamic White-Label Theme Styling -->
+        <!-- Dynamic White-Label Theme & Custom Scrollbar Styling -->
         <style>
             :root {
                 --color-accent: {{ tenant('couleur_primaire') ?: '#0EA5A0' }};
                 --color-accent-hover: {{ tenant('couleur_secondaire') ?: '#0D9488' }};
+            }
+            /* Sleek thin transparent scrollbar for sidebar */
+            .sidebar-scrollbar::-webkit-scrollbar {
+                width: 4px;
+            }
+            .sidebar-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .sidebar-scrollbar::-webkit-scrollbar-thumb {
+                background: rgba(51, 65, 85, 0.4);
+                border-radius: 9999px;
+            }
+            .sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+                background: rgba(100, 116, 139, 0.8);
+            }
+            .sidebar-scrollbar {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(51, 65, 85, 0.4) transparent;
             }
         </style>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-[#F5F6F8] text-slate-800" x-data="{ sidebarOpen: false }">
+    <body class="font-sans antialiased bg-[#F5F6F8] text-slate-800" 
+          x-data="{ 
+              sidebarOpen: false, 
+              sidebarCollapsed: localStorage.getItem('insurio_sidebar_collapsed') === 'true' 
+          }" 
+          x-init="$watch('sidebarCollapsed', val => localStorage.setItem('insurio_sidebar_collapsed', val))"
+          @keydown.window.escape="sidebarOpen = false">
+        
         @if(session('impersonated_by_landlord'))
             <div class="bg-indigo-650 text-white text-xs font-semibold py-2 px-6 flex items-center justify-between shadow-sm relative z-50">
                 <div class="flex items-center gap-2">
@@ -37,35 +62,55 @@
                 </a>
             </div>
         @endif
-        <div class="flex h-screen overflow-hidden">            <!-- LEFT SIDEBAR: Premium Dark Slate Theme (like ShopifyManager) -->
-            <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-[#0F172A] border-r border-[#1E293B] flex-shrink-0 text-slate-300">
+
+        <div class="flex h-screen overflow-hidden">
+            <!-- DESKTOP OFF-CANVAS SIDEBAR (280px Expanded / 72px Collapsed) -->
+            <aside class="hidden lg:flex lg:flex-col bg-[#0F172A] border-r border-[#1E293B] flex-shrink-0 text-slate-300 transition-all duration-200 ease-in-out relative z-30"
+                   :class="sidebarCollapsed ? 'w-[72px]' : 'w-[280px]'">
                 @include('layouts.partials.sidebar-content')
             </aside>
 
-            <!-- MOBILE NAV OVERLAY & HAMBURGER DRAWER -->
-            <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 bg-[#0F172A]/70 z-40 lg:hidden" @click="sidebarOpen = false"></div>
-            
-            <aside class="fixed top-0 bottom-0 left-0 w-64 bg-[#0F172A] border-r border-[#1E293B] z-50 transform -translate-x-full transition-transform duration-300 lg:hidden"  
+            <!-- MOBILE NAV BACKDROP BLUR OVERLAY -->
+            <div x-show="sidebarOpen" 
+                 x-cloak
+                 x-transition:enter="transition-opacity ease-out duration-200"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-in duration-150"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-[#0F172A]/80 backdrop-blur-sm z-40 lg:hidden" 
+                 @click="sidebarOpen = false">
+            </div>
+
+            <!-- MOBILE OFF-CANVAS DRAWER -->
+            <aside class="fixed top-0 bottom-0 left-0 w-[280px] bg-[#0F172A] border-r border-[#1E293B] z-50 transform transition-transform duration-200 ease-in-out lg:hidden flex flex-col"  
                    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
                 @include('layouts.partials.sidebar-content')
-                <button @click="sidebarOpen = false" class="absolute top-4 right-4 text-slate-400 hover:text-white z-50">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
             </aside>
 
             <!-- MAIN CONTENT AREA -->
-            <div class="flex-1 flex flex-col overflow-hidden">
+            <div class="flex-1 flex flex-col overflow-hidden min-w-0">
                 <!-- Top Header bar -->
                 <header class="h-16 bg-white border-b border-slate-200/80 flex items-center justify-between px-6 z-10">
                     <div class="flex items-center gap-4">
-                        <button @click="sidebarOpen = true" class="text-slate-500 hover:text-slate-800 lg:hidden">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <!-- Mobile Hamburger Toggle -->
+                        <button @click="sidebarOpen = true" class="text-slate-500 hover:text-slate-800 lg:hidden p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
-                        <!-- Search Box — Phase 3 Global Search -->
+
+                        <!-- Desktop Sidebar Collapse Toggle Button (Top Left) -->
+                        <button @click="sidebarCollapsed = !sidebarCollapsed" 
+                                class="hidden lg:flex items-center justify-center p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                                :title="sidebarCollapsed ? 'Agrandir le menu' : 'Réduire le menu'">
+                            <svg class="h-5 w-5 transform transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Search Box — Global Search -->
                         <div class="hidden md:flex items-center w-80">
                             <livewire:admin.global-search />
                         </div>
@@ -78,11 +123,10 @@
                             {{ tenant('name') ?? 'Agence Connectée' }}
                         </div>
 
-                        <!-- Notification Bell — Phase 3 Notification Center -->
+                        <!-- Notification Bell -->
                         <livewire:admin.notification-center />
                     </div>
                 </header>
-
 
                 <!-- Page Content container -->
                 <main class="flex-1 overflow-y-auto bg-[#F5F6F8]">
