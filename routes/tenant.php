@@ -29,8 +29,8 @@ use App\Livewire\Automobile\FormulaireContrat;
 $tenantMiddleware = [
     InitializeTenancyByDomain::class,
     'web',
-    CheckTenantSubscription::class,
-    SecurityHeaders::class,
+    \App\Http\Middleware\CheckTenantSubscription::class,
+    \App\Http\Middleware\SecurityHeaders::class,
 ];
 
 if (!app()->environment('testing')) {
@@ -55,7 +55,13 @@ Route::middleware($tenantMiddleware)->group(function () {
         ->middleware('auth')
         ->name('force-password-change');
 
-    Route::middleware(['auth', AccountLockout::class, SessionTimeout::class, RequireTwoFactor::class, RequirePasswordChange::class])->group(function () {
+    Route::middleware([
+        'auth',
+        \App\Http\Middleware\AccountLockout::class,
+        \App\Http\Middleware\SessionTimeout::class,
+        \App\Http\Middleware\RequireTwoFactor::class,
+        \App\Http\Middleware\RequirePasswordChange::class
+    ])->group(function () {
         Route::get('dashboard', \App\Livewire\Admin\AdminDashboard::class)->name('dashboard');
         Route::view('profile', 'profile')->name('profile');
         Route::get('settings', \App\Livewire\Admin\GestionAgence::class)->name('settings');
