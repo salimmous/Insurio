@@ -90,10 +90,10 @@
         <a href="{{ Route::has('admin.communications') ? route('admin.communications') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.communications*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <!-- Lucide: MessageCircleMore -->
+            <!-- Lucide: MessagesSquare -->
             <svg width="20" height="20" style="min-width: 20px; min-height: 20px;" class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.communications*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                <path d="M8 12h.01M12 12h.01M16 12h.01" />
+                <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2z" />
+                <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Communications</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -206,10 +206,10 @@
         <a href="{{ Route::has('admin.payments.center') ? route('admin.payments.center') : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.payments.center*') && request('tab') !== 'cheques' && !request()->routeIs('admin.payments.workspace*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <!-- Lucide: Wallet -->
+            <!-- Lucide: WalletCards -->
             <svg width="20" height="20" style="min-width: 20px; min-height: 20px;" class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.payments.center*') && request('tab') !== 'cheques' ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3v4a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V7" />
-                <path d="M18 12h.01" />
+                <rect width="18" height="12" x="3" y="8" rx="2" />
+                <path d="M7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Centre de Paiements</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
@@ -221,10 +221,11 @@
         <a href="{{ Route::has('admin.payments.center') ? route('admin.payments.center') . '?tab=cheques' : '#' }}" 
            class="flex items-center text-sm font-medium rounded-xl transition-all duration-200 relative group py-2.5 {{ request()->routeIs('admin.payments.center*') && request('tab') === 'cheques' ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-sm font-semibold' : 'text-slate-400 hover:bg-[#1E293B]/60 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-3.5'">
-            <!-- Lucide: Ticket -->
+            <!-- Lucide: Receipt -->
             <svg width="20" height="20" style="min-width: 20px; min-height: 20px;" class="h-5 w-5 shrink-0 transition-colors {{ request()->routeIs('admin.payments.center*') && request('tab') === 'cheques' ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
-                <path d="M13 5v14" />
+                <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
+                <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+                <path d="M12 6v12" />
             </svg>
             <span class="ml-3 truncate" x-show="!sidebarCollapsed">Chèques</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
