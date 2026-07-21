@@ -90,14 +90,14 @@ class FormulaireContrat extends Component
             $contrat = ContratAuto::findOrFail($contratId);
             $this->fill($contrat->toArray());
             $this->product_id = $contrat->product_id;
-            $this->date_effet = $contrat->date_effet->format('Y-m-d');
-            $this->date_echeance = $contrat->date_echeance->format('Y-m-d');
-            $this->date_production = $contrat->date_production->format('Y-m-d');
+            $this->date_effet = $contrat->date_effet ? \Carbon\Carbon::parse($contrat->date_effet)->format('Y-m-d') : '';
+            $this->date_echeance = $contrat->date_echeance ? \Carbon\Carbon::parse($contrat->date_echeance)->format('Y-m-d') : '';
+            $this->date_production = $contrat->date_production ? \Carbon\Carbon::parse($contrat->date_production)->format('Y-m-d') : '';
             if ($contrat->date_mise_circulation) {
-                $this->date_mise_circulation = $contrat->date_mise_circulation->format('Y-m-d');
+                $this->date_mise_circulation = \Carbon\Carbon::parse($contrat->date_mise_circulation)->format('Y-m-d');
             }
             if ($contrat->date_resiliation) {
-                $this->date_resiliation = $contrat->date_resiliation->format('Y-m-d');
+                $this->date_resiliation = \Carbon\Carbon::parse($contrat->date_resiliation)->format('Y-m-d');
             }
             if ($contrat->client) {
                 $this->souscripteur = $contrat->client->nom . ' ' . $contrat->client->prenom;

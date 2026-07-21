@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property \Illuminate\Support\Carbon|null $start_date
+ * @property \Illuminate\Support\Carbon|null $end_date
+ * @property \Illuminate\Support\Carbon|null $date_effet
+ * @property \Illuminate\Support\Carbon|null $date_echeance
+ * @property \Illuminate\Support\Carbon|null $date_production
+ * @property \Illuminate\Support\Carbon|null $date_resiliation
+ * @property \Illuminate\Support\Carbon|null $date_mise_circulation
+ */
 class Contract extends Model
 {
     protected $table = 'contracts';

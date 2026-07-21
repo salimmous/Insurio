@@ -76,7 +76,7 @@ class GestionClients extends Component
             $this->whatsapp_number = $client->whatsapp_number;
             $this->cin = $client->cin;
             $this->passport = $client->passport;
-            $this->date_of_birth = $client->date_of_birth ? $client->date_of_birth->format('Y-m-d') : '';
+            $this->date_of_birth = $client->date_of_birth ? \Carbon\Carbon::parse($client->date_of_birth)->format('Y-m-d') : '';
             $this->profession = $client->profession;
             $this->address = $client->address;
             $this->city = $client->city;
