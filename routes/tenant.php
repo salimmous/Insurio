@@ -5,6 +5,12 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use App\Http\Middleware\CheckTenantSubscription;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\AccountLockout;
+use App\Http\Middleware\SessionTimeout;
+use App\Http\Middleware\RequireTwoFactor;
+use App\Http\Middleware\RequirePasswordChange;
 use App\Livewire\Automobile\ListeContrats;
 use App\Livewire\Automobile\FormulaireContrat;
 
