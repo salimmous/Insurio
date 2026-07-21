@@ -29,8 +29,8 @@ use App\Livewire\Automobile\FormulaireContrat;
 $tenantMiddleware = [
     InitializeTenancyByDomain::class,
     'web',
-    \App\Http\Middleware\CheckTenantSubscription::class,
-    \App\Http\Middleware\SecurityHeaders::class,
+    CheckTenantSubscription::class,
+    SecurityHeaders::class,
 ];
 
 if (!app()->environment('testing')) {
@@ -57,10 +57,10 @@ Route::middleware($tenantMiddleware)->group(function () {
 
     Route::middleware([
         'auth',
-        \App\Http\Middleware\AccountLockout::class,
-        \App\Http\Middleware\SessionTimeout::class,
-        \App\Http\Middleware\RequireTwoFactor::class,
-        \App\Http\Middleware\RequirePasswordChange::class
+        AccountLockout::class,
+        SessionTimeout::class,
+        RequireTwoFactor::class,
+        RequirePasswordChange::class
     ])->group(function () {
         Route::get('dashboard', \App\Livewire\Admin\AdminDashboard::class)->name('dashboard');
         Route::view('profile', 'profile')->name('profile');
