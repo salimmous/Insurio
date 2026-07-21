@@ -1,4 +1,4 @@
-<div class="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="p-6 space-y-6 font-sans">
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">Importation de données</h1>

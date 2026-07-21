@@ -1,5 +1,5 @@
-<div class="py-6 font-sans">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+<div class="py-6 font-sans w-full">
+    <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6">
 
         <!-- Header -->
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 flex items-center gap-4">

@@ -1,5 +1,5 @@
-<div class="py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="p-6 space-y-6 font-sans">
+    <div>
         
         <!-- HEADER BAR: Case Info & Actions -->
         <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">

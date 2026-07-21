@@ -1,5 +1,5 @@
-<div class="py-6 font-sans">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+<div class="p-6 space-y-6 font-sans">
+    <div>
 
         <!-- Header Controls Row -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">

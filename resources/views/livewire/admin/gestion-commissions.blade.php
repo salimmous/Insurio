@@ -1,5 +1,5 @@
-<div class="py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="p-6 space-y-6 font-sans">
+    <div>
         <!-- Header -->
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Suivi des Commissions Employés</h1>

@@ -1,5 +1,5 @@
 <div class="p-6 bg-slate-50 min-h-screen text-slate-800">
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="w-full px-6 space-y-6">
 
         <!-- Banner context -->
         <div class="flex justify-between items-center bg-white border border-slate-200/80 rounded-2xl px-6 py-4 shadow-sm">
