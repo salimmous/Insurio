@@ -1,6 +1,6 @@
 <div>
     @if($isSuperAdmin)
-    <!-- Floating Support Badge Trigger -->
+    <!-- Floating Platform Support Badge Trigger -->
     <div class="fixed bottom-5 right-5 z-50">
         <button wire:click="togglePanel" 
                 class="bg-slate-900 hover:bg-slate-850 text-white font-bold px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700/80 flex items-center gap-2.5 transition-all transform hover:scale-105 group text-xs">
@@ -8,7 +8,7 @@
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 {{ $tenantStatus === 'Actif' ? 'bg-teal-400' : 'bg-rose-500' }}"></span>
             </span>
-            <span class="tracking-wide">SUPER ADMIN CONTROL</span>
+            <span class="tracking-wide">CONSOLE SUPPORT TECHNIQUE</span>
             <span class="bg-slate-800 text-teal-400 font-mono text-[9px] px-2 py-0.5 rounded-md border border-slate-700 group-hover:border-teal-500/50">
                 {{ $tenantStatus }}
             </span>
@@ -27,8 +27,8 @@
                         🛡️
                     </div>
                     <div>
-                        <h2 class="text-sm font-bold text-white tracking-wide">Enterprise Support & Console Super Admin</h2>
-                        <p class="text-[10px] text-slate-400 mt-0.5">Assistance & Diagnostics en direct pour {{ tenant('name') ?? 'Insurio Agency' }}</p>
+                        <h2 class="text-sm font-bold text-white tracking-wide">Console Support Technique & Assistance Agence</h2>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Diagnostics & Interventions en direct pour {{ tenant('name') ?? 'Insurio Agency' }}</p>
                     </div>
                 </div>
                 <button wire:click="togglePanel" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors">
@@ -55,7 +55,7 @@
             <!-- Live Monitoring Cards -->
             <div class="p-5 space-y-4 border-b border-slate-800 bg-slate-900/50">
                 <div class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 flex items-center justify-between">
-                    <span>Métriques Serveur & Base de Données (30s)</span>
+                    <span>Santé Serveur & Base de Données (30s)</span>
                     <button wire:click="refreshStats" class="text-teal-400 hover:underline font-bold text-[9px] flex items-center gap-1">
                         🔄 Rafraîchir
                     </button>
@@ -155,7 +155,7 @@
                 <!-- Tenant Metadata Summary -->
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
                     <div class="flex justify-between text-slate-400">
-                        <span>Identifiant Tenant:</span>
+                        <span>Identifiant Agence:</span>
                         <span class="font-mono text-slate-200 font-bold">{{ tenant('id') }}</span>
                     </div>
                     <div class="flex justify-between text-slate-400">
@@ -163,7 +163,7 @@
                         <span class="font-mono text-teal-400 font-bold">{{ request()->getHost() }}</span>
                     </div>
                     <div class="flex justify-between text-slate-400">
-                        <span>Version Insurio:</span>
+                        <span>Version Insurio Core:</span>
                         <span class="font-mono text-slate-200 font-bold">v4.8 Enterprise</span>
                     </div>
                 </div>
@@ -172,7 +172,7 @@
 
             <!-- Panel Footer -->
             <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center justify-between text-[11px] text-slate-400">
-                <span>Console Super Admin — Strictement Confidentiel</span>
+                <span>Console Support Technique — Confidentialité Plateforme</span>
                 <button wire:click="togglePanel" class="text-teal-400 font-bold hover:underline">Fermer Panel</button>
             </div>
         </div>

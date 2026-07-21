@@ -70,7 +70,7 @@ class SuperAdminSupportPanel extends Component
             Artisan::call('config:clear');
             Artisan::call('route:clear');
             Artisan::call('view:clear');
-            ActivityLog::writeLog('superadmin.cache_cleared');
+            ActivityLog::writeLog('platform_support.cache_cleared');
             session()->flash('super_msg', '⚡ Caches système, routes et vues réinitialisés en 0.2s.');
         } catch (\Throwable $e) {
             session()->flash('super_error', 'Erreur vider cache: ' . $e->getMessage());
@@ -80,7 +80,7 @@ class SuperAdminSupportPanel extends Component
     public function runScheduler()
     {
         try {
-            ActivityLog::writeLog('superadmin.scheduler_run');
+            ActivityLog::writeLog('platform_support.scheduler_run');
             session()->flash('super_msg', '⏱️ Tâches planifiées (Scheduler) exécutées avec succès.');
         } catch (\Throwable $e) {
             session()->flash('super_error', 'Erreur scheduler: ' . $e->getMessage());
@@ -89,7 +89,7 @@ class SuperAdminSupportPanel extends Component
 
     public function generateBackup()
     {
-        ActivityLog::writeLog('superadmin.instant_backup');
+        ActivityLog::writeLog('platform_support.instant_backup');
         session()->flash('super_msg', '📦 Sauvegarde instantanée générée et indexée dans le coffre-fort.');
     }
 
@@ -98,7 +98,7 @@ class SuperAdminSupportPanel extends Component
         $newStatus = !$this->isMaintenanceMode;
         Setting::set('maintenance_mode', (string)$newStatus);
         $this->isMaintenanceMode = $newStatus;
-        ActivityLog::writeLog('superadmin.maintenance_toggled', ['status' => $newStatus]);
+        ActivityLog::writeLog('platform_support.maintenance_toggled', ['status' => $newStatus]);
         session()->flash('super_msg', $newStatus ? '🛠️ Mode maintenance ACTIVÉ pour l\'agence.' : '✅ Mode maintenance DÉSACTIVÉ.');
     }
 
@@ -106,7 +106,7 @@ class SuperAdminSupportPanel extends Component
     {
         Setting::set('tenant_status', 'Suspendu');
         $this->tenantStatus = 'Suspendu';
-        ActivityLog::writeLog('superadmin.emergency_locked');
+        ActivityLog::writeLog('platform_support.emergency_locked');
         session()->flash('super_error', '🚨 VERROUILLAGE D\'URGENCE EXÉCUTÉ — Accès agence bloqué.');
     }
 
@@ -114,7 +114,7 @@ class SuperAdminSupportPanel extends Component
     {
         Setting::set('tenant_status', 'Actif');
         $this->tenantStatus = 'Actif';
-        ActivityLog::writeLog('superadmin.emergency_unlocked');
+        ActivityLog::writeLog('platform_support.emergency_unlocked');
         session()->flash('super_msg', '🔓 VERROUILLAGE LEVÉ — Accès agence rétabli.');
     }
 
@@ -125,7 +125,7 @@ class SuperAdminSupportPanel extends Component
             $newPass = 'Insurio2026!' . rand(100, 999);
             $admin->update(['password' => bcrypt($newPass)]);
             $this->tempPassword = $newPass;
-            ActivityLog::writeLog('superadmin.password_reset', ['user_id' => $admin->id]);
+            ActivityLog::writeLog('platform_support.password_reset', ['user_id' => $admin->id]);
             session()->flash('super_msg', '🔑 Mot de passe de ' . $admin->email . ' réinitialisé: ' . $newPass);
         } else {
             session()->flash('super_error', 'Aucun administrateur trouvé.');
@@ -134,9 +134,8 @@ class SuperAdminSupportPanel extends Component
 
     public function render()
     {
-        $user = auth()->user();
-        $isSuperAdmin = session('impersonated_by_landlord') || 
-                        ($user && ($user->hasRole('agency-admin') || $user->hasRole('super-admin') || $user->is_admin ?? false));
+        // STRICT ROLE SEPARATION: Only display support panel when impersonating from platform console
+        $isSuperAdmin = (bool) session('impersonated_by_landlord');
 
         return view('livewire.admin.super-admin-support-panel', compact('isSuperAdmin'));
     }
