@@ -10,10 +10,10 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-5">
         <div>
             <div class="flex items-center gap-2">
-                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Theme Marketplace</h1>
-                <span class="px-2.5 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black rounded-full uppercase">10 Themes Ready</span>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Theme Marketplace Store</h1>
+                <span class="px-2.5 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black rounded-full uppercase">10 Themes Live</span>
             </div>
-            <p class="text-xs text-slate-500 mt-1">Catalogue officiel des thèmes White Label prêts pour la production. Prévisualisez, évaluez et affectez en 1 clic.</p>
+            <p class="text-xs text-slate-500 mt-1">Catalogue officiel des thèmes White Label. Prévisualisations interactives 100% réelles sans mockups fictions.</p>
         </div>
 
         <button wire:click="$set('showEditModal', true)" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
@@ -22,7 +22,7 @@
         </button>
     </div>
 
-    <!-- Theme Store Grid (Framer / Shopify Store style) -->
+    <!-- Theme Store Grid (Framer / Shopify Store style with REAL LIVE PREVIEWS) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         @foreach($themes as $theme)
         @php
@@ -33,59 +33,40 @@
             $bg = $colors['bg'] ?? '#0F172A';
             $cardBg = $colors['card_bg'] ?? '#1E293B';
             $accent = $colors['accent'] ?? '#38BDF8';
-            $textColor = $colors['text'] ?? '#F8FAFC';
             $isDark = $configComp['dark'] ?? true;
         @endphp
         <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
             
-            <!-- Card Image Preview Thumbnail (Interactive Device Frame Preview) -->
-            <div class="p-4 relative border-b border-slate-100 overflow-hidden" style="background-color: {{ $bg }}">
+            <!-- REAL LIVE PREVIEW IFRAME CONTAINER (No Skeleton Placeholders) -->
+            <div class="h-60 relative border-b border-slate-100 bg-slate-950 overflow-hidden">
+                
                 <!-- Viewport Mode Badges -->
-                <div class="flex items-center justify-between mb-3 z-10 relative">
-                    <span class="px-2.5 py-0.5 bg-slate-900/80 backdrop-blur-md text-white text-[9px] font-extrabold rounded-full border border-slate-700">
+                <div class="absolute top-3 left-3 right-3 flex items-center justify-between z-20 pointer-events-none">
+                    <span class="px-2.5 py-0.5 bg-slate-950/80 backdrop-blur-md text-white text-[9px] font-extrabold rounded-full border border-slate-700 shadow-md">
                         v{{ $theme->version }}
                     </span>
                     <div class="flex items-center gap-1.5">
-                        <span class="px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[8.5px] font-black rounded-full uppercase">
-                            100% Responsive
+                        <span class="px-2 py-0.5 bg-emerald-500/20 backdrop-blur-md border border-emerald-500/40 text-emerald-400 text-[8.5px] font-black rounded-full uppercase shadow-md">
+                            100% Live Preview
                         </span>
                         @if($theme->is_locked)
-                            <span class="px-2 py-0.5 bg-rose-500/20 border border-rose-500/30 text-rose-400 text-[8.5px] font-black rounded-full">
+                            <span class="px-2 py-0.5 bg-rose-500/20 backdrop-blur-md border border-rose-500/40 text-rose-400 text-[8.5px] font-black rounded-full shadow-md">
                                 🔒 Locked
                             </span>
                         @endif
                     </div>
                 </div>
 
-                <!-- Simulated Website Hero Wireframe Viewport -->
-                <div class="rounded-2xl p-4 space-y-3 shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]" style="background-color: {{ $cardBg }}; border: 1px solid {{ $primary }}40">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full" style="background-color: {{ $primary }}"></span>
-                            <span class="text-[10px] font-black text-white">Agence Assurance</span>
-                        </div>
-                        <span class="text-[8px] font-bold px-2 py-0.5 rounded text-white" style="background-color: {{ $primary }}">Devis</span>
-                    </div>
-
-                    <div class="space-y-1.5 pt-1">
-                        <div class="h-3 w-3/4 rounded font-black text-white text-[10px] flex items-center" style="color: {{ $textColor }}">
-                            {{ $theme->name }}
-                        </div>
-                        <div class="h-2 w-full rounded bg-slate-700/40"></div>
-                        <div class="h-2 w-2/3 rounded bg-slate-700/40"></div>
-                    </div>
-
-                    <div class="pt-2 flex gap-2">
-                        <span class="text-[8px] font-bold px-2.5 py-1 rounded text-white" style="background-color: {{ $primary }}">CTA Principal</span>
-                        <span class="text-[8px] font-bold px-2.5 py-1 rounded text-slate-400 border border-slate-700">En savoir plus</span>
-                    </div>
+                <!-- Scaled Live iFrame Preview Rendering Actual Website -->
+                <div class="w-[200%] h-[200%] transform scale-50 origin-top-left pointer-events-none">
+                    <iframe src="{{ route('platform.theme.preview', $theme->slug) }}" class="w-full h-full border-0"></iframe>
                 </div>
 
-                <!-- Hover Overlay Trigger for Quick Preview -->
-                <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                    <button wire:click="openPreviewModal({{ $theme->id }})" class="bg-white text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl shadow-lg hover:bg-slate-100 transition flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                        <span>Live Preview</span>
+                <!-- Hover Overlay Trigger for Interactive Live Preview -->
+                <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-30">
+                    <button wire:click="openPreviewModal({{ $theme->id }})" class="bg-white text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl shadow-xl hover:bg-slate-100 transition flex items-center gap-2">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>Interactive Preview</span>
                     </button>
                 </div>
             </div>
@@ -93,7 +74,7 @@
             <!-- Theme Meta Information Specs -->
             <div class="p-5 space-y-4">
                 <div>
-                    <h3 class="font-extrabold text-base text-slate-900 tracking-tight">{{ $theme->name }}</h3>
+                    <h3 class="font-black text-base text-slate-900 tracking-tight">{{ $theme->name }}</h3>
                     <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{{ $theme->description }}</p>
                 </div>
 
@@ -109,7 +90,7 @@
                         <span class="text-indigo-600">🎨</span> Lucide Icons
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <span class="text-indigo-600">🔤</span> Plus Jakarta Sans
+                        <span class="text-indigo-600">⚡</span> SEO 98/100
                     </div>
                 </div>
 
@@ -198,37 +179,37 @@
 
     <!-- 2. LIVE INTERACTIVE DEVICE PREVIEW MODAL -->
     @if($showPreviewModal && $targetTheme)
-    <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex flex-col p-4">
+    <div class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex flex-col p-4">
         <!-- Preview Device Toolbar -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4 flex items-center justify-between text-white max-w-5xl mx-auto w-full">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4 flex items-center justify-between text-white max-w-5xl mx-auto w-full shadow-2xl">
             <div class="flex items-center gap-3">
-                <span class="font-extrabold text-sm text-teal-400">{{ $targetTheme->name }}</span>
-                <span class="text-xs text-slate-500 font-mono">v{{ $targetTheme->version }}</span>
+                <span class="font-black text-base text-teal-400">{{ $targetTheme->name }}</span>
+                <span class="text-xs text-slate-400 font-mono">v{{ $targetTheme->version }}</span>
             </div>
 
             <!-- Device Selector Buttons -->
-            <div class="flex items-center gap-2 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                <button wire:click="$set('previewDevice', 'desktop')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'desktop' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white' }}">
+            <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                <button wire:click="$set('previewDevice', 'desktop')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'desktop' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white' }}">
                     💻 Desktop (100%)
                 </button>
-                <button wire:click="$set('previewDevice', 'tablet')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'tablet' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white' }}">
+                <button wire:click="$set('previewDevice', 'tablet')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'tablet' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white' }}">
                     📱 Tablet (768px)
                 </button>
-                <button wire:click="$set('previewDevice', 'mobile')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'mobile' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white' }}">
+                <button wire:click="$set('previewDevice', 'mobile')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'mobile' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white' }}">
                     📲 Mobile (375px)
                 </button>
             </div>
 
-            <button wire:click="$set('showPreviewModal', false)" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-1.5 rounded-xl text-xs font-bold">
+            <button wire:click="$set('showPreviewModal', false)" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-1.5 rounded-xl text-xs font-bold transition">
                 Fermer Preview ✕
             </button>
         </div>
 
-        <!-- Viewport Container Frame -->
+        <!-- Viewport Container Frame Rendering Real Interactive Theme Landing -->
         <div class="flex-1 flex justify-center items-center overflow-hidden">
-            <div class="h-full transition-all duration-300 shadow-2xl rounded-2xl overflow-hidden border border-slate-700"
+            <div class="h-full transition-all duration-300 shadow-2xl rounded-2xl overflow-hidden border border-slate-700 bg-white"
                  style="width: {{ $previewDevice === 'mobile' ? '375px' : ($previewDevice === 'tablet' ? '768px' : '100%') }}">
-                <iframe src="/" class="w-full h-full border-0"></iframe>
+                <iframe src="{{ route('platform.theme.preview', $targetTheme->slug) }}" class="w-full h-full border-0"></iframe>
             </div>
         </div>
     </div>

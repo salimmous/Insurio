@@ -3,12 +3,22 @@
 use App\Http\Controllers\Platform\AuthController as PlatformAuthController;
 use App\Http\Controllers\Platform\DashboardController as PlatformDashboardController;
 use App\Http\Controllers\Platform\ExpenseController as PlatformExpenseController;
+use App\Models\WebsiteTheme;
 
 foreach (config('tenancy.central_domains', []) as $domain) {
     Route::domain($domain)->get('/', function () {
         return redirect()->route('platform.login');
     });
 }
+
+// Public Theme Preview Route for iFrames
+Route::get('/super-admin/theme-preview/{slug}', function ($slug) {
+    $theme = WebsiteTheme::where('slug', $slug)->first();
+    if (!$theme) {
+        $theme = WebsiteTheme::first();
+    }
+    return view('tenant.landing', ['previewTheme' => $theme]);
+})->name('platform.theme.preview');
 
 // Central Super Admin Authentication
 Route::get('/super-admin/login', [PlatformAuthController::class, 'showLoginForm'])->name('platform.login');
