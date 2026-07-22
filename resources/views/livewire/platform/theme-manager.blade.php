@@ -10,10 +10,10 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-5">
         <div>
             <div class="flex items-center gap-2">
-                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Theme Marketplace Store</h1>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Theme Marketplace Store V2</h1>
                 <span class="px-2.5 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black rounded-full uppercase">10 Themes Live</span>
             </div>
-            <p class="text-xs text-slate-500 mt-1">Catalogue officiel des thèmes White Label. Prévisualisations interactives 100% réelles sans mockups fictions.</p>
+            <p class="text-xs text-slate-500 mt-1">Marketplace officiel de thèmes d'assurance White Label prêts pour la production. Prévisualisations interactives 100% réelles.</p>
         </div>
 
         <button wire:click="$set('showEditModal', true)" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
@@ -22,7 +22,7 @@
         </button>
     </div>
 
-    <!-- Theme Store Grid (Framer / Shopify Store style with REAL LIVE PREVIEWS) -->
+    <!-- Theme Store Grid (Framer / Shopify Store style with REAL LIVE PREVIEWS & HOVER SCROLL) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         @foreach($themes as $theme)
         @php
@@ -37,8 +37,8 @@
         @endphp
         <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
             
-            <!-- REAL LIVE PREVIEW IFRAME CONTAINER (No Skeleton Placeholders) -->
-            <div class="h-60 relative border-b border-slate-100 bg-slate-950 overflow-hidden">
+            <!-- REAL LIVE PREVIEW IFRAME CONTAINER WITH AUTO-SCROLL ON HOVER -->
+            <div class="h-64 relative border-b border-slate-100 bg-slate-950 overflow-hidden" x-data="{ scrolling: false }" @mouseenter="scrolling = true" @mouseleave="scrolling = false">
                 
                 <!-- Viewport Mode Badges -->
                 <div class="absolute top-3 left-3 right-3 flex items-center justify-between z-20 pointer-events-none">
@@ -47,7 +47,7 @@
                     </span>
                     <div class="flex items-center gap-1.5">
                         <span class="px-2 py-0.5 bg-emerald-500/20 backdrop-blur-md border border-emerald-500/40 text-emerald-400 text-[8.5px] font-black rounded-full uppercase shadow-md">
-                            100% Live Preview
+                            100% Live Website
                         </span>
                         @if($theme->is_locked)
                             <span class="px-2 py-0.5 bg-rose-500/20 backdrop-blur-md border border-rose-500/40 text-rose-400 text-[8.5px] font-black rounded-full shadow-md">
@@ -58,15 +58,15 @@
                 </div>
 
                 <!-- Scaled Live iFrame Preview Rendering Actual Website -->
-                <div class="w-[200%] h-[200%] transform scale-50 origin-top-left pointer-events-none">
+                <div class="w-[200%] h-[300%] transform scale-50 origin-top-left pointer-events-none transition-transform duration-1000 ease-in-out" :class="scrolling ? '-translate-y-1/3' : 'translate-y-0'">
                     <iframe src="{{ route('platform.theme.preview', $theme->slug) }}" class="w-full h-full border-0"></iframe>
                 </div>
 
                 <!-- Hover Overlay Trigger for Interactive Live Preview -->
-                <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-30">
+                <div class="absolute inset-0 bg-slate-950/40 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-30">
                     <button wire:click="openPreviewModal({{ $theme->id }})" class="bg-white text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl shadow-xl hover:bg-slate-100 transition flex items-center gap-2">
                         <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                        <span>Interactive Preview</span>
+                        <span>Live Preview</span>
                     </button>
                 </div>
             </div>
@@ -110,7 +110,7 @@
             <div class="p-5 pt-0 space-y-2">
                 <button wire:click="openAssignModal({{ $theme->id }})" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-                    <span>Assign To Agency</span>
+                    <span>Choose & Assign To Agency</span>
                 </button>
 
                 <div class="grid grid-cols-2 gap-2">
@@ -127,38 +127,41 @@
         @endforeach
     </div>
 
-    <!-- 1. ASSIGN TO AGENCY SEARCH MODAL -->
+    <!-- 1. MULTI-STEP ASSIGNMENT WORKFLOW MODAL -->
     @if($showAssignModal && $targetTheme)
     <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 space-y-6 shadow-2xl">
+        <div class="bg-white rounded-3xl border border-slate-200 max-w-xl w-full p-6 space-y-6 shadow-2xl">
+            <!-- Modal Stepper Header -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                    <span class="text-[10px] font-black text-teal-600 uppercase tracking-widest">Affectation Thème</span>
+                    <span class="text-[10px] font-black text-teal-600 uppercase tracking-widest">Workflow Affectation • Étape {{ $assignStep }}/2</span>
                     <h2 class="text-lg font-black text-slate-900 mt-0.5">Appliquer "{{ $targetTheme->name }}"</h2>
                 </div>
                 <button wire:click="$set('showAssignModal', false)" class="text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
             </div>
 
+            @if($assignStep === 1)
+            <!-- Step 1: Search & Choose Agency -->
             <div class="space-y-4">
-                <!-- Search Agency Input -->
                 <div class="relative">
                     <span class="absolute left-3.5 top-3 text-slate-400 text-xs">🔍</span>
                     <input type="text" wire:model.live="searchAgency" placeholder="Rechercher agence par nom ou sous-domaine..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-800 focus:ring-teal-500 font-semibold">
                 </div>
 
-                <!-- Agency List Radio Cards -->
-                <div class="max-h-60 overflow-y-auto space-y-2 pr-1 text-xs">
+                <div class="max-h-64 overflow-y-auto space-y-2 pr-1 text-xs">
                     @forelse($filteredTenants as $tenant)
-                    <label class="flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition {{ $selectedTenantId === $tenant->id ? 'border-teal-500 bg-teal-50/50 text-slate-900 font-bold' : 'border-slate-200 hover:bg-slate-50 text-slate-700' }}">
+                    <div wire:click="selectAgencyForAssign('{{ $tenant->id }}')" class="flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition border-slate-200 hover:border-teal-500 hover:bg-teal-50/50">
                         <div class="flex items-center gap-3">
-                            <input type="radio" wire:model="selectedTenantId" value="{{ $tenant->id }}" class="text-teal-600 focus:ring-teal-500">
+                            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                                {{ substr($tenant->name ?? $tenant->id, 0, 1) }}
+                            </div>
                             <div>
                                 <span class="block font-black text-slate-900">{{ $tenant->name ?? $tenant->id }}</span>
                                 <span class="block text-[10px] text-slate-400 font-mono">{{ $tenant->id }}.sc7mosa1422.universe.wf</span>
                             </div>
                         </div>
-                        <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 rounded-full text-slate-600">Active</span>
-                    </label>
+                        <span class="text-[11px] font-bold text-teal-600">Sélectionner →</span>
+                    </div>
                     @empty
                     <div class="text-center py-6 text-slate-400 text-xs">
                         Aucune agence trouvée pour "{{ $searchAgency }}".
@@ -167,12 +170,31 @@
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                <button wire:click="$set('showAssignModal', false)" class="px-5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900">Annuler</button>
-                <button wire:click="confirmAssignToAgency" class="bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs px-6 py-2.5 rounded-xl shadow-lg transition">
-                    🚀 Confirmer & Publier Live
-                </button>
+            @elseif($assignStep === 2 && $selectedTenant)
+            <!-- Step 2: Preview & Confirm with Selected Agency -->
+            <div class="space-y-4 text-xs">
+                <div class="p-4 bg-slate-900 text-white rounded-2xl space-y-2 border border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-extrabold uppercase text-teal-400 tracking-wider">Agence Sélectionnée</span>
+                        <button wire:click="$set('assignStep', 1)" class="text-[10px] font-bold text-slate-400 hover:text-white underline">Changer d'agence</button>
+                    </div>
+                    <div class="text-base font-black text-white">{{ $selectedTenant->name ?? $selectedTenant->id }}</div>
+                    <div class="text-xs text-slate-400 font-mono">{{ $selectedTenant->id }}.sc7mosa1422.universe.wf</div>
+                </div>
+
+                <div class="p-4 bg-emerald-50 text-emerald-900 rounded-2xl border border-emerald-200 font-semibold space-y-1">
+                    <div class="font-black text-sm text-emerald-950">Vérification de Publication Live</div>
+                    <p class="text-xs text-emerald-800">Le thème <strong>{{ $targetTheme->name }}</strong> remplacera immédiatement l'identité visuelle du site sans altérer les textes, logos et contacts de l'agence.</p>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button wire:click="$set('assignStep', 1)" class="px-5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900">Retour</button>
+                    <button wire:click="confirmAssignToAgency" class="bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs px-6 py-2.5 rounded-xl shadow-lg transition">
+                        🚀 Confirmer & Publier Live
+                    </button>
+                </div>
             </div>
+            @endif
         </div>
     </div>
     @endif

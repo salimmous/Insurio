@@ -17,6 +17,10 @@ class ThemeManager extends Component
     public $targetThemeId;
     public $targetTheme;
     public $selectedTenantId = '';
+    public $selectedTenant;
+
+    // Workflow Steps inside Assign Modal
+    public $assignStep = 1; // 1: Select Agency, 2: Preview with Agency Info, 3: Confirm
 
     // Modals visibility
     public $showAssignModal = false;
@@ -49,14 +53,23 @@ class ThemeManager extends Component
         $this->themes = WebsiteTheme::all();
     }
 
-    // Modal Trigger Actions
+    // Workflow Assignment Actions
     public function openAssignModal($themeId)
     {
         $this->targetThemeId = $themeId;
         $this->targetTheme = WebsiteTheme::findOrFail($themeId);
         $this->selectedTenantId = '';
+        $this->selectedTenant = null;
         $this->searchAgency = '';
+        $this->assignStep = 1;
         $this->showAssignModal = true;
+    }
+
+    public function selectAgencyForAssign($tenantId)
+    {
+        $this->selectedTenantId = $tenantId;
+        $this->selectedTenant = Tenant::find($tenantId);
+        $this->assignStep = 2; // Move to Preview with Agency Info Step
     }
 
     public function openPreviewModal($themeId)
@@ -146,7 +159,7 @@ class ThemeManager extends Component
         });
 
         $this->showAssignModal = false;
-        session()->flash('message', "Le thème '{$this->targetTheme->name}' a été immédiatement appliqué & publié sur l'agence " . ($tenant->name ?? $tenant->id));
+        session()->flash('message', "🚀 Le thème structural '{$this->targetTheme->name}' a été appliqué et publié live sur l'agence " . ($tenant->name ?? $tenant->id));
     }
 
     public function render()
