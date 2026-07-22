@@ -11,13 +11,23 @@ foreach (config('tenancy.central_domains', []) as $domain) {
     });
 }
 
-// Public Theme Preview Route for iFrames
+// Independent Theme Preview Route for iFrames
 Route::get('/super-admin/theme-preview/{slug}', function ($slug) {
     $theme = WebsiteTheme::where('slug', $slug)->first();
-    if (!$theme) {
-        $theme = WebsiteTheme::first();
+    $viewPath = "themes.{$slug}.landing";
+    if (!view()->exists($viewPath)) {
+        // Fallback mapping
+        $map = [
+            'corporate-blue' => 'themes.corporate-blue.landing',
+            'axa-inspire' => 'themes.corporate-blue.landing',
+            'apple-insurance' => 'themes.apple.landing',
+            'luxury-gold' => 'themes.luxury-gold.landing',
+            'luxury-private' => 'themes.luxury-gold.landing',
+            'wafa-inspire' => 'themes.wafa-inspire.landing',
+        ];
+        $viewPath = $map[$slug] ?? 'tenant.landing';
     }
-    return view('tenant.landing', ['previewTheme' => $theme]);
+    return view($viewPath, ['previewTheme' => $theme, 'agencyName' => 'Agence exemple - ' . ($theme->name ?? $slug)]);
 })->name('platform.theme.preview');
 
 // Central Super Admin Authentication
