@@ -32,6 +32,7 @@ class Client extends Model
         'notes',
         'solvabilite',
         'incident',
+        'type_incident',
         'entreprise_id',
         'succursale_id',
         'created_by',

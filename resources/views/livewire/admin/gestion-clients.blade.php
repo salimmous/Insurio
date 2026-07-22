@@ -58,7 +58,7 @@
         <!-- Filter / Search Bar -->
         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 flex gap-4">
             <div class="flex-1">
-                <input type="text" wire:model.live="search" placeholder="Rechercher par Référence (ex: CL-00001), Nom, CIN, Téléphone..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" wire:model.live="search" placeholder="Rechercher par Référence (ex: CL-00001), Nom, CIN, Branche (ex: Auto, Santé)..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             </div>
         </div>
 
@@ -75,7 +75,7 @@
                             <th class="px-6 py-3">Téléphone</th>
                             <th class="px-6 py-3">E-mail</th>
                             <th class="px-6 py-3">Solvabilité</th>
-                            <th class="px-6 py-3">Incidents</th>
+                            <th class="px-6 py-3">Incidents & Branche</th>
                             <th class="px-6 py-3 text-right">Actions</th>
                         </tr>
                     </thead>
@@ -119,7 +119,14 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($client->incident)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Oui (Impayé/Sinistre)</span>
+                                        <div class="space-y-1">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Incident Impayé</span>
+                                            @if($client->type_incident)
+                                                <span class="inline-block text-[10px] font-bold px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded">
+                                                    {{ $client->type_incident }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     @else
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">Aucun</span>
                                     @endif
@@ -233,15 +240,6 @@
                         </div>
 
                         <div>
-                            <label class="block font-bold text-gray-700 mb-1">WhatsApp Direct</label>
-                            <input type="text" wire:model="whatsapp_number" class="w-full border border-gray-300 rounded-lg p-2.5">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1">Adresse E-mail</label>
-                            <input type="email" wire:model="email" class="w-full border border-gray-300 rounded-lg p-2.5">
-                        </div>
-
-                        <div>
                             <label class="block font-bold text-gray-700 mb-1">Solvabilité</label>
                             <select wire:model="solvabilite" class="w-full border border-gray-300 rounded-lg p-2.5">
                                 <option value="solvable">Solvable</option>
@@ -254,6 +252,34 @@
                                 <option value="0">Aucun incident</option>
                                 <option value="1">Incident / Impayé Enregistré</option>
                             </select>
+                        </div>
+
+                        <!-- Product Branch / Incident Type Selector -->
+                        <div class="md:col-span-2">
+                            <label class="block font-bold text-gray-700 mb-1">Branche Produit / Type d'Incident (Auto, Santé, Habitation, AT...)</label>
+                            <select wire:model="type_incident" class="w-full border border-gray-300 rounded-lg p-2.5 bg-amber-50/50">
+                                <option value="">-- Sélectionner la Branche Produit --</option>
+                                <option value="Assurance Automobile">🚗 Automobile (Auto)</option>
+                                <option value="Assurance Habitation & Foyer">🏡 Habitation & Foyer</option>
+                                <option value="Santé & Mutuelle">🩺 Santé & Mutuelle</option>
+                                <option value="Accident du Travail (AT)">👷 Accident du Travail (AT)</option>
+                                <option value="Multirisque Professionnelle">🏢 Multirisque Professionnelle</option>
+                                <option value="Responsabilité Civile (RC)">🛡️ Responsabilité Civile (RC)</option>
+                                <option value="Flottes & Transport">🚛 Flottes & Transport</option>
+                                <option value="Voyage & Assistance Int.">✈️ Voyage & Assistance Int.</option>
+                                @foreach($products as $prod)
+                                    <option value="{{ $prod->nom }}">{{ $prod->nom }} ({{ $prod->code }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">WhatsApp Direct</label>
+                            <input type="text" wire:model="whatsapp_number" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Adresse E-mail</label>
+                            <input type="email" wire:model="email" class="w-full border border-gray-300 rounded-lg p-2.5">
                         </div>
                     </div>
 

@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Client;
+use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 
@@ -31,6 +32,7 @@ class GestionClients extends Component
     public $notes = '';
     public $solvabilite = 'solvable';
     public $incident = false;
+    public $type_incident = '';
     public $entreprise_id = null;
 
     // Compatibility public properties for older tests
@@ -56,6 +58,7 @@ class GestionClients extends Component
         'notes' => 'nullable|string|max:1000',
         'solvabilite' => 'required|in:solvable,non-solvable',
         'incident' => 'required|boolean',
+        'type_incident' => 'nullable|string|max:255',
         'entreprise_id' => 'nullable|integer|exists:clients,id',
     ];
 
@@ -86,6 +89,7 @@ class GestionClients extends Component
             $this->notes = $client->notes;
             $this->solvabilite = $client->solvabilite;
             $this->incident = (bool)$client->incident;
+            $this->type_incident = $client->type_incident ?? '';
             $this->entreprise_id = $client->entreprise_id;
 
             $this->nom = $this->last_name;
@@ -123,6 +127,7 @@ class GestionClients extends Component
         $this->notes = '';
         $this->solvabilite = 'solvable';
         $this->incident = false;
+        $this->type_incident = '';
         $this->entreprise_id = null;
 
         $this->nom = '';
@@ -172,6 +177,10 @@ class GestionClients extends Component
             $data['reference'] = $this->reference ?: 'CL-' . str_pad(($this->clientId ?? ((Client::max('id') ?? 0) + 1)), 5, '0', STR_PAD_LEFT);
         }
 
+        if (Schema::hasColumn('clients', 'type_incident')) {
+            $data['type_incident'] = $this->type_incident;
+        }
+
         Client::updateOrCreate(
             ['id' => $this->clientId],
             $data
@@ -211,14 +220,20 @@ class GestionClients extends Component
                 if (Schema::hasColumn('clients', 'reference')) {
                     $q->orWhere('reference', 'like', '%' . $this->search . '%');
                 }
+
+                if (Schema::hasColumn('clients', 'type_incident')) {
+                    $q->orWhere('type_incident', 'like', '%' . $this->search . '%');
+                }
             });
         }
 
         $entreprises = Client::where('client_type', 'company')->orderBy('last_name')->get();
+        $products = Product::where('statut', 'actif')->orderBy('nom')->get();
 
         return view('livewire.admin.gestion-clients', [
             'clients' => $query->latest()->paginate(10),
             'entreprises' => $entreprises,
+            'products' => $products,
         ])->layout('layouts.app');
     }
 }
