@@ -25,16 +25,17 @@
     <!-- Theme Store Grid (Framer / Shopify Store style) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         @foreach($themes as $theme)
-        <?php
-            $colors = $theme->colors ?? [];
-            $configComp = $theme->components_config ?? [];
+        @php
+            $colors = is_array($theme->colors) ? $theme->colors : json_decode($theme->colors ?? '[]', true);
+            $configComp = is_array($theme->components_config) ? $theme->components_config : json_decode($theme->components_config ?? '[]', true);
             $primary = $colors['primary'] ?? '#1E40AF';
             $secondary = $colors['secondary'] ?? '#3B82F6';
             $bg = $colors['bg'] ?? '#0F172A';
             $cardBg = $colors['card_bg'] ?? '#1E293B';
             $accent = $colors['accent'] ?? '#38BDF8';
+            $textColor = $colors['text'] ?? '#F8FAFC';
             $isDark = $configComp['dark'] ?? true;
-        ?>
+        @endphp
         <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
             
             <!-- Card Image Preview Thumbnail (Interactive Device Frame Preview) -->
@@ -67,7 +68,7 @@
                     </div>
 
                     <div class="space-y-1.5 pt-1">
-                        <div class="h-3 w-3/4 rounded font-black text-white text-[10px] flex items-center" style="color: {{ $colors['text'] ?? '#fff' }}">
+                        <div class="h-3 w-3/4 rounded font-black text-white text-[10px] flex items-center" style="color: {{ $textColor }}">
                             {{ $theme->name }}
                         </div>
                         <div class="h-2 w-full rounded bg-slate-700/40"></div>
