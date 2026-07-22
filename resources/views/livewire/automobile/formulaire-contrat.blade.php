@@ -418,28 +418,46 @@
                 </div>
             </div>
 
-            <!-- SUMMARY BLOCK: Totaux en bas -->
-            <div class="bg-gradient-to-r from-teal-50 via-slate-50 to-indigo-50 border border-teal-200/60 rounded-2xl p-6 shadow-sm space-y-4">
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-6 text-center divide-x divide-slate-200">
+            <!-- SUMMARY BLOCK: Totaux & Calcul de Marge HT Avant Taxes -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 text-white rounded-2xl p-6 shadow-xl space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="h-2.5 w-2.5 rounded-full bg-teal-400"></span>
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-200">Synthèse Financière & Calcul Marge HT (Avant Taxes)</h3>
+                    </div>
+                    <span class="text-xs text-teal-400 font-mono font-bold">Marge Produit : {{ number_format($this->margePourcentage, 2) }}%</span>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-4 text-center divide-x divide-slate-800">
                     <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Prime Nette</span>
-                        <div class="text-2xl font-bold text-slate-800 mt-1 font-mono">{{ number_format($this->primeNette, 2) }} DH</div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Prime Nette (HT)</span>
+                        <div class="text-xl font-bold text-white mt-1 font-mono">{{ number_format($this->primeNette, 2) }} DH</div>
+                        <span class="text-[9px] text-slate-400 block mt-0.5">Base Pre-Tax</span>
                     </div>
                     <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Taxes</span>
-                        <div class="text-2xl font-bold text-slate-800 mt-1 font-mono">{{ number_format($this->totalTaxe, 2) }} DH</div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-teal-400 block">Marge Brute HT</span>
+                        <div class="text-xl font-bold text-teal-400 mt-1 font-mono">{{ number_format($this->margeBruteHt, 2) }} DH</div>
+                        <span class="text-[9px] text-teal-500 block mt-0.5">{{ number_format($this->margePourcentage, 2) }}% sur HT</span>
                     </div>
                     <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Commissions</span>
-                        <div class="text-2xl font-bold text-emerald-600 mt-1 font-mono">{{ number_format($this->totalCommission, 2) }} DH</div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block">Commissions</span>
+                        <div class="text-xl font-bold text-amber-400 mt-1 font-mono">{{ number_format($this->totalCommission, 2) }} DH</div>
+                        <span class="text-[9px] text-amber-500 block mt-0.5">Apporteur / Intermédiaire</span>
                     </div>
                     <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total TPS</span>
-                        <div class="text-2xl font-bold text-slate-800 mt-1 font-mono">{{ number_format($this->totalTps, 2) }} DH</div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">Bénéfice Net Agence</span>
+                        <div class="text-2xl font-black text-emerald-400 mt-1 font-mono">{{ number_format($this->beneficeNet, 2) }} DH</div>
+                        <span class="text-[9px] text-emerald-500 block mt-0.5">Marge HT - Comm</span>
                     </div>
                     <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">Prime Totale (À Payer)</span>
-                        <div class="text-3xl font-extrabold text-teal-600 mt-1 font-mono">{{ number_format($this->primeTotale, 2) }} DH</div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Taxes & Timbre</span>
+                        <div class="text-xl font-bold text-slate-300 mt-1 font-mono">{{ number_format($this->totalTaxe, 2) }} DH</div>
+                        <span class="text-[9px] text-slate-400 block mt-0.5">Taxes Éthiques / État</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-300 block">Prime Totale (TTC)</span>
+                        <div class="text-2xl font-extrabold text-indigo-400 mt-1 font-mono">{{ number_format($this->primeTotale, 2) }} DH</div>
+                        <span class="text-[9px] text-indigo-400 block mt-0.5">À Régler par Client</span>
                     </div>
                 </div>
             </div>

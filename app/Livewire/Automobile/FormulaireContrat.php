@@ -201,6 +201,25 @@ class FormulaireContrat extends Component
         return (float)$this->tps_auto + (float)$this->tps_pta;
     }
 
+    public function getMargePourcentageProperty()
+    {
+        if ($this->product_id) {
+            $prod = \App\Models\Product::find($this->product_id);
+            return $prod ? (float)$prod->marge_pourcentage : 0.00;
+        }
+        return 0.00;
+    }
+
+    public function getMargeBruteHtProperty()
+    {
+        return $this->primeNette * ($this->margePourcentage / 100);
+    }
+
+    public function getBeneficeNetProperty()
+    {
+        return $this->margeBruteHt - $this->totalCommission;
+    }
+
     public function save()
     {
         $rules = [

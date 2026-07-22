@@ -461,4 +461,29 @@ class Contract extends Model
         }
         return (float)$this->prime_totale - (float)$reglementsSum;
     }
+
+    // Product Margin % (Pre-Tax HT)
+    public function getMargePourcentageAttribute(): float
+    {
+        if ($this->type && $this->type->marge_pourcentage !== null) {
+            return (float)$this->type->marge_pourcentage;
+        }
+        if ($this->product && $this->product->marge_pourcentage !== null) {
+            return (float)$this->product->marge_pourcentage;
+        }
+        return 0.00;
+    }
+
+    // Pre-Tax Margin Amount (Calculated on Prime Nette HT BEFORE TAXES)
+    public function getMargeHtMontantAttribute(): float
+    {
+        $primeNette = (float)($this->prime_nette ?? 0.00);
+        return $primeNette * ($this->marge_pourcentage / 100);
+    }
+
+    // Agency Net Profit (Pre-Tax Margin minus Apporteur Commissions)
+    public function getBeneficeNetAttribute(): float
+    {
+        return $this->marge_ht_montant - $this->total_commissions;
+    }
 }
