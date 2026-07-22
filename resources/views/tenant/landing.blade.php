@@ -1,6 +1,12 @@
 <?php
     $config = \App\Models\TenantWebsiteConfig::first();
-    $theme = $config && $config->theme ? $config->theme : \App\Models\WebsiteTheme::first();
+    $theme = null;
+    if ($config && !empty($config->theme_id)) {
+        $theme = \App\Models\WebsiteTheme::find($config->theme_id);
+    }
+    if (!$theme) {
+        $theme = \App\Models\WebsiteTheme::first();
+    }
     $colors = $theme ? ($theme->colors ?? []) : [];
     $content = $config ? ($config->content ?? []) : [];
     $seo = $config ? ($config->seo ?? []) : [];

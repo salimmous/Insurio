@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WebsiteTheme extends Model
 {
+    protected $connection = 'mysql';
     protected $table = 'website_themes';
 
     protected $fillable = [
