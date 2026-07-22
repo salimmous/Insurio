@@ -1,0 +1,3 @@
+/* Tesla Insurance Custom Styles */
+body { font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
+.tesla-btn { background-color: #E82127; color: #FFFFFF; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 9999px; }

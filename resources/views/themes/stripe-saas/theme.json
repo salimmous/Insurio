@@ -1,0 +1,10 @@
+{
+    "name": "Stripe SaaS",
+    "slug": "stripe-saas",
+    "version": "3.0.0",
+    "author": "Insurio Studio",
+    "description": "Stripe.com-inspired API-first insurtech platform.",
+    "typography": "Plus Jakarta Sans",
+    "primary_color": "#6366F1",
+    "bg_color": "#FFFFFF"
+}

@@ -21,7 +21,7 @@ class ThemeManager extends Component
     public $selectedTenant;
 
     // Workflow Steps inside Assign Modal
-    public $assignStep = 1; // 1: Select Agency, 2: Preview with Agency Info, 3: Confirm
+    public $assignStep = 1;
 
     // Modals visibility
     public $showAssignModal = false;
@@ -30,7 +30,7 @@ class ThemeManager extends Component
     public $showEditModal = false;
 
     // Live Preview Device
-    public $previewDevice = 'desktop'; // desktop, tablet, mobile
+    public $previewDevice = 'desktop';
 
     // Theme Editing Form
     public $theme_id;
@@ -45,135 +45,45 @@ class ThemeManager extends Component
 
     public function mount()
     {
-        $this->ensureFifteenThemesSeeded();
+        $this->ensureThirtyThemesSeeded();
         $this->loadThemes();
         $this->tenants = Tenant::all();
     }
 
-    public function ensureFifteenThemesSeeded()
+    public function ensureThirtyThemesSeeded()
     {
-        if (WebsiteTheme::count() < 15) {
+        if (WebsiteTheme::count() < 30) {
             $themes = [
-                [
-                    'name' => 'AXA Inspire',
-                    'slug' => 'axa-inspire',
-                    'description' => 'Minimal luxe, grandes photographies, fond blanc épuré et typographie audacieuse.',
-                    'colors' => json_encode(['primary' => '#00008F', 'secondary' => '#1E293B', 'bg' => '#FFFFFF', 'card_bg' => '#F8FAFC', 'text' => '#0F172A', 'accent' => '#FF0000']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '900']),
-                    'components_config' => json_encode(['hero_style' => 'axa_bold', 'radius' => 'rounded-none', 'dark' => false]),
-                ],
-                [
-                    'name' => 'RMA Inspire',
-                    'slug' => 'rma-inspire',
-                    'description' => 'Style institutionnel marocain avec carrousel hero, mega-menu et accès direct aux agences.',
-                    'colors' => json_encode(['primary' => '#1E3A8A', 'secondary' => '#2563EB', 'bg' => '#F8FAFC', 'card_bg' => '#FFFFFF', 'text' => '#0F172A', 'accent' => '#38BDF8']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'rma_slider', 'radius' => 'rounded-xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Wafa Inspire',
-                    'slug' => 'wafa-inspire',
-                    'description' => 'Tons vert émeraude, cartes arrondies et univers familial chaleureux.',
-                    'colors' => json_encode(['primary' => '#047857', 'secondary' => '#10B981', 'bg' => '#F0FDF4', 'card_bg' => '#FFFFFF', 'text' => '#064E3B', 'accent' => '#34D399']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '700']),
-                    'components_config' => json_encode(['hero_style' => 'wafa_family', 'radius' => 'rounded-3xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Sanlam Inspire',
-                    'slug' => 'sanlam-inspire',
-                    'description' => 'Grille d\'information entreprise riche pour particuliers et professionnels.',
-                    'colors' => json_encode(['primary' => '#0284C7', 'secondary' => '#0369A1', 'bg' => '#FFFFFF', 'card_bg' => '#F0F9FF', 'text' => '#0C4A6E', 'accent' => '#38BDF8']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'sanlam_grid', 'radius' => 'rounded-2xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Allianz Inspire',
-                    'slug' => 'allianz-inspire',
-                    'description' => 'Style corporate allemand hyper épuré avec formulaire de simulation intégré.',
-                    'colors' => json_encode(['primary' => '#00377B', 'secondary' => '#00529C', 'bg' => '#FFFFFF', 'card_bg' => '#F8FAFC', 'text' => '#0B192C', 'accent' => '#0084FF']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'allianz_form', 'radius' => 'rounded-xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Apple Insurance',
-                    'slug' => 'apple-insurance',
-                    'description' => 'Inspiré par Apple : Blanc pur, typographie géante et visuels haute définition.',
-                    'colors' => json_encode(['primary' => '#000000', 'secondary' => '#1D1D1F', 'bg' => '#FFFFFF', 'card_bg' => '#F5F5F7', 'text' => '#1D1D1F', 'accent' => '#0071E3']),
-                    'typography' => json_encode(['font' => 'Inter', 'heading_weight' => '700']),
-                    'components_config' => json_encode(['hero_style' => 'apple_clean', 'radius' => 'rounded-3xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Luxury Private',
-                    'slug' => 'luxury-private',
-                    'description' => 'Gestion de patrimoine VIP et banques privées avec détails noirs et dorés.',
-                    'colors' => json_encode(['primary' => '#B45309', 'secondary' => '#D97706', 'bg' => '#FAF9F6', 'card_bg' => '#FFFFFF', 'text' => '#18181B', 'accent' => '#FBBF24']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'luxury_vip', 'radius' => 'rounded-xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Startup Insurance',
-                    'slug' => 'startup-insurance',
-                    'description' => 'Inspiré de Stripe & Linear : Design SaaS moderne avec micro-interactions.',
-                    'colors' => json_encode(['primary' => '#6366F1', 'secondary' => '#4F46E5', 'bg' => '#FFFFFF', 'card_bg' => '#F8FAFC', 'text' => '#0F172A', 'accent' => '#38BDF8']),
-                    'typography' => json_encode(['font' => 'Inter', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'stripe_saas', 'radius' => 'rounded-2xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Morocco Premium',
-                    'slug' => 'morocco-premium',
-                    'description' => 'Identité marocaine 🇲🇦 avec priorités arabe et motifs zellige.',
-                    'colors' => json_encode(['primary' => '#9A3412', 'secondary' => '#C2410C', 'bg' => '#FAFAF9', 'card_bg' => '#FFFFFF', 'text' => '#1C1917', 'accent' => '#F97316']),
-                    'typography' => json_encode(['font' => 'Noto Kufi Arabic', 'heading_weight' => '900']),
-                    'components_config' => json_encode(['hero_style' => 'moroccan_zellij', 'radius' => 'rounded-2xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Future AI',
-                    'slug' => 'future-ai',
-                    'description' => 'Technologie IA avec grille cyber, néon violet et visuels dynamiques.',
-                    'colors' => json_encode(['primary' => '#7C3AED', 'secondary' => '#A855F7', 'bg' => '#F5F3FF', 'card_bg' => '#FFFFFF', 'text' => '#1E1B4B', 'accent' => '#C084FC']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'ai_cyber', 'radius' => 'rounded-3xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Healthcare',
-                    'slug' => 'healthcare',
-                    'description' => 'Dédié au secteur médical, hôpitaux, médecins et mutuelles de santé.',
-                    'colors' => json_encode(['primary' => '#0284C7', 'secondary' => '#0D9488', 'bg' => '#F0F9FF', 'card_bg' => '#FFFFFF', 'text' => '#0F172A', 'accent' => '#38BDF8']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '700']),
-                    'components_config' => json_encode(['hero_style' => 'medical_care', 'radius' => 'rounded-2xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Real Estate',
-                    'slug' => 'real-estate',
-                    'description' => 'Assurance promoteurs, projets immobiliers, immeubles et chantiers.',
-                    'colors' => json_encode(['primary' => '#334155', 'secondary' => '#475569', 'bg' => '#F8FAFC', 'card_bg' => '#FFFFFF', 'text' => '#0F172A', 'accent' => '#2563EB']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'building_arch', 'radius' => 'rounded-xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Family Protection',
-                    'slug' => 'family-protection',
-                    'description' => 'Protection des proches, enfants, avenir et prévoyance familiale.',
-                    'colors' => json_encode(['primary' => '#E11D48', 'secondary' => '#F43F5E', 'bg' => '#FFF1F2', 'card_bg' => '#FFFFFF', 'text' => '#881337', 'accent' => '#FB7185']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '700']),
-                    'components_config' => json_encode(['hero_style' => 'family_warmth', 'radius' => 'rounded-3xl', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Corporate Enterprise',
-                    'slug' => 'corporate-enterprise',
-                    'description' => 'Inspiré d\'IBM et Microsoft : Design sobre pour risques d\'entreprises.',
-                    'colors' => json_encode(['primary' => '#0F172A', 'secondary' => '#1E293B', 'bg' => '#FFFFFF', 'card_bg' => '#F8FAFC', 'text' => '#0F172A', 'accent' => '#2563EB']),
-                    'typography' => json_encode(['font' => 'Inter', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'enterprise_grid', 'radius' => 'rounded-lg', 'dark' => false]),
-                ],
-                [
-                    'name' => 'Marketplace',
-                    'slug' => 'marketplace',
-                    'description' => 'Comparateur interactif avec simulateur de devis et filtres intelligents.',
-                    'colors' => json_encode(['primary' => '#2563EB', 'secondary' => '#3B82F6', 'bg' => '#F8FAFC', 'card_bg' => '#FFFFFF', 'text' => '#0F172A', 'accent' => '#60A5FA']),
-                    'typography' => json_encode(['font' => 'Plus Jakarta Sans', 'heading_weight' => '800']),
-                    'components_config' => json_encode(['hero_style' => 'comparator_hub', 'radius' => 'rounded-2xl', 'dark' => false]),
-                ],
+                ['name' => 'Tesla Insurance', 'slug' => 'tesla-insurance', 'description' => 'Futuriste et minimaliste inspiré par Tesla.', 'colors' => json_encode(['primary' => '#E82127', 'secondary' => '#171A20', 'bg' => '#FFFFFF', 'card_bg' => '#F4F4F4', 'text' => '#171A20', 'accent' => '#E82127'])],
+                ['name' => 'Apple Enterprise', 'slug' => 'apple-enterprise', 'description' => 'Directives Human Interface d\'Apple.', 'colors' => json_encode(['primary' => '#000000', 'secondary' => '#1D1D1F', 'bg' => '#FFFFFF', 'card_bg' => '#F5F5F7', 'text' => '#1D1D1F', 'accent' => '#0071E3'])],
+                ['name' => 'Stripe SaaS', 'slug' => 'stripe-saas', 'description' => 'Inspiration Stripe.com avec grille moderne.', 'colors' => json_encode(['primary' => '#6366F1', 'secondary' => '#4F46E5', 'bg' => '#FFFFFF', 'card_bg' => '#F8FAFC', 'text' => '#0F172A', 'accent' => '#38BDF8'])],
+                ['name' => 'Linear', 'slug' => 'linear', 'description' => 'Design sombre et fluide inspiré de Linear.app.', 'colors' => json_encode(['primary' => '#5E6AD2', 'secondary' => '#1C1D22', 'bg' => '#0B0C0E', 'card_bg' => '#151619', 'text' => '#F7F8F8', 'accent' => '#707EED'])],
+                ['name' => 'Notion', 'slug' => 'notion', 'description' => 'Design éditorial minimaliste inspiré de Notion.', 'colors' => json_encode(['primary' => '#000000', 'secondary' => '#37352F', 'bg' => '#FFFFFF', 'card_bg' => '#F7F6F3', 'text' => '#37352F', 'accent' => '#2EAADC'])],
+                ['name' => 'Vercel', 'slug' => 'vercel', 'description' => 'Style développeur haute précision inspiré de Vercel.', 'colors' => json_encode(['primary' => '#000000', 'secondary' => '#111111', 'bg' => '#000000', 'card_bg' => '#111111', 'text' => '#FFFFFF', 'accent' => '#0070F3'])],
+                ['name' => 'Airbnb', 'slug' => 'airbnb', 'description' => 'Grandes photographies et cartes d\'exploration.', 'colors' => json_encode(['primary' => '#FF385C', 'secondary' => '#E00B41', 'bg' => '#FFFFFF', 'card_bg' => '#F7F7F7', 'text' => '#222222', 'accent' => '#FF385C'])],
+                ['name' => 'Booking', 'slug' => 'booking', 'description' => 'Cartes de comparaison rapides style Booking.', 'colors' => json_encode(['primary' => '#003580', 'secondary' => '#00224F', 'bg' => '#F5F5F5', 'card_bg' => '#FFFFFF', 'text' => '#262626', 'accent' => '#FEBB02'])],
+                ['name' => 'Porsche Premium', 'slug' => 'porsche-premium', 'description' => 'Ingénierie de luxe et élégance automobile.', 'colors' => json_encode(['primary' => '#D5001C', 'secondary' => '#191919', 'bg' => '#FFFFFF', 'card_bg' => '#F2F2F2', 'text' => '#191919', 'accent' => '#D5001C'])],
+                ['name' => 'Mercedes Corporate', 'slug' => 'mercedes-corporate', 'description' => 'Élégance allemande et lignes chromées.', 'colors' => json_encode(['primary' => '#000000', 'secondary' => '#1C1C1C', 'bg' => '#0A0A0A', 'card_bg' => '#141414', 'text' => '#F5F5F5', 'accent' => '#00A3E0'])],
+                ['name' => 'Rolex Prestige', 'slug' => 'rolex-prestige', 'description' => 'Luxe noir et or avec typographie d\'exception.', 'colors' => json_encode(['primary' => '#006039', 'secondary' => '#A37E2C', 'bg' => '#0C0D0E', 'card_bg' => '#151719', 'text' => '#F4E5B8', 'accent' => '#C5A059'])],
+                ['name' => 'Louis Vuitton', 'slug' => 'louis-vuitton', 'description' => 'Haute couture et prestige éditorial.', 'colors' => json_encode(['primary' => '#1A1817', 'secondary' => '#8C6239', 'bg' => '#FAF9F6', 'card_bg' => '#FFFFFF', 'text' => '#1A1817', 'accent' => '#8C6239'])],
+                ['name' => 'Hermes', 'slug' => 'hermes', 'description' => 'Luxe français avec accents orange emblématiques.', 'colors' => json_encode(['primary' => '#F37021', 'secondary' => '#2D2926', 'bg' => '#FFFDF9', 'card_bg' => '#FFFFFF', 'text' => '#2D2926', 'accent' => '#F37021'])],
+                ['name' => 'Dior', 'slug' => 'dior', 'description' => 'Éditorial épuré haute définition.', 'colors' => json_encode(['primary' => '#000000', 'secondary' => '#333333', 'bg' => '#FFFFFF', 'card_bg' => '#FAFAFA', 'text' => '#000000', 'accent' => '#000000'])],
+                ['name' => 'IBM Enterprise', 'slug' => 'ibm-enterprise', 'description' => 'B2B sérieux et grille d\'ingénierie IBM.', 'colors' => json_encode(['primary' => '#0F62FE', 'secondary' => '#161616', 'bg' => '#F4F4F4', 'card_bg' => '#FFFFFF', 'text' => '#161616', 'accent' => '#0F62FE'])],
+                ['name' => 'Microsoft Business', 'slug' => 'microsoft-business', 'description' => 'Style professionnel d\'entreprise Fluent.', 'colors' => json_encode(['primary' => '#0078D4', 'secondary' => '#107C41', 'bg' => '#F3F2F1', 'card_bg' => '#FFFFFF', 'text' => '#201F1E', 'accent' => '#0078D4'])],
+                ['name' => 'Oracle Enterprise', 'slug' => 'oracle-enterprise', 'description' => 'Grands tableaux de bord et risques d\'entreprise.', 'colors' => json_encode(['primary' => '#C74634', 'secondary' => '#312D2A', 'bg' => '#FAF8F5', 'card_bg' => '#FFFFFF', 'text' => '#312D2A', 'accent' => '#C74634'])],
+                ['name' => 'SAP Corporate', 'slug' => 'sap-corporate', 'description' => 'Architecture de données et assurances SAP.', 'colors' => json_encode(['primary' => '#0A6ED1', 'secondary' => '#1C2D42', 'bg' => '#F7F9FA', 'card_bg' => '#FFFFFF', 'text' => '#1C2D42', 'accent' => '#F0AB00'])],
+                ['name' => 'Healthcare Plus', 'slug' => 'healthcare-plus', 'description' => 'Style médical pour cliniques et médecins.', 'colors' => json_encode(['primary' => '#0284C7', 'secondary' => '#0D9488', 'bg' => '#F0F9FF', 'card_bg' => '#FFFFFF', 'text' => '#0F172A', 'accent' => '#38BDF8'])],
+                ['name' => 'Children Insurance', 'slug' => 'children-insurance', 'description' => 'Assurance éducation et protection enfants.', 'colors' => json_encode(['primary' => '#F59E0B', 'secondary' => '#10B981', 'bg' => '#FFFBEB', 'card_bg' => '#FFFFFF', 'text' => '#78350F', 'accent' => '#EC4899'])],
+                ['name' => 'Islamic Finance', 'slug' => 'islamic-finance', 'description' => 'Finance islamique et Takaful au Maroc.', 'colors' => json_encode(['primary' => '#047857', 'secondary' => '#B45309', 'bg' => '#FAFDFB', 'card_bg' => '#FFFFFF', 'text' => '#064E3B', 'accent' => '#D97706'])],
+                ['name' => 'Morocco Luxury', 'slug' => 'morocco-luxury', 'description' => 'Architecture et riads de luxe marocains.', 'colors' => json_encode(['primary' => '#9A3412', 'secondary' => '#B45309', 'bg' => '#FAFAF9', 'card_bg' => '#FFFFFF', 'text' => '#1C1917', 'accent' => '#D97706'])],
+                ['name' => 'Royal Morocco', 'slug' => 'royal-morocco', 'description' => 'Tradition marocaine prestige et artisanat.', 'colors' => json_encode(['primary' => '#854D0E', 'secondary' => '#A16207', 'bg' => '#FEFCE8', 'card_bg' => '#FFFFFF', 'text' => '#713F12', 'accent' => '#CA8A04'])],
+                ['name' => 'Glassmorphism Future', 'slug' => 'glassmorphism-future', 'description' => 'Effet verre dépoli et flou d\'arrière-plan.', 'colors' => json_encode(['primary' => '#6366F1', 'secondary' => '#818CF8', 'bg' => '#090D16', 'card_bg' => '#1E1B4B', 'text' => '#EEF2FF', 'accent' => '#38BDF8'])],
+                ['name' => 'Neo Brutalism', 'slug' => 'neo-brutalism', 'description' => 'Bordures noires nettes et ombres solides.', 'colors' => json_encode(['primary' => '#FF6B6B', 'secondary' => '#4ECDC4', 'bg' => '#FFE66D', 'card_bg' => '#FFFFFF', 'text' => '#000000', 'accent' => '#1A535C'])],
+                ['name' => 'Bento UI', 'slug' => 'bento-ui', 'description' => 'Grille Bento moderne style Apple & Framer.', 'colors' => json_encode(['primary' => '#18181B', 'secondary' => '#27272A', 'bg' => '#F4F4F5', 'card_bg' => '#FFFFFF', 'text' => '#18181B', 'accent' => '#6366F1'])],
+                ['name' => 'Material Design 3', 'slug' => 'material-design-3', 'description' => 'Standards Google Material You / Material 3.', 'colors' => json_encode(['primary' => '#6750A4', 'secondary' => '#625B71', 'bg' => '#FEF7FF', 'card_bg' => '#F3EDF7', 'text' => '#1D1B20', 'accent' => '#7D5260'])],
+                ['name' => 'Fluent Design', 'slug' => 'fluent-design', 'description' => 'Design Microsoft Fluent 2 avec ombres douces.', 'colors' => json_encode(['primary' => '#0078D4', 'secondary' => '#2B88D8', 'bg' => '#F5F5F5', 'card_bg' => '#FFFFFF', 'text' => '#242424', 'accent' => '#005A9E'])],
+                ['name' => 'Cyber Insurance', 'slug' => 'cyber-insurance', 'description' => 'Protection risques cybernétiques & piratage.', 'colors' => json_encode(['primary' => '#10B981', 'secondary' => '#065F46', 'bg' => '#022C22', 'card_bg' => '#064E3B', 'text' => '#ECFDF5', 'accent' => '#34D399'])],
+                ['name' => 'AI Insurance 2035', 'slug' => 'ai-insurance-2035', 'description' => 'Futur 2035 avec souscription algorithmique.', 'colors' => json_encode(['primary' => '#A855F7', 'secondary' => '#9333EA', 'bg' => '#0F172A', 'card_bg' => '#1E293B', 'text' => '#F8FAFC', 'accent' => '#C084FC'])],
             ];
 
             foreach ($themes as $t) {
@@ -197,7 +107,6 @@ class ThemeManager extends Component
         $this->themes = WebsiteTheme::all();
     }
 
-    // Workflow Assignment Actions
     public function openAssignModal($themeId)
     {
         $this->targetThemeId = $themeId;
@@ -252,7 +161,7 @@ class ThemeManager extends Component
         $theme = WebsiteTheme::findOrFail($id);
         $theme->update(['is_locked' => !$theme->is_locked]);
         $this->loadThemes();
-        session()->flash('message', 'Statut de verrouillage du thème mis à jour.');
+        session()->flash('message', 'Statut de verrouillage mis à jour.');
     }
 
     public function saveTheme()
@@ -286,7 +195,7 @@ class ThemeManager extends Component
 
         $this->showEditModal = false;
         $this->loadThemes();
-        session()->flash('message', 'Thème enregistré avec succès !');
+        session()->flash('message', 'Thème sauvegardé avec succès !');
     }
 
     public function confirmAssignToAgency()
@@ -303,7 +212,7 @@ class ThemeManager extends Component
         });
 
         $this->showAssignModal = false;
-        session()->flash('message', "🚀 Le thème structural '{$this->targetTheme->name}' a été appliqué et publié live sur l'agence " . ($tenant->name ?? $tenant->id));
+        session()->flash('message', "🚀 Le thème '{$this->targetTheme->name}' a été appliqué live sur l'agence " . ($tenant->name ?? $tenant->id));
     }
 
     public function render()

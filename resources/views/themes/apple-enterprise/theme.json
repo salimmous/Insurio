@@ -1,0 +1,10 @@
+{
+    "name": "Apple Enterprise",
+    "slug": "apple-enterprise",
+    "version": "3.0.0",
+    "author": "Insurio Studio",
+    "description": "Apple Human Interface layout for corporate fleets.",
+    "typography": "Inter",
+    "primary_color": "#000000",
+    "bg_color": "#FFFFFF"
+}

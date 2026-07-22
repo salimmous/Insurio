@@ -1,0 +1,10 @@
+{
+    "name": "Tesla Insurance",
+    "slug": "tesla-insurance",
+    "version": "3.0.0",
+    "author": "Insurio Studio",
+    "description": "Futuristic minimal telematics insurance layout.",
+    "typography": "Inter",
+    "primary_color": "#E82127",
+    "bg_color": "#FFFFFF"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Linear",
+    "slug": "linear",
+    "version": "3.0.0",
+    "author": "Insurio Studio",
+    "description": "Linear.app-inspired high-speed dark insurance system.",
+    "typography": "Inter",
+    "primary_color": "#5E6AD2",
+    "bg_color": "#0B0C0E"
+}

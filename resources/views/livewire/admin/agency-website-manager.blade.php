@@ -1,194 +1,185 @@
-<div class="p-6 space-y-6 font-sans">
+<div class="p-8 max-w-[1600px] mx-auto space-y-6 font-sans">
     @if (session()->has('message'))
-        <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 p-4 rounded-xl text-xs font-bold">
-            {{ session('message') }}
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-xs font-bold flex items-center justify-between shadow-xs">
+            <span>{{ session('message') }}</span>
+            <button class="text-emerald-500 hover:text-emerald-900 font-bold" @click="$el.parentElement.remove()">✕</button>
         </div>
     @endif
 
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-5">
         <div>
-            <div class="flex items-center gap-2">
-                <h1 class="text-2xl font-black text-slate-900">Gestionnaire du Site Web Agence</h1>
-                <span class="px-2.5 py-1 bg-slate-900 text-teal-400 font-extrabold text-[10px] rounded-full uppercase border border-slate-800">
-                    Thème Actif: {{ $activeTheme->name ?? 'Corporate' }} (🔒 Verrouillé par Super Admin)
-                </span>
-            </div>
-            <p class="text-xs text-slate-500 mt-1">Personnalisez votre contenu, vos coordonnées et votre SEO sans altérer la charte graphique.</p>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight">CMS Editeur du Site Web de l'Agence</h1>
+            <p class="text-xs text-slate-500 mt-1">Personnalisez l'identité, les textes, contacts et le référencement SEO de votre agence en temps réel sans coder.</p>
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="/" target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs px-4 py-2.5 rounded-xl transition">
-                🌐 Voir le Site Live
-            </a>
-            <button wire:click="saveContent" class="bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-lg transition">
-                💾 Sauvegarder Modif.
+            <button wire:click="saveContent" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-md transition">
+                💾 Sauvegarder & Publier
             </button>
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="flex border-b border-slate-200 gap-6 text-xs font-bold">
-        <button wire:click="$set('activeTab', 'content')" class="pb-3 border-b-2 {{ $activeTab === 'content' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-400 hover:text-slate-700' }}">
-            📝 Textes & Accroches
-        </button>
-        <button wire:click="$set('activeTab', 'contact')" class="pb-3 border-b-2 {{ $activeTab === 'contact' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-400 hover:text-slate-700' }}">
-            📞 Coordonnées & Horaires
-        </button>
-        <button wire:click="$set('activeTab', 'seo')" class="pb-3 border-b-2 {{ $activeTab === 'seo' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-400 hover:text-slate-700' }}">
-            🔍 SEO & Réseaux Sociaux
-        </button>
-        <button wire:click="$set('activeTab', 'domain')" class="pb-3 border-b-2 {{ $activeTab === 'domain' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-400 hover:text-slate-700' }}">
-            🌐 Domaine Personnalisé
-        </button>
-    </div>
+    <!-- Main 2-Column Split: Config Controls (Left) vs Live Interactive Preview (Right) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Panel: Settings Tabs & Inputs -->
+        <div class="lg:col-span-5 space-y-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+            
+            <!-- Navigation Tabs -->
+            <div class="flex border-b border-slate-200 text-xs font-bold gap-4 overflow-x-auto pb-2">
+                <button wire:click="$set('activeTab', 'general')" class="pb-2 transition {{ $activeTab === 'general' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-500 hover:text-slate-900' }}">
+                    Marque & Nom
+                </button>
+                <button wire:click="$set('activeTab', 'hero')" class="pb-2 transition {{ $activeTab === 'hero' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-500 hover:text-slate-900' }}">
+                    Hero & Textes
+                </button>
+                <button wire:click="$set('activeTab', 'contact')" class="pb-2 transition {{ $activeTab === 'contact' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-500 hover:text-slate-900' }}">
+                    Contact & Carte
+                </button>
+                <button wire:click="$set('activeTab', 'social')" class="pb-2 transition {{ $activeTab === 'social' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-500 hover:text-slate-900' }}">
+                    Réseaux
+                </button>
+                <button wire:click="$set('activeTab', 'seo')" class="pb-2 transition {{ $activeTab === 'seo' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-slate-500 hover:text-slate-900' }}">
+                    SEO & Analytics
+                </button>
+            </div>
 
-    <!-- Tab Contents -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Form Side -->
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-            @if($activeTab === 'content')
-                <h2 class="text-xs font-black uppercase text-slate-800 tracking-wider">Page d'Accueil (Hero Section)</h2>
-                
-                <div class="space-y-3 text-xs">
+            <!-- Tab 1: General Brand -->
+            @if($activeTab === 'general')
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nom de l'Agence</label>
+                    <input type="text" wire:model.live="agency_name" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">URL du Logo (PNG / SVG)</label>
+                    <input type="text" wire:model.live="logo_url" placeholder="https://..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">URL Favicon</label>
+                    <input type="text" wire:model.live="favicon_url" placeholder="https://..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+            </div>
+
+            <!-- Tab 2: Hero & Textes -->
+            @elseif($activeTab === 'hero')
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Titre Hero (Français 🇫🇷)</label>
+                    <input type="text" wire:model.live="hero_title" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Sous-titre Hero (Français 🇫🇷)</label>
+                    <textarea wire:model.live="hero_subtitle" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"></textarea>
+                </div>
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block font-bold text-slate-700 mb-1">Titre Hero (Arabe 🇲🇦)</label>
+                    <input type="text" wire:model.live="hero_title_ar" dir="rtl" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Sous-titre Hero (Arabe 🇲🇦)</label>
+                    <textarea wire:model.live="hero_subtitle_ar" dir="rtl" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Badge d'En-tête</label>
-                        <input type="text" wire:model="badge_text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
+                        <label class="block font-bold text-slate-700 mb-1">Bouton Principal</label>
+                        <input type="text" wire:model.live="cta_primary_text" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
                     </div>
-
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Titre Principal (Hero Title)</label>
-                        <input type="text" wire:model="hero_title" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold">
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Sous-Titre Explicatif</label>
-                        <textarea wire:model="hero_subtitle" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800"></textarea>
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-100 space-y-3">
-                        <h2 class="text-xs font-black uppercase text-slate-800 tracking-wider">À Propos de l'Agence</h2>
-                        <div>
-                            <label class="block font-bold text-slate-600 mb-1">Titre Section À Propos</label>
-                            <input type="text" wire:model="about_title" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-600 mb-1">Texte Présentation</label>
-                            <textarea wire:model="about_text" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800"></textarea>
-                        </div>
+                        <label class="block font-bold text-slate-700 mb-1">Bouton Secondaire</label>
+                        <input type="text" wire:model.live="cta_secondary_text" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
                     </div>
                 </div>
+            </div>
 
+            <!-- Tab 3: Contact & Location -->
             @elseif($activeTab === 'contact')
-                <h2 class="text-xs font-black uppercase text-slate-800 tracking-wider">Coordonnées de l'Agence</h2>
-                
-                <div class="grid grid-cols-2 gap-4 text-xs">
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Téléphone Agence</label>
-                        <input type="text" wire:model="phone" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-mono">
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Numéro WhatsApp Direct</label>
-                        <input type="text" wire:model="whatsapp" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-mono">
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Email Officiel</label>
-                        <input type="email" wire:model="email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Horaires d'Ouverture</label>
-                        <input type="text" wire:model="opening_hours" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
-                    </div>
-
-                    <div class="col-span-2">
-                        <label class="block font-bold text-slate-600 mb-1">Adresse Physique</label>
-                        <input type="text" wire:model="address" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
-                    </div>
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Téléphone Fixe</label>
+                    <input type="text" wire:model.live="phone" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">WhatsApp GSM Direct</label>
+                    <input type="text" wire:model.live="whatsapp" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Email Officiel</label>
+                    <input type="email" wire:model.live="email" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Adresse Physique</label>
+                    <textarea wire:model.live="address" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"></textarea>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Heures d'Ouverture</label>
+                    <input type="text" wire:model.live="opening_hours" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+            </div>
 
+            <!-- Tab 4: Social Media -->
+            @elseif($activeTab === 'social')
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Page Facebook</label>
+                    <input type="text" wire:model.live="facebook" placeholder="https://facebook.com/..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Compte Instagram</label>
+                    <input type="text" wire:model.live="instagram" placeholder="https://instagram.com/..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Profil LinkedIn</label>
+                    <input type="text" wire:model.live="linkedin" placeholder="https://linkedin.com/..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Compte TikTok</label>
+                    <input type="text" wire:model.live="tiktok" placeholder="https://tiktok.com/..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+            </div>
+
+            <!-- Tab 5: SEO & Analytics -->
             @elseif($activeTab === 'seo')
-                <h2 class="text-xs font-black uppercase text-slate-800 tracking-wider">Référencement Naturel (SEO) & Pixels</h2>
-                
-                <div class="space-y-3 text-xs">
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Meta Title (Balise Titre)</label>
-                        <input type="text" wire:model="meta_title" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Meta Description</label>
-                        <textarea wire:model="meta_description" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Mots Clés (Keywords)</label>
-                        <input type="text" wire:model="keywords" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">
-                        <div>
-                            <label class="block font-bold text-slate-600 mb-1">Lien Facebook</label>
-                            <input type="text" wire:model="facebook" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-600 mb-1">Lien Instagram</label>
-                            <input type="text" wire:model="instagram" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
-                        </div>
-                    </div>
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Meta Méta Titre (Google)</label>
+                    <input type="text" wire:model.live="meta_title" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
-
-            @elseif($activeTab === 'domain')
-                <h2 class="text-xs font-black uppercase text-slate-800 tracking-wider">Nom de Domaine Personnalisé</h2>
-                
-                <div class="space-y-3 text-xs">
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Domaine Personnalisé (ex: agence-assurance.ma)</label>
-                        <input type="text" wire:model="custom_domain" placeholder="ex: assurance-casablanca.ma" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-mono">
-                    </div>
-
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-600 space-y-2">
-                        <span class="font-bold text-slate-900 block">Instructions CNAME / DNS:</span>
-                        <p class="text-[11px]">Pointez l'enregistrement A de votre registrar (Maroc Telecom / NTC / Gandi) vers IP: <code class="font-mono text-teal-600 font-bold">185.220.100.15</code></p>
-                    </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Méta Description</label>
+                    <textarea wire:model.live="meta_description" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"></textarea>
                 </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">ID Google Analytics (G-XXXXXXX)</label>
+                    <input type="text" wire:model.live="google_analytics" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="font-bold text-slate-700">Activer Bandeau Cookies</span>
+                    <input type="checkbox" wire:model.live="cookie_banner_enabled" class="w-4 h-4 rounded text-indigo-600">
+                </div>
+            </div>
             @endif
+
         </div>
 
-        <!-- Live Preview Phone Frame -->
-        <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 space-y-4 text-white shadow-2xl flex flex-col justify-between">
-            <div class="space-y-3">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <span class="text-[10px] font-extrabold uppercase text-teal-400 tracking-widest">Aperçu Dynamique (Live)</span>
-                    <span class="text-[9px] text-slate-500 font-mono">Theme: {{ $activeTheme->slug ?? 'default' }}</span>
+        <!-- Right Panel: Real-Time Live Website Preview Frame -->
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-4 shadow-xs flex flex-col h-[750px]">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    <span class="text-xs font-bold text-slate-500 ml-2">Prévisualisation En Direct (Live Preview)</span>
                 </div>
-
-                <!-- Simulated Phone Card -->
-                <div class="rounded-2xl p-4 space-y-3 border" style="background-color: {{ $activeTheme->colors['bg'] ?? '#0F172A' }}; border-color: {{ $activeTheme->colors['primary'] ?? '#1E40AF' }}">
-                    <span class="px-2 py-0.5 text-[8px] font-bold rounded-full text-slate-950" style="background-color: {{ $activeTheme->colors['accent'] ?? '#38BDF8' }}">
-                        {{ $badge_text ?: 'Assurance' }}
-                    </span>
-
-                    <h3 class="text-sm font-black text-white leading-tight">
-                        {{ $hero_title ?: 'Titre d\'accroche' }}
-                    </h3>
-
-                    <p class="text-[10px] text-slate-400 line-clamp-2">
-                        {{ $hero_subtitle ?: 'Description sous-titre' }}
-                    </p>
-
-                    <div class="pt-2 flex gap-2">
-                        <span class="text-[9px] font-bold px-3 py-1 rounded-lg text-white" style="background-color: {{ $activeTheme->colors['primary'] ?? '#1E40AF' }}">
-                            Devis Gratuit
-                        </span>
-                    </div>
-                </div>
+                <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+                    Thème Actif: {{ $activeTheme->name ?? 'Corporate Blue' }}
+                </span>
             </div>
 
-            <div class="text-center text-[10px] text-slate-500 pt-4 border-t border-slate-800">
-                Garantie 100% conformité charte graphique Super Admin.
+            <div class="flex-1 w-full h-full rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                <iframe src="/" class="w-full h-full border-0"></iframe>
             </div>
         </div>
+
     </div>
 </div>

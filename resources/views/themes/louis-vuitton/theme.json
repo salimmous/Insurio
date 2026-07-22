@@ -1,0 +1,10 @@
+{
+    "name": "Louis Vuitton",
+    "slug": "louis-vuitton",
+    "version": "3.0.0",
+    "author": "Insurio Studio",
+    "description": "French high-luxury editorial insurance theme.",
+    "typography": "Cinzel",
+    "primary_color": "#8C6239",
+    "bg_color": "#FAF9F6"
+}
