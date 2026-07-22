@@ -94,6 +94,7 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/payments', \App\Livewire\Admin\PaymentManager::class)->name('admin.payments')->middleware('can:payments.manage');
         Route::get('/admin/payments-center', \App\Livewire\Admin\PaymentCenter::class)->name('admin.payments.center')->middleware('can:clients.view');
         Route::get('/admin/payments-center/{id}', \App\Livewire\Admin\PaymentWorkspace::class)->name('admin.payments.workspace')->middleware('can:clients.view');
+        Route::get('/admin/cloture-caisse', \App\Livewire\Admin\ClotureCaisse::class)->name('admin.cloture-caisse')->middleware('can:clients.view');
         Route::get('/admin/vault', \App\Livewire\Admin\DocumentVault::class)->name('admin.vault')->middleware('can:clients.view');
         Route::get('/admin/agenda', \App\Livewire\Admin\AgendaCenter::class)->name('admin.agenda')->middleware('can:clients.view');
         Route::get('/admin/communications', \App\Livewire\Admin\CommunicationCenter::class)->name('admin.communications')->middleware('can:clients.view');
