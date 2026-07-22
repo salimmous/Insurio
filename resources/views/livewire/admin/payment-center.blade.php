@@ -1,578 +1,408 @@
 <div class="p-6 space-y-6 font-sans">
-    <div>
-
-        <!-- HEADER & AI ASSISTANT -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-            <div>
-                <h1 class="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
-                    <span class="text-indigo-600">💸</span> Centre de Règlements & Opérations
-                </h1>
-                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mt-1">Tenant Financial Operations Workspace</p>
+    <!-- Header Title -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-2">
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Grand Livre & Gestion de la Trésorerie</h1>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    BANKING ERP LEDGER v3.0
+                </span>
             </div>
-            
-            <div class="flex gap-2 w-full md:w-auto">
-                <button wire:click="$toggle('showAiAssistant')" class="flex items-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition-all border border-indigo-200/40">
-                    ⚡ AI Co-pilot
-                </button>
-                <button wire:click="openCreatePayment" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-indigo-900/10">
-                    + Enregistrer Règlement
-                </button>
-            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Suivi inaltérable de chaque dirham, traçabilité des opérations, caisses et chèques marocains.</p>
         </div>
 
-        <!-- AI Assistant Panel -->
-        @if($showAiAssistant)
-            <div class="bg-indigo-950 text-indigo-100 p-6 rounded-2xl border border-indigo-900 shadow-xl space-y-4 animate-fade-in">
-                <div class="flex justify-between items-start border-b border-indigo-900/50 pb-3">
-                    <h3 class="text-sm font-extrabold uppercase tracking-wider text-teal-400 flex items-center gap-2">
-                        🧠 Insurio Financial Intelligence
-                    </h3>
-                    <button wire:click="$set('showAiAssistant', false)" class="text-indigo-400 hover:text-white text-xs">Fermer</button>
-                </div>
-                <div class="text-xs font-medium leading-relaxed font-mono whitespace-pre-line">
-                    {!! $aiSummary !!}
-                </div>
-            </div>
-        @endif
-
-        <!-- TOP METRICS / TELEMETRY (Stripe Dashboard Style) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Metric 1: Today's Revenue -->
-            <div class="bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 shadow-sm relative overflow-hidden">
-                <div class="absolute right-0 top-0 h-24 w-24 bg-indigo-650 opacity-10 rounded-full blur-xl"></div>
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-300">Revenue du Jour</span>
-                <div class="text-2xl font-black mt-2">{{ number_format($kpis['today_revenue'], 2) }} DH</div>
-                <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-3 font-mono">
-                    <span class="bg-slate-800 px-1.5 py-0.5 rounded text-teal-400 font-bold">Espèces: {{ number_format($kpis['cash_today'], 2) }}</span>
-                    <span class="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300 font-bold">Bancaire: {{ number_format($kpis['bank_today'] + $kpis['cheque_today'], 2) }}</span>
-                </div>
-            </div>
-
-            <!-- Metric 2: Monthly Telemetry -->
-            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Ce Mois / Cette Année</span>
-                <div class="text-2xl font-black mt-2 text-slate-800">{{ number_format($kpis['monthly_revenue'], 2) }} DH</div>
-                <div class="text-[10px] font-bold text-slate-450 mt-3 flex justify-between">
-                    <span>Année (YTD):</span>
-                    <span class="font-extrabold text-slate-700">{{ number_format($kpis['yearly_revenue'], 2) }} DH</span>
-                </div>
-            </div>
-
-            <!-- Metric 3: Outstanding / Unpaid Balance -->
-            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Encours Total Agence</span>
-                <div class="text-2xl font-black mt-2 text-rose-600">{{ number_format($kpis['outstanding_balance'], 2) }} DH</div>
-                <div class="text-[10px] font-bold text-slate-450 mt-3 flex justify-between">
-                    <span>Règlements en attente:</span>
-                    <span class="font-extrabold text-slate-700">{{ $kpis['pending_count'] }} fiches</span>
-                </div>
-            </div>
-
-            <!-- Metric 4: Cheques Status -->
-            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Incidents de Chèques</span>
-                <div class="text-2xl font-black mt-2 text-amber-600">{{ $kpis['returned_count'] }} Chèques</div>
-                <div class="text-[10px] font-bold text-slate-450 mt-3 flex justify-between">
-                    <span>Statut :</span>
-                    <span class="font-extrabold text-amber-700 uppercase">retours impayés</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- MAIN WORKSPACE NAVIGATION TABS -->
-        <div class="bg-white p-1 rounded-xl border border-gray-200 shadow-sm flex overflow-x-auto scrollbar-none gap-1">
-            <button wire:click="$set('activeTab', 'payments')" class="flex-shrink-0 px-4 py-2 text-xs font-bold rounded-lg transition-all {{ $activeTab === 'payments' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50' }}">
-                💳 Règlements ({{ $payments->total() }})
-            </button>
-            <button wire:click="$set('activeTab', 'installments')" class="flex-shrink-0 px-4 py-2 text-xs font-bold rounded-lg transition-all {{ $activeTab === 'installments' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50' }}">
-                🗓️ Échéanciers Center
-            </button>
-            <button wire:click="$set('activeTab', 'cheques')" class="flex-shrink-0 px-4 py-2 text-xs font-bold rounded-lg transition-all {{ $activeTab === 'cheques' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50' }}">
-                🏦 Cheque Center
-            </button>
-            <button wire:click="$set('activeTab', 'reconciliation')" class="flex-shrink-0 px-4 py-2 text-xs font-bold rounded-lg transition-all {{ $activeTab === 'reconciliation' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50' }}">
-                🤝 Rapprochements Bancaires
-            </button>
-            <button wire:click="$set('activeTab', 'accounting')" class="flex-shrink-0 px-4 py-2 text-xs font-bold rounded-lg transition-all {{ $activeTab === 'accounting' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50' }}">
-                📊 Comptabilité & Performance
+        <div class="flex items-center gap-3">
+            <button wire:click="openCreateModal" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition">
+                ⚡ Nouvelles Entrée au Grand Livre
             </button>
         </div>
-
-        <!-- TAB CONTENTS -->
-        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm min-h-[500px]">
-
-            <!-- TAB 1: PAYMENTS LIST -->
-            @if($activeTab === 'payments')
-                <div class="space-y-4">
-                    <!-- Filters Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                        <div class="lg:col-span-2">
-                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher réglement, client, contrat..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-1.5 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                        </div>
-                        <div>
-                            <select wire:model.live="filterStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-600 focus:outline-none">
-                                <option value="">Tous les statuts</option>
-                                <option value="draft">Brouillon</option>
-                                <option value="pending">En attente</option>
-                                <option value="paid">Payé</option>
-                                <option value="overdue">En retard</option>
-                                <option value="returned">Chèque retourné</option>
-                            </select>
-                        </div>
-                        <div>
-                            <select wire:model.live="filterMethod" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-600 focus:outline-none">
-                                <option value="">Tous les modes</option>
-                                <option value="cash">Espèces</option>
-                                <option value="cheque">Chèque</option>
-                                <option value="bank_transfer">Virement</option>
-                                <option value="credit_card">Carte bancaire</option>
-                            </select>
-                        </div>
-                        <div>
-                            <select wire:model.live="filterBranch" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-600 focus:outline-none">
-                                <option value="">Toutes les succursales</option>
-                                @foreach($branches as $b)
-                                    <option value="{{ $b->id }}">{{ $b->nom }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <select wire:model.live="filterCompany" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-600 focus:outline-none">
-                                <option value="">Toutes les compagnies</option>
-                                @foreach($companies as $c)
-                                    <option value="{{ $c->id }}">{{ $c->nom }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Payments Table -->
-                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
-                        <table class="min-w-full divide-y divide-gray-200 text-left text-xs font-medium text-slate-600">
-                            <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-extrabold text-[10px]">
-                                <tr>
-                                    <th class="px-6 py-4">Règlement</th>
-                                    <th class="px-6 py-4">Client / Contrat</th>
-                                    <th class="px-6 py-4">Succursale</th>
-                                    <th class="px-6 py-4">Montant</th>
-                                    <th class="px-6 py-4">Mode</th>
-                                    <th class="px-6 py-4">Statut</th>
-                                    <th class="px-6 py-4">Échéance</th>
-                                    <th class="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
-                                @forelse($payments as $p)
-                                    <tr class="hover:bg-slate-50/50 transition-all">
-                                        <td class="px-6 py-4 font-mono font-bold text-slate-800">
-                                            <a href="{{ route('admin.payments.workspace', $p->id) }}" class="text-indigo-650 hover:underline">
-                                                {{ $p->payment_number }}
-                                            </a>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span class="block font-bold text-slate-700">{{ $p->client->nom_complet ?? '-' }}</span>
-                                            <span class="block text-[10px] text-slate-400 font-mono">{{ $p->contract->contract_number ?? '-' }}</span>
-                                        </td>
-                                        <td class="px-6 py-4">{{ $p->branch->nom ?? '-' }}</td>
-                                        <td class="px-6 py-4">
-                                            <span class="block font-extrabold text-slate-800">{{ number_format($p->amount, 2) }} {{ $p->currency }}</span>
-                                            @if($p->paid_amount > 0)
-                                                <span class="block text-[10px] text-emerald-600">Payé: {{ number_format($p->paid_amount, 2) }}</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 uppercase font-bold text-slate-500">{{ $p->payment_method }}</td>
-                                        <td class="px-6 py-4">
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase 
-                                                {{ $p->payment_status === 'paid' ? 'bg-emerald-100 text-emerald-800' : '' }}
-                                                {{ $p->payment_status === 'pending' ? 'bg-amber-100 text-amber-800' : '' }}
-                                                {{ $p->payment_status === 'overdue' ? 'bg-rose-100 text-rose-800' : '' }}
-                                                {{ $p->payment_status === 'returned' ? 'bg-red-100 text-red-800' : '' }}
-                                                {{ $p->payment_status === 'deposited' ? 'bg-indigo-100 text-indigo-800' : '' }}
-                                            ">
-                                                {{ $p->payment_status }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 font-mono">{{ $p->due_date ? $p->due_date->format('d/m/Y') : '-' }}</td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex justify-end gap-2">
-                                                <a href="{{ route('admin.payments.workspace', $p->id) }}" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-[10px] font-extrabold transition-all">Consulter</a>
-                                                @if(in_array($p->payment_status, ['pending', 'draft']))
-                                                    <button wire:click="openReconcile({{ $p->id }})" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded text-[10px] font-extrabold transition-all">Rapprocher</button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center py-8 text-slate-400">Aucun règlement enregistré.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    {{ $payments->links() }}
-                </div>
-            @endif
-
-            <!-- TAB 2: INSTALLMENTS CENTER -->
-            @if($activeTab === 'installments')
-                <div class="space-y-4">
-                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2 mb-4">Échéanciers & Plans de Financement</h2>
-                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
-                        <table class="min-w-full divide-y divide-gray-200 text-left text-xs font-medium text-slate-600">
-                            <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-extrabold text-[10px]">
-                                <tr>
-                                    <th class="px-6 py-4">ID Échéance</th>
-                                    <th class="px-6 py-4">Client / Contrat</th>
-                                    <th class="px-6 py-4">Montant Échéance</th>
-                                    <th class="px-6 py-4">Date Limite</th>
-                                    <th class="px-6 py-4">Statut</th>
-                                    <th class="px-6 py-4">Reçu Paiement</th>
-                                    <th class="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
-                                @forelse($installments as $inst)
-                                    <tr class="hover:bg-slate-50/50 transition-all">
-                                        <td class="px-6 py-4 font-mono font-bold text-slate-700">#{{ $inst->id }}</td>
-                                        <td class="px-6 py-4">
-                                            <span class="block font-bold text-slate-700">{{ $inst->payment->client->nom_complet ?? '-' }}</span>
-                                            <span class="block text-[10px] text-slate-400 font-mono">{{ $inst->payment->contract->contract_number ?? '-' }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 font-extrabold text-slate-800">{{ number_format($inst->amount, 2) }} DH</td>
-                                        <td class="px-6 py-4 font-mono">{{ $inst->due_date->format('d/m/Y') }}</td>
-                                        <td class="px-6 py-4">
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase
-                                                {{ $inst->status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}
-                                            ">
-                                                {{ $inst->status }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 font-mono text-slate-450">{{ $inst->receipt_number ?: '-' }}</td>
-                                        <td class="px-6 py-4 text-right">
-                                            @if($inst->status !== 'paid')
-                                                <button wire:click="recordInstallmentPayment({{ $inst->id }})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-extrabold transition-all">Acquitter</button>
-                                            @else
-                                                <span class="text-slate-400 font-bold text-[10px] uppercase">Régularisé</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center py-8 text-slate-400">Aucun échéancier trouvé.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    {{ $installments->links() }}
-                </div>
-            @endif
-
-            <!-- TAB 3: CHEQUE CENTER -->
-            @if($activeTab === 'cheques')
-                <div class="space-y-6">
-                    <div class="flex justify-between items-center border-b pb-4">
-                        <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Cheque Management Desk</h2>
-                        <div class="flex gap-2">
-                            @foreach(['waiting' => 'En Attente', 'deposited' => 'Déposés', 'paid' => 'Encaissés', 'returned' => 'Rejetés'] as $k => $lbl)
-                                <button wire:click="$set('chequeStatusFilter', '{{ $k }}')" class="px-3 py-1.5 text-xs font-extrabold rounded-lg transition-all {{ $chequeStatusFilter === $k ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-                                    {{ $lbl }}
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- Cheques Table -->
-                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
-                        <table class="min-w-full divide-y divide-gray-200 text-left text-xs font-medium text-slate-600">
-                            <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-extrabold text-[10px]">
-                                <tr>
-                                    <th class="px-6 py-4">N° Chèque</th>
-                                    <th class="px-6 py-4">Banque / Émetteur</th>
-                                    <th class="px-6 py-4">Montant</th>
-                                    <th class="px-6 py-4">Échéance Chèque</th>
-                                    <th class="px-6 py-4">Date Dépôt</th>
-                                    <th class="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
-                                @forelse($cheques as $c)
-                                    <tr class="hover:bg-slate-50/50 transition-all">
-                                        <td class="px-6 py-4 font-mono font-bold text-slate-800">{{ $c->cheque_number }}</td>
-                                        <td class="px-6 py-4">
-                                            <span class="block font-bold text-slate-700">{{ $c->bank_name }}</span>
-                                            <span class="block text-[10px] text-slate-400">{{ $c->client->nom_complet }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 font-extrabold text-slate-800">{{ number_format($c->amount, 2) }} DH</td>
-                                        <td class="px-6 py-4 font-mono">{{ $c->cheque_issue_date ? $c->cheque_issue_date->format('d/m/Y') : '-' }}</td>
-                                        <td class="px-6 py-4 font-mono text-slate-500">{{ $c->cheque_deposit_date ? $c->cheque_deposit_date->format('d/m/Y') : 'Non déposé' }}</td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex justify-end gap-1.5">
-                                                @if($c->payment_status === 'pending' || $c->payment_status === 'waiting')
-                                                    <button wire:click="updateChequeStatus({{ $c->id }}, 'deposited')" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-[10px] font-extrabold transition-all">Déposer</button>
-                                                @endif
-                                                @if($c->payment_status === 'deposited')
-                                                    <button wire:click="updateChequeStatus({{ $c->id }}, 'paid')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded text-[10px] font-extrabold transition-all">Encaisser</button>
-                                                    <button wire:click="updateChequeStatus({{ $c->id }}, 'returned')" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-[10px] font-extrabold transition-all">Rejeter / Impayé</button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center py-8 text-slate-400">Aucun chèque dans cette catégorie.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    {{ $cheques->links() }}
-                </div>
-            @endif
-
-            <!-- TAB 4: BANK RECONCILIATION -->
-            @if($activeTab === 'reconciliation')
-                <div class="space-y-6">
-                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2 mb-4">Rapprochement Bancaire (Reconciliation Desk)</h2>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Left: List of payments to match -->
-                        <div class="lg:col-span-2 space-y-4">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Transactions non rapprochées</h3>
-                            <div class="overflow-x-auto border border-gray-200 rounded-xl bg-slate-50/50 p-2">
-                                <table class="min-w-full divide-y divide-gray-200 text-left text-xs text-slate-600">
-                                    <thead class="text-slate-500 font-extrabold text-[9px] uppercase">
-                                        <tr>
-                                            <th class="px-4 py-3">Règlement</th>
-                                            <th class="px-4 py-3">Client</th>
-                                            <th class="px-4 py-3">Montant</th>
-                                            <th class="px-4 py-3">Mode</th>
-                                            <th class="px-4 py-3 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200 bg-white">
-                                        @forelse($unreconciled as $up)
-                                            <tr>
-                                                <td class="px-4 py-3 font-mono font-bold text-indigo-700">{{ $up->payment_number }}</td>
-                                                <td class="px-4 py-3">{{ $up->client->nom_complet }}</td>
-                                                <td class="px-4 py-3 font-extrabold text-slate-800">{{ number_format($up->amount, 2) }} DH</td>
-                                                <td class="px-4 py-3 uppercase font-bold text-[10px] text-slate-500">{{ $up->payment_method }}</td>
-                                                <td class="px-4 py-3 text-right">
-                                                    <button wire:click="openReconcile({{ $up->id }})" class="px-2 py-1 bg-slate-900 text-white rounded text-[10px] font-bold hover:bg-slate-800 transition-all">Match</button>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="5" class="text-center py-4 text-slate-400">Toutes les transactions ont été rapprochées !</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Right: Reconciled History -->
-                        <div class="space-y-4">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Derniers Rapprochements</h3>
-                            <div class="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-                                @forelse($reconciled as $rec)
-                                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-xs space-y-2">
-                                        <div class="flex justify-between font-bold">
-                                            <span class="text-slate-800 font-mono">{{ $rec->payment->payment_number }}</span>
-                                            <span class="text-emerald-600">Matched</span>
-                                        </div>
-                                        <p class="text-[10px] text-slate-450 font-semibold uppercase">Réf Banque: {{ $rec->reference }}</p>
-                                        <div class="text-[10px] text-slate-500 flex justify-between">
-                                            <span>Date: {{ $rec->deposit_date->format('d/m/Y') }}</span>
-                                            @if($rec->difference > 0)
-                                                <span class="text-rose-600 font-bold">Écart: {{ number_format($rec->difference, 2) }} DH</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="text-center text-slate-450 italic py-6">Aucun rapprochement enregistré.</div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            <!-- TAB 5: ACCOUNTING AND TELEMETRY -->
-            @if($activeTab === 'accounting')
-                <div class="space-y-6">
-                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2 mb-4">Comptabilité & Ventilation des Revenus</h2>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Revenue by Payment Method -->
-                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                            <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-4">Mode de Règlement (Répartition)</h3>
-                            <div class="space-y-3">
-                                @foreach($methodChart as $mc)
-                                    <div class="space-y-1">
-                                        <div class="flex justify-between text-xs font-bold text-slate-700">
-                                            <span class="uppercase">{{ $mc->payment_method }}</span>
-                                            <span>{{ number_format($mc->total, 2) }} DH</span>
-                                        </div>
-                                        <div class="w-full bg-slate-200 rounded-full h-1.5">
-                                            <div class="bg-indigo-600 h-1.5 rounded-full" style="width: 60%"></div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <!-- Revenue by Insurer -->
-                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                            <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-4">Compagnies d'Assurances (Vol. Affaires)</h3>
-                            <div class="space-y-3">
-                                @foreach($companyChart as $cc)
-                                    <div class="space-y-1">
-                                        <div class="flex justify-between text-xs font-bold text-slate-700">
-                                            <span>{{ $cc->company->nom ?? 'Compagnie Inconnue' }}</span>
-                                            <span>{{ number_format($cc->total, 2) }} DH</span>
-                                        </div>
-                                        <div class="w-full bg-slate-200 rounded-full h-1.5">
-                                            <div class="bg-teal-500 h-1.5 rounded-full" style="width: 45%"></div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-        </div>
-
     </div>
 
-    <!-- CREATE PAYMENT MODAL -->
-    @if($showCreateModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-xl w-full max-w-lg p-6 space-y-4 animate-scale-up">
-                <div class="flex justify-between items-center border-b pb-3">
-                    <h2 class="text-base font-extrabold text-slate-800">Enregistrer un Règlement</h2>
-                    <button wire:click="$set('showCreateModal', false)" class="text-slate-400 hover:text-slate-700 text-sm">✕</button>
+    <!-- High-Density Financial KPI Banner -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Recettes du Jour</span>
+                <span class="text-2xl font-black text-emerald-600">+{{ number_format($todayRevenue, 2) }} DH</span>
+                <span class="text-[10px] text-slate-400 block">Dépenses: {{ number_format($todayExpenses, 2) }} DH</span>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">💵</div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Solde Caisses Agence</span>
+                <span class="text-2xl font-black text-slate-900">{{ number_format($cashBalance, 2) }} DH</span>
+                <span class="text-[10px] text-slate-400 block">Caisse Principale Ouverte</span>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">🏦</div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Comptes Bancaires</span>
+                <span class="text-2xl font-black text-blue-600">{{ number_format($bankBalance, 2) }} DH</span>
+                <span class="text-[10px] text-slate-400 block">Attijariwafa, BCP, BMCE</span>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">🏛️</div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Chèques en Portefeuille</span>
+                <span class="text-2xl font-black text-amber-600">{{ number_format($pendingChequesSum, 2) }} DH</span>
+                <span class="text-[10px] text-slate-400 block">{{ $pendingChequesCount }} chèques à déposer</span>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">📜</div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex border-b border-slate-200 text-xs font-bold gap-6 overflow-x-auto pb-2">
+        <button wire:click="$set('activeTab', 'ledger')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'ledger' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <span>📖 Grand Livre Comptable</span>
+        </button>
+        <button wire:click="$set('activeTab', 'cheques')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'cheques' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <span>📜 Chèques Marocains</span>
+            @if($pendingChequesCount > 0)
+                <span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-mono">{{ $pendingChequesCount }}</span>
+            @endif
+        </button>
+        <button wire:click="$set('activeTab', 'caisses')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'caisses' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <span>💰 Caisses & Coffres</span>
+        </button>
+        <button wire:click="$set('activeTab', 'banks')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'banks' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <span>🏛️ Comptes Bancaires & RIB</span>
+        </button>
+        <button wire:click="$set('activeTab', 'approvals')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'approvals' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <span>🛡️ Double Validation</span>
+            @if($pendingApprovalsCount > 0)
+                <span class="bg-rose-100 text-rose-800 text-[10px] px-2 py-0.5 rounded-full font-mono animate-pulse">{{ $pendingApprovalsCount }}</span>
+            @endif
+        </button>
+        <button wire:click="$set('activeTab', 'audit')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'audit' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <span>🕵️ Logs d'Audit Inaltérables</span>
+        </button>
+    </div>
+
+    <!-- TAB 1: GRAND LIVRE COMPTABLE -->
+    @if($activeTab === 'ledger')
+        <div class="space-y-4">
+            <!-- Search & Filters -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <input type="text" wire:model.live="search" placeholder="Rechercher par Transaction ID (TRX-...), N° Reçu, Client, CIN..." class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
-                
-                <form wire:submit.prevent="createPayment" class="space-y-4 text-xs font-semibold text-slate-700">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-slate-500 mb-1">Client</label>
-                            <select wire:model.live="client_id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-                                <option value="">Séléctionner le client</option>
-                                @foreach($clients as $cl)
-                                    <option value="{{ $cl->id }}">{{ $cl->nom_complet }}</option>
-                                @endforeach
-                            </select>
-                            @error('client_id') <span class="text-red-500">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-slate-500 mb-1">Contrat</label>
-                            <select wire:model.live="contract_id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-                                <option value="">Séléctionner le contrat</option>
-                                @foreach($contracts as $co)
-                                    @if(empty($client_id) || $co->client_id == $client_id)
-                                        <option value="{{ $co->id }}">{{ $co->contract_number }} ({{ $co->compagnie->nom ?? '' }})</option>
+                <div class="w-48">
+                    <select wire:model.live="filterEntryType" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold">
+                        <option value="">Tous les types (Crédit / Débit)</option>
+                        <option value="credit">Crédit (Recettes +)</option>
+                        <option value="debit">Débit (Dépenses -)</option>
+                    </select>
+                </div>
+                <div class="w-48">
+                    <select wire:model.live="filterMethod" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold">
+                        <option value="">Tous les modes de paiement</option>
+                        <option value="cash">Espèces</option>
+                        <option value="cheque">Chèque Marocain</option>
+                        <option value="transfer">Virement Bancaire</option>
+                        <option value="card">Carte Bancaire / TPE</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Ledger Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+                <table class="min-w-full divide-y divide-slate-200 text-xs">
+                    <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-left">
+                        <tr>
+                            <th class="px-6 py-3.5">Transaction ID & Date</th>
+                            <th class="px-6 py-3.5">Client / Contrat</th>
+                            <th class="px-6 py-3.5">Catégorie</th>
+                            <th class="px-6 py-3.5">Mode</th>
+                            <th class="px-6 py-3.5">Montant</th>
+                            <th class="px-6 py-3.5">Statut</th>
+                            <th class="px-6 py-3.5 text-right">Reçu & Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-slate-800 font-medium">
+                        @forelse($ledgers as $item)
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4">
+                                    <span class="font-mono font-bold text-indigo-600 block">{{ $item->transaction_id }}</span>
+                                    <span class="text-[10px] text-slate-400 font-mono">{{ $item->entry_date->format('d/m/Y H:i') }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($item->client)
+                                        <div class="font-bold text-slate-900">{{ $item->client->first_name }} {{ $item->client->last_name }}</div>
+                                        <span class="text-[10px] text-slate-400 font-mono">CIN: {{ $item->client->cin ?? '-' }}</span>
+                                    @else
+                                        <span class="text-slate-400">Opération Générale Agence</span>
                                     @endif
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="capitalize font-semibold text-slate-700">{{ str_replace('_', ' ', $item->category) }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="uppercase font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                                        {{ $item->payment_method }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 font-mono font-bold text-sm">
+                                    @if($item->entry_type === 'credit')
+                                        <span class="text-emerald-600">+{{ number_format($item->amount, 2) }} DH</span>
+                                    @else
+                                        <span class="text-rose-600">-{{ number_format($item->amount, 2) }} DH</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($item->status === 'completed')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Validé</span>
+                                    @elseif($item->status === 'pending')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">En Attente Approval</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">Rejeté</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-right font-mono">
+                                    <span class="text-[10px] font-bold text-slate-500 block">{{ $item->receipt_number }}</span>
+                                    <button class="text-indigo-600 hover:underline font-bold text-[11px]">Imprimer Reçu 🖨️</button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+                                    Aucune opération enregistrée dans le Grand Livre.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+                <div class="p-4 border-t border-slate-200">
+                    {{ $ledgers->links() }}
+                </div>
+            </div>
+        </div>
+
+    <!-- TAB 2: CENTRE DE CHÈQUES MAROCAINS -->
+    @elseif($activeTab === 'cheques')
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
+            <div class="flex justify-between items-center border-b pb-4">
+                <h3 class="font-black text-lg text-slate-900">Gestion du Portefeuille de Chèques Marocains</h3>
+                <span class="text-xs text-slate-500">Suivi Attijariwafa, BCP, BMCE, CIH, SGMB, CDM</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @forelse($cheques as $chq)
+                    <div class="p-5 border border-slate-200 rounded-2xl bg-slate-50 space-y-4 shadow-2xs">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-mono font-bold text-indigo-600 block text-sm">N° {{ $chq->cheque_number }}</span>
+                                <span class="text-xs font-bold text-slate-800 block">{{ $chq->bank_name }}</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $chq->status === 'collected' ? 'bg-emerald-100 text-emerald-800' : ($chq->status === 'returned' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800') }}">
+                                {{ $chq->status }}
+                            </span>
+                        </div>
+
+                        <div class="text-xs space-y-1 text-slate-600">
+                            <div><span class="font-bold">Émetteur:</span> {{ $chq->issuer }}</div>
+                            <div><span class="font-bold">Échéance:</span> {{ $chq->due_date ? $chq->due_date->format('d/m/Y') : '-' }}</div>
+                            <div class="font-mono text-base font-black text-slate-900 pt-1">{{ number_format($chq->amount, 2) }} DH</div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between gap-2">
+                            @if($chq->status === 'received' || $chq->status === 'pending')
+                                <button wire:click="updateChequeStatus({{ $chq->id }}, 'deposited')" class="w-full bg-blue-600 text-white py-1.5 rounded-lg text-[10px] font-bold">Déposer en Banque 🏛️</button>
+                            @elseif($chq->status === 'deposited')
+                                <button wire:click="updateChequeStatus({{ $chq->id }}, 'collected')" class="w-full bg-emerald-600 text-white py-1.5 rounded-lg text-[10px] font-bold">Marquer Encaissé ✅</button>
+                                <button wire:click="updateChequeStatus({{ $chq->id }}, 'returned')" class="w-full bg-rose-600 text-white py-1.5 rounded-lg text-[10px] font-bold">Marquer Impayé ❌</button>
+                            @endif
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-3 text-center py-12 text-slate-400 text-xs">
+                        Aucun chèque enregisté en portefeuille.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+    <!-- TAB 3: CAISSES & COFFRES -->
+    @elseif($activeTab === 'caisses')
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
+            <h3 class="font-black text-lg text-slate-900 border-b pb-4">Caisses d'Agence & Comptage Physique</h3>
+            @foreach($cashRegisters as $reg)
+                <div class="p-6 border border-slate-200 rounded-2xl bg-slate-50 grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+                    <div>
+                        <span class="font-black text-slate-900 text-base block">{{ $reg->name }}</span>
+                        <span class="text-xs text-emerald-600 font-bold">● Caisse Ouverte</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 block">Solde Théorique</span>
+                        <span class="text-xl font-black font-mono text-slate-900">{{ number_format($reg->current_balance, 2) }} DH</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 block">Dernier Comptage Physique</span>
+                        <span class="text-xl font-black font-mono text-indigo-600">{{ number_format($reg->physical_balance, 2) }} DH</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 block">Écart de Caisse</span>
+                        <span class="text-xl font-black font-mono {{ $reg->variance_amount < 0 ? 'text-rose-600' : 'text-emerald-600' }}">
+                            {{ number_format($reg->variance_amount, 2) }} DH
+                        </span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+    <!-- TAB 4: COMPTES BANCAIRES & RIB -->
+    @elseif($activeTab === 'banks')
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
+            <h3 class="font-black text-lg text-slate-900 border-b pb-4">Comptes Bancaires Marocains & Trésorerie</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @foreach($bankAccounts as $b)
+                    <div class="p-5 border border-slate-200 rounded-2xl bg-slate-50 space-y-3">
+                        <span class="font-black text-slate-900 text-sm block">{{ $b->bank_name }}</span>
+                        <span class="text-xs text-slate-500 block">{{ $b->agency }}</span>
+                        <div class="font-mono text-xs font-bold text-slate-700 bg-white p-2 rounded-lg border border-slate-200 break-all">
+                            RIB: {{ $b->rib }}
+                        </div>
+                        <div class="text-xl font-black font-mono text-blue-600 pt-2 border-t">
+                            {{ number_format($b->current_balance, 2) }} DH
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+    <!-- TAB 5: DOUBLE VALIDATION WORKFLOW -->
+    @elseif($activeTab === 'approvals')
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
+            <h3 class="font-black text-lg text-slate-900 border-b pb-4">File d'Attente de Double Validation (> 5,000 DH)</h3>
+            <div class="space-y-4">
+                @forelse($approvals as $app)
+                    <div class="p-5 border border-slate-200 rounded-2xl bg-amber-50/50 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div>
+                            <span class="font-mono font-bold text-indigo-600 text-sm block">Demandé par: {{ $app->requester->name ?? 'Employé' }}</span>
+                            <span class="text-xs text-slate-600 block">{{ $app->manager_notes }}</span>
+                        </div>
+                        <div class="font-mono font-black text-xl text-slate-900">
+                            {{ number_format($app->amount, 2) }} DH
+                        </div>
+                        <button wire:click="approveTransaction({{ $app->id }})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition">
+                            Approuver & Valider ➔
+                        </button>
+                    </div>
+                @empty
+                    <div class="text-center py-12 text-slate-400 text-xs">
+                        Aucune transaction en attente de validation.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+    <!-- TAB 6: LOGS D'AUDIT INALTÉRABLES -->
+    @elseif($activeTab === 'audit')
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+            <h3 class="font-black text-lg text-slate-900 border-b pb-4">Traçabilité et Registre d'Audit Inaltérable</h3>
+            <div class="space-y-3 font-mono text-xs">
+                @foreach($auditLogs as $log)
+                    <div class="p-3 border border-slate-200 rounded-xl bg-slate-50 flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-indigo-600 block">[{{ $log->created_at->format('d/m/Y H:i:s') }}] {{ $log->action }}</span>
+                            <span class="text-slate-500 text-[10px] block">Utilisateur: {{ $log->user->name ?? 'Système' }} • IP: {{ $log->ip_address }}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 max-w-md truncate">{{ $log->reason }}</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    <!-- Modal Form: New General Ledger Entry -->
+    @if($showCreateModal)
+        <div class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="text-lg font-black text-slate-900">Nouvelle Opération au Grand Livre</h3>
+                    <button wire:click="closeCreateModal" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+                </div>
+
+                <form wire:submit.prevent="createLedgerEntry" class="space-y-4 text-xs font-medium">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Sens de l'Opération *</label>
+                            <select wire:model.live="entry_type" class="w-full border border-slate-300 rounded-xl p-2.5 font-bold">
+                                <option value="credit">Crédit (+ Recette Agence)</option>
+                                <option value="debit">Débit (- Dépense / Remboursement)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Montant (DH) *</label>
+                            <input type="number" step="0.01" wire:model.live="amount" class="w-full border border-slate-300 rounded-xl p-2.5 font-mono font-bold text-sm">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Mode de Paiement *</label>
+                            <select wire:model.live="payment_method" class="w-full border border-slate-300 rounded-xl p-2.5 font-bold">
+                                <option value="cash">Espèces (Caisse Agence)</option>
+                                <option value="cheque">Chèque Marocain</option>
+                                <option value="transfer">Virement Bancaire</option>
+                                <option value="card">Carte Bancaire / TPE</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Catégorie Comptable *</label>
+                            <select wire:model="category" class="w-full border border-slate-300 rounded-xl p-2.5">
+                                <option value="encaissement_prime">Encaissement Prime Assurance</option>
+                                <option value="reglement_sinistre">Règlement Sinistre Client</option>
+                                <option value="commission">Commission Compagnie</option>
+                                <option value="charge">Charge & Dépense d'Exploitation</option>
+                                <option value="virement">Virement Bancaire Interne</option>
+                            </select>
+                        </div>
+
+                        @if($payment_method === 'cheque')
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">N° de Chèque *</label>
+                                <input type="text" wire:model="cheque_number" placeholder="ex: 8849201" class="w-full border border-slate-300 rounded-xl p-2.5 font-mono">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Banque Émettrice *</label>
+                                <select wire:model="bank_name" class="w-full border border-slate-300 rounded-xl p-2.5">
+                                    <option value="Attijariwafa Bank">Attijariwafa Bank</option>
+                                    <option value="Banque Populaire (BCP)">Banque Populaire (BCP)</option>
+                                    <option value="BMCE Bank of Africa">BMCE Bank of Africa</option>
+                                    <option value="CIH Bank">CIH Bank</option>
+                                    <option value="Société Générale (SGMB)">Société Générale (SGMB)</option>
+                                    <option value="Crédit du Maroc (CDM)">Crédit du Maroc (CDM)</option>
+                                </select>
+                            </div>
+                        @endif
+
+                        <div class="md:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">Rattacher au Client (Optionnel)</label>
+                            <select wire:model="client_id" class="w-full border border-slate-300 rounded-xl p-2.5">
+                                <option value="">-- Aucun Client (Opération Générale) --</option>
+                                @foreach($clients as $cl)
+                                    <option value="{{ $cl->id }}">{{ $cl->formatted_reference }} - {{ $cl->first_name }} {{ $cl->last_name }} (CIN: {{ $cl->cin ?? '-' }})</option>
                                 @endforeach
                             </select>
-                            @error('contract_id') <span class="text-red-500">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-slate-500 mb-1">Montant Prime (DH)</label>
-                            <input type="number" step="0.01" wire:model.live="amount" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
-                            @error('amount') <span class="text-red-500">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-slate-500 mb-1">Acompte Payé (DH)</label>
-                            <input type="number" step="0.01" wire:model.live="paid_amount" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-slate-500 mb-1">Remise (DH)</label>
-                            <input type="number" step="0.01" wire:model.live="discount" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
-                        </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Notes & Motif de la Transaction</label>
+                        <textarea wire:model="notes" rows="2" class="w-full border border-slate-300 rounded-xl p-2.5"></textarea>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-slate-500 mb-1">Mode de Règlement</label>
-                            <select wire:model.live="payment_method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-                                <option value="cash">Espèces</option>
-                                <option value="cheque">Chèque</option>
-                                <option value="bank_transfer">Virement bancaire</option>
-                                <option value="credit_card">Carte Bancaire</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-slate-500 mb-1">Date d'Opération</label>
-                            <input type="date" wire:model="payment_date" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
-                        </div>
-                    </div>
-
-                    <!-- CONDITIONAL CHEQUE DETAILS -->
-                    @if($payment_method === 'cheque')
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                            <h3 class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Détails du Chèque</h3>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-slate-500 mb-0.5">N° Chèque</label>
-                                    <input type="text" wire:model="cheque_number" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 font-mono">
-                                </div>
-                                <div>
-                                    <label class="block text-slate-500 mb-0.5">Banque Émettrice</label>
-                                    <input type="text" wire:model="bank_name" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5">
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    <div class="flex justify-end gap-2 pt-3 border-t">
-                        <button type="button" wire:click="$set('showCreateModal', false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl">Annuler</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-650 hover:bg-indigo-700 text-white rounded-xl">Confirmer & Enregistrer</button>
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <button type="button" wire:click="closeCreateModal" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 font-bold">Annuler</button>
+                        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-md">Enregistrer au Grand Livre</button>
                     </div>
                 </form>
             </div>
         </div>
     @endif
-
-    <!-- RECONCILE MODAL -->
-    @if($showReconcileModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-xl w-full max-w-sm p-6 space-y-4 animate-scale-up">
-                <div class="flex justify-between items-center border-b pb-3">
-                    <h2 class="text-base font-extrabold text-slate-800">Rapprochement Bancaire</h2>
-                    <button wire:click="$set('showReconcileModal', false)" class="text-slate-400 hover:text-slate-700 text-sm">✕</button>
-                </div>
-                
-                <form wire:submit.prevent="createReconciliation" class="space-y-4 text-xs font-semibold text-slate-700">
-                    <div>
-                        <label class="block text-slate-500 mb-1">Référence du Dépôt / Transfert</label>
-                        <input type="text" wire:model="reconcile_ref" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
-                        @error('reconcile_ref') <span class="text-red-500">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">Montant Reçu par la Banque (DH)</label>
-                        <input type="number" step="0.01" wire:model="reconcile_amount" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
-                        @error('reconcile_amount') <span class="text-red-500">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">Date de Constat de Dépôt</label>
-                        <input type="date" wire:model="reconcile_date" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
-                    </div>
-
-                    <div class="flex justify-end gap-2 pt-3 border-t">
-                        <button type="button" wire:click="$set('showReconcileModal', false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl">Annuler</button>
-                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">Confirmer & Matcher</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endif
-
 </div>
