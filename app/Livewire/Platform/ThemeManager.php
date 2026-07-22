@@ -11,10 +11,23 @@ class ThemeManager extends Component
 {
     public $themes;
     public $tenants;
+    public $searchAgency = '';
+    
+    // Selection state for Modals
+    public $targetThemeId;
+    public $targetTheme;
     public $selectedTenantId = '';
-    public $selectedThemeId = 1;
 
-    // Theme editing properties
+    // Modals visibility
+    public $showAssignModal = false;
+    public $showPreviewModal = false;
+    public $showDetailsModal = false;
+    public $showEditModal = false;
+
+    // Live Preview Device
+    public $previewDevice = 'desktop'; // desktop, tablet, mobile
+
+    // Theme Editing Form
     public $theme_id;
     public $name;
     public $description;
@@ -24,7 +37,6 @@ class ThemeManager extends Component
     public $card_bg_color = '#1E293B';
     public $accent_color = '#38BDF8';
     public $is_locked = true;
-    public $showModal = false;
 
     public function mount()
     {
@@ -35,6 +47,31 @@ class ThemeManager extends Component
     public function loadThemes()
     {
         $this->themes = WebsiteTheme::all();
+    }
+
+    // Modal Trigger Actions
+    public function openAssignModal($themeId)
+    {
+        $this->targetThemeId = $themeId;
+        $this->targetTheme = WebsiteTheme::findOrFail($themeId);
+        $this->selectedTenantId = '';
+        $this->searchAgency = '';
+        $this->showAssignModal = true;
+    }
+
+    public function openPreviewModal($themeId)
+    {
+        $this->targetThemeId = $themeId;
+        $this->targetTheme = WebsiteTheme::findOrFail($themeId);
+        $this->previewDevice = 'desktop';
+        $this->showPreviewModal = true;
+    }
+
+    public function openDetailsModal($themeId)
+    {
+        $this->targetThemeId = $themeId;
+        $this->targetTheme = WebsiteTheme::findOrFail($themeId);
+        $this->showDetailsModal = true;
     }
 
     public function editTheme($id)
@@ -50,7 +87,7 @@ class ThemeManager extends Component
         $this->card_bg_color = $colors['card_bg'] ?? '#1E293B';
         $this->accent_color = $colors['accent'] ?? '#38BDF8';
         $this->is_locked = (bool)$theme->is_locked;
-        $this->showModal = true;
+        $this->showEditModal = true;
     }
 
     public function toggleLock($id)
@@ -90,30 +127,40 @@ class ThemeManager extends Component
             WebsiteTheme::create($data);
         }
 
-        $this->showModal = false;
+        $this->showEditModal = false;
         $this->loadThemes();
         session()->flash('message', 'Thème enregistré avec succès !');
     }
 
-    public function assignThemeToTenant()
+    public function confirmAssignToAgency()
     {
         $this->validate([
             'selectedTenantId' => 'required',
-            'selectedThemeId' => 'required',
+            'targetThemeId' => 'required',
         ]);
 
         $tenant = Tenant::findOrFail($this->selectedTenantId);
         $tenant->run(function () {
-            $config = \App\Models\TenantWebsiteConfig::firstOrCreate([], ['theme_id' => $this->selectedThemeId]);
-            $config->update(['theme_id' => $this->selectedThemeId]);
+            $config = \App\Models\TenantWebsiteConfig::firstOrCreate([], ['theme_id' => $this->targetThemeId]);
+            $config->update(['theme_id' => $this->targetThemeId]);
         });
 
-        session()->flash('message', "Thème appliqué immédiatement à l'agence " . $tenant->name);
+        $this->showAssignModal = false;
+        session()->flash('message', "Le thème '{$this->targetTheme->name}' a été immédiatement appliqué & publié sur l'agence " . ($tenant->name ?? $tenant->id));
     }
 
     public function render()
     {
-        return view('livewire.platform.theme-manager')
-            ->layout('layouts.platform');
+        $filteredTenants = $this->tenants;
+        if (!empty($this->searchAgency)) {
+            $filteredTenants = $this->tenants->filter(function ($t) {
+                return str_contains(strtolower($t->name ?? ''), strtolower($this->searchAgency)) ||
+                       str_contains(strtolower($t->id ?? ''), strtolower($this->searchAgency));
+            });
+        }
+
+        return view('livewire.platform.theme-manager', [
+            'filteredTenants' => $filteredTenants
+        ])->layout('layouts.platform');
     }
 }
