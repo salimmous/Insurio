@@ -32,6 +32,9 @@ Route::middleware(['auth:platform', 'central'])->group(function () {
     Route::post('/super-admin/charges', [PlatformExpenseController::class, 'store'])->name('platform.expenses.store');
     Route::delete('/super-admin/charges/{id}', [PlatformExpenseController::class, 'destroy'])->name('platform.expenses.destroy');
 
+    // Theme Engine Management (Super Admin Theme Gallery & Lock)
+    Route::get('/super-admin/themes', \App\Livewire\Platform\ThemeManager::class)->name('platform.themes');
+
     // Generic platform modules navigation routing
     Route::get('/super-admin/module/{moduleName}', [PlatformDashboardController::class, 'showModule'])->name('platform.module');
 });
