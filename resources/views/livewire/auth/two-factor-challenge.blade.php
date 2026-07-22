@@ -1,133 +1,111 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 flex items-center justify-center p-4 font-sans">
-    <div class="w-full max-w-md">
-
-        <!-- Logo / Brand -->
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center gap-3 mb-2">
-                <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-xl border border-indigo-400/30">
-                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
-                </div>
-                <span class="text-3xl font-black text-white tracking-tight">Insurio</span>
-            </div>
-            <p class="text-indigo-200/70 text-xs font-mono uppercase tracking-widest">Banking-Level 2FA Security Gateway</p>
+<div class="w-full sm:max-w-md space-y-6">
+    <!-- Header Title & Tenant Logo -->
+    <div class="text-center space-y-2">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 mb-1 border border-indigo-100 dark:border-indigo-900/50">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
         </div>
-
-        <!-- Card -->
-        <div class="bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-800 overflow-hidden">
-
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-5">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-base font-black text-white">
-                            {{ $needsSetup ? 'Configuration 2FA Obligatoire' : 'Vérification 2FA Requis' }}
-                        </h1>
-                        <p class="text-indigo-100 text-xs">
-                            {{ $needsSetup ? 'Scannez le QR Code pour configurer votre application' : 'Code TOTP à 6 chiffres obligatoire pour accéder' }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-6 space-y-5">
-
-                @if($errorMessage)
-                <div class="bg-rose-950/90 border border-rose-700/80 rounded-2xl p-4 flex items-start gap-3">
-                    <svg class="w-5 h-5 text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <p class="text-xs text-rose-200 font-semibold">{{ $errorMessage }}</p>
-                </div>
-                @endif
-
-                @if($needsSetup)
-                    <!-- Initial Setup Flow -->
-                    <div class="text-center space-y-4">
-                        <div class="inline-block p-4 bg-white rounded-2xl border border-slate-200 shadow-md">
-                            {!! $qrCodeSvg !!}
-                        </div>
-
-                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs">
-                            <span class="text-[10px] text-slate-400 block font-sans">Clé Secrète Manuelle:</span>
-                            <span class="font-bold text-indigo-400 text-sm select-all">{{ $setupSecret }}</span>
-                        </div>
-
-                        <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-left text-xs space-y-2">
-                            <span class="font-bold text-amber-400 block">⚠️ Sauvegardez vos 10 codes de secours:</span>
-                            <div class="grid grid-cols-2 gap-1.5 font-mono text-[11px] text-emerald-400">
-                                @foreach($setupRecoveryCodes as $rcode)
-                                    <div>{{ $rcode }}</div>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-2">Entrez le code TOTP à 6 chiffres *</label>
-                            <input
-                                wire:model="code"
-                                type="text"
-                                inputmode="numeric"
-                                pattern="[0-9]*"
-                                maxlength="6"
-                                placeholder="123456"
-                                class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-950 text-emerald-400 font-mono text-center text-2xl font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                autofocus
-                            >
-                        </div>
-                    </div>
-                @elseif(!$useRecoveryCode)
-                    <!-- Standard TOTP Code Flow -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-2">Code TOTP Authentificateur (Google, MS, Authy, 1Password) *</label>
-                        <input
-                            wire:model="code"
-                            type="text"
-                            inputmode="numeric"
-                            pattern="[0-9]*"
-                            maxlength="6"
-                            placeholder="123456"
-                            class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-950 text-emerald-400 font-mono text-center text-2xl font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            autofocus
-                        >
-                    </div>
-                @else
-                    <!-- Recovery Code Flow -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-2">Code de Récupération (Recovery Code) *</label>
-                        <input
-                            wire:model="recoveryCode"
-                            type="text"
-                            placeholder="xxxxxx-xxxxxx"
-                            class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-950 text-indigo-300 font-mono text-center text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            autofocus
-                        >
-                    </div>
-                @endif
-
-                <button
-                    wire:click="verify"
-                    wire:loading.attr="disabled"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-xs"
-                >
-                    <span wire:loading.remove wire:target="verify">Vérifier & Valider l'Accès ➔</span>
-                    <span wire:loading wire:target="verify">Vérification en cours...</span>
-                </button>
-
-                @if(!$needsSetup)
-                    <div class="text-center pt-2">
-                        <button wire:click="toggleRecoveryMode" type="button" class="text-xs text-indigo-400 hover:underline font-semibold">
-                            {{ $useRecoveryCode ? '← Utiliser le code TOTP Authentificateur' : '🔑 Utiliser un code de récupération' }}
-                        </button>
-                    </div>
-                @endif
-            </div>
-        </div>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+            {{ $needsSetup ? 'Configuration 2FA Obligatoire' : 'Authentification à Deux Facteurs' }}
+        </h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+            {{ $needsSetup ? 'Veuillez scanner le QR code ci-dessous avec votre application TOTP.' : 'Entrez le code à 6 chiffres généré par votre application d\'authentification.' }}
+        </p>
     </div>
+
+    <!-- Error Alert -->
+    @if($errorMessage)
+        <div class="p-3.5 rounded-lg bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-xs font-semibold text-red-700 dark:text-red-300 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>{{ $errorMessage }}</span>
+        </div>
+    @endif
+
+    <form wire:submit.prevent="verify" class="space-y-5 text-sm">
+        @if($needsSetup)
+            <!-- Inline First-Time Setup -->
+            <div class="text-center space-y-4">
+                <div class="inline-block p-3 bg-white rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                    {!! $qrCodeSvg !!}
+                </div>
+
+                <div class="p-2.5 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 font-mono text-xs text-left">
+                    <span class="text-[10px] text-gray-400 uppercase tracking-wider block font-sans font-bold mb-0.5">Clé Secrète Manuelle:</span>
+                    <span class="font-bold text-indigo-600 dark:text-indigo-400 text-sm select-all">{{ $setupSecret }}</span>
+                </div>
+
+                <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-lg border border-amber-200 dark:border-amber-900 text-left text-xs space-y-1.5">
+                    <span class="font-bold text-amber-800 dark:text-amber-300 block">⚠️ Sauvegardez vos 10 codes de secours:</span>
+                    <div class="grid grid-cols-2 gap-1 font-mono text-[11px] text-amber-900 dark:text-amber-200">
+                        @foreach($setupRecoveryCodes as $rcode)
+                            <div>{{ $rcode }}</div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="text-left">
+                    <label class="block font-semibold text-xs text-gray-700 dark:text-gray-300 mb-1">Code TOTP de confirmation (6 chiffres) *</label>
+                    <input
+                        wire:model="code"
+                        type="text"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        maxlength="6"
+                        placeholder="123456"
+                        class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg font-mono font-bold text-center text-xl tracking-widest focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                        autofocus
+                    >
+                </div>
+            </div>
+        @elseif(!$useRecoveryCode)
+            <!-- Standard TOTP Challenge -->
+            <div>
+                <label class="block font-semibold text-xs text-gray-700 dark:text-gray-300 mb-1">Code Authentificateur TOTP (6 Chiffres) *</label>
+                <input
+                    wire:model="code"
+                    type="text"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    maxlength="6"
+                    placeholder="123456"
+                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg font-mono font-bold text-center text-xl tracking-widest focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    autofocus
+                >
+            </div>
+        @else
+            <!-- Recovery Code Input -->
+            <div>
+                <label class="block font-semibold text-xs text-gray-700 dark:text-gray-300 mb-1">Code de Récupération (Recovery Code) *</label>
+                <input
+                    wire:model="recoveryCode"
+                    type="text"
+                    placeholder="xxxxxx-xxxxxx"
+                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg font-mono font-bold text-center text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    autofocus
+                >
+            </div>
+        @endif
+
+        <div class="pt-2">
+            <button
+                type="submit"
+                wire:loading.attr="disabled"
+                class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+            >
+                <span wire:loading.remove wire:target="verify">Valider & Continuer ➔</span>
+                <span wire:loading wire:target="verify">Vérification...</span>
+            </button>
+        </div>
+    </form>
+
+    @if(!$needsSetup)
+        <div class="text-center pt-1 border-t border-gray-100 dark:border-gray-700">
+            <button wire:click="toggleRecoveryMode" type="button" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
+                {{ $useRecoveryCode ? '← Utiliser le code TOTP Authentificateur' : '🔑 Utiliser un code de récupération' }}
+            </button>
+        </div>
+    @endif
 </div>
