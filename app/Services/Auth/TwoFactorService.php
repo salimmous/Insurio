@@ -2,90 +2,199 @@
 
 namespace App\Services\Auth;
 
-use App\Mail\TwoFactorCodeMail;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;
+use App\Models\TwoFactorAuditLog;
+use PragmaRX\Google2FA\Google2FA;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 
 class TwoFactorService
 {
-    /**
-     * Send email OTP to user and return the generated code (for testing).
-     */
-    public function sendCode(User $user): string
+    protected Google2FA $google2fa;
+
+    public function __construct()
     {
-        $code = $user->generateTwoFactorCode();
-
-        try {
-            Mail::to($user->email)->send(new TwoFactorCodeMail($user, $code));
-        } catch (\Throwable $e) {
-            \Log::error('Failed to send 2FA code', ['user_id' => $user->id, 'error' => $e->getMessage()]);
-        }
-
-        return $code;
+        $this->google2fa = new Google2FA();
     }
 
     /**
-     * Verify the submitted OTP code.
+     * Generate a new TOTP secret for user.
      */
-    public function verify(User $user, string $code): bool
+    public function generateSecretKey(): string
     {
-        // Rate limit: max 5 attempts per 15 minutes
-        $key     = 'mfa_attempts_' . $user->id;
-        $attempts = Cache::get($key, 0);
-
-        if ($attempts >= 5) {
-            return false;
-        }
-
-        if (!$user->verifyTwoFactorCode($code)) {
-            Cache::put($key, $attempts + 1, now()->addMinutes(15));
-            return false;
-        }
-
-        // Clear code + reset attempts
-        $user->clearTwoFactorCode();
-        Cache::forget($key);
-
-        return true;
+        return $this->google2fa->generateSecretKey();
     }
 
     /**
-     * Enable 2FA for a user (set confirmed_at).
+     * Get QR Code SVG string for TOTP setup locally (offline).
      */
-    public function enable(User $user): void
+    public function getQrCodeSvg(User $user, string $secret): string
     {
-        $user->update(['two_factor_confirmed_at' => now()]);
+        $appName = config('app.name', 'Insurio');
+        $qrCodeUrl = $this->google2fa->getQRCodeUrl(
+            $appName,
+            $user->email,
+            $secret
+        );
+
+        return QrCode::size(220)->style('round')->margin(1)->generate($qrCodeUrl);
     }
 
     /**
-     * Disable 2FA for a user.
+     * Verify submitted TOTP code against secret.
      */
-    public function disable(User $user): void
+    public function verifyTotp(string $secret, string $code): bool
+    {
+        return $this->google2fa->verifyKey($secret, $code);
+    }
+
+    /**
+     * Generate 10 single-use recovery codes.
+     */
+    public function generateRecoveryCodes(): array
+    {
+        $codes = [];
+        for ($i = 0; $i < 10; $i++) {
+            $codes[] = Str::random(10) . '-' . Str::random(10);
+        }
+        return $codes;
+    }
+
+    /**
+     * Confirm and enable 2FA for user.
+     */
+    public function confirmTwoFactor(User $user, string $secret, array $recoveryCodes): void
+    {
+        $encryptedSecret = Crypt::encryptString($secret);
+        $encryptedRecoveryCodes = Crypt::encryptString(json_encode($recoveryCodes));
+
+        $user->update([
+            'two_factor_secret' => $encryptedSecret,
+            'two_factor_recovery_codes' => $encryptedRecoveryCodes,
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $this->logEvent($user, '2FA Enabled');
+    }
+
+    /**
+     * Disable 2FA for user.
+     */
+    public function disableTwoFactor(User $user): void
     {
         $user->update([
-            'two_factor_confirmed_at'  => null,
-            'two_factor_secret'        => null,
+            'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
-            'two_factor_code'          => null,
-            'two_factor_expires_at'    => null,
+            'two_factor_confirmed_at' => null,
         ]);
+
+        $this->logEvent($user, '2FA Disabled');
     }
 
     /**
-     * Trust the current device for 30 days.
+     * Decrypt secret key.
+     */
+    public function getDecryptedSecret(User $user): ?string
+    {
+        if (!$user->two_factor_secret) {
+            return null;
+        }
+
+        try {
+            return Crypt::decryptString($user->two_factor_secret);
+        } catch (\Throwable $e) {
+            return $user->two_factor_secret; // Fallback unencrypted if legacy
+        }
+    }
+
+    /**
+     * Decrypt recovery codes array.
+     */
+    public function getDecryptedRecoveryCodes(User $user): array
+    {
+        if (!$user->two_factor_recovery_codes) {
+            return [];
+        }
+
+        try {
+            $json = Crypt::decryptString($user->two_factor_recovery_codes);
+            return json_decode($json, true) ?: [];
+        } catch (\Throwable $e) {
+            return json_decode($user->two_factor_recovery_codes, true) ?: [];
+        }
+    }
+
+    /**
+     * Verify and consume a recovery code (one-time use).
+     */
+    public function verifyAndConsumeRecoveryCode(User $user, string $submittedCode): bool
+    {
+        $codes = $this->getDecryptedRecoveryCodes($user);
+
+        if (empty($codes)) {
+            return false;
+        }
+
+        $index = array_search(trim($submittedCode), $codes);
+
+        if ($index !== false) {
+            unset($codes[$index]); // Invalidate code
+            $updatedCodes = array_values($codes);
+
+            $user->update([
+                'two_factor_recovery_codes' => Crypt::encryptString(json_encode($updatedCodes)),
+            ]);
+
+            $this->logEvent($user, 'Recovery Code Used');
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Trust device for 30 days.
      */
     public function trustDevice(User $user, string $fingerprint, string $deviceName, string $ip): void
     {
-        // Remove existing entry if any
         $user->trustedDevices()->where('device_fingerprint', $fingerprint)->delete();
 
         $user->trustedDevices()->create([
             'device_fingerprint' => $fingerprint,
-            'device_name'        => $deviceName,
-            'ip_address'         => $ip,
-            'confirmed_at'       => now(),
-            'expires_at'         => now()->addDays(30),
+            'device_name' => $deviceName,
+            'ip_address' => $ip,
+            'confirmed_at' => now(),
+            'expires_at' => now()->addDays(30),
+        ]);
+
+        $this->logEvent($user, 'Device Trusted');
+    }
+
+    /**
+     * Check if device is trusted.
+     */
+    public function isDeviceTrusted(User $user, string $fingerprint): bool
+    {
+        return $user->trustedDevices()
+            ->where('device_fingerprint', $fingerprint)
+            ->where('expires_at', '>', now())
+            ->exists();
+    }
+
+    /**
+     * Log 2FA Security Audit Event.
+     */
+    public function logEvent(User $user, string $event): void
+    {
+        TwoFactorAuditLog::create([
+            'user_id' => $user->id,
+            'event' => $event,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'device' => request()->header('User-Agent') ? Str::limit(request()->header('User-Agent'), 100) : 'Browser',
+            'country' => 'Morocco',
+            'created_at' => now(),
         ]);
     }
 }

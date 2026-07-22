@@ -100,7 +100,7 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/communications', \App\Livewire\Admin\CommunicationCenter::class)->name('admin.communications')->middleware('can:clients.view');
 
         // Security Center
-        Route::get('/admin/security', \App\Livewire\Admin\SecurityCenter::class)->name('admin.security');
+        Route::get('/admin/security', \App\Livewire\Admin\SecuritySettings::class)->name('admin.security');
 
         // Agent routes
         Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions')->middleware('can:commissions.view');

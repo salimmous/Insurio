@@ -9,38 +9,38 @@ use Livewire\Component;
 class TwoFactorChallenge extends Component
 {
     public string $code = '';
+    public string $recoveryCode = '';
+    public bool $useRecoveryCode = false;
     public bool $rememberDevice = false;
-    public bool $codeSent = false;
     public string $errorMessage = '';
 
     public function mount(): void
     {
         $user = auth()->user();
-        if (!$user || !$user->hasTwoFactorEnabled()) {
+        if (!$user || !$user->two_factor_confirmed_at) {
             redirect()->route('dashboard');
             return;
         }
 
-        // Auto-send code on mount
-        $this->sendCode();
+        // Check if device is already trusted
+        $fingerprint = md5(request()->ip() . request()->userAgent());
+        if (app(TwoFactorService::class)->isDeviceTrusted($user, $fingerprint)) {
+            session(['two_factor_verified' => true]);
+            redirect()->route('dashboard');
+            return;
+        }
     }
 
-    public function sendCode(): void
+    public function toggleRecoveryMode(): void
     {
-        $user = auth()->user();
-        if (!$user) return;
-
-        app(TwoFactorService::class)->sendCode($user);
-        $this->codeSent = true;
+        $this->useRecoveryCode = !$this->useRecoveryCode;
+        $this->code = '';
+        $this->recoveryCode = '';
         $this->errorMessage = '';
     }
 
     public function verify(): void
     {
-        $this->validate([
-            'code' => 'required|digits:6',
-        ]);
-
         $user = auth()->user();
         if (!$user) {
             redirect()->route('login');
@@ -49,44 +49,36 @@ class TwoFactorChallenge extends Component
 
         $service = app(TwoFactorService::class);
 
-        if (!$service->verify($user, $this->code)) {
-            $this->errorMessage = __('Invalid or expired verification code. Please try again.');
-            return;
+        if ($this->useRecoveryCode) {
+            $this->validate(['recoveryCode' => 'required|string']);
+
+            if (!$service->verifyAndConsumeRecoveryCode($user, $this->recoveryCode)) {
+                $this->errorMessage = 'Code de récupération invalide ou déjà utilisé.';
+                $service->logEvent($user, 'Failed Verification');
+                return;
+            }
+        } else {
+            $this->validate(['code' => 'required|string|size:6']);
+
+            $secret = $service->getDecryptedSecret($user);
+            if (!$secret || !$service->verifyTotp($secret, $this->code)) {
+                $this->errorMessage = 'Code Authenticator TOTP invalide. Veuillez réessayer.';
+                $service->logEvent($user, 'Failed Verification');
+                return;
+            }
         }
 
-        // Mark MFA as verified in session
+        // Mark 2FA verified in session
         session(['two_factor_verified' => true]);
+        $service->logEvent($user, 'Successful Verification');
 
-        // Trust device if requested
+        // Trust device for 30 days if selected
         if ($this->rememberDevice) {
-            $loginService  = app(LoginSecurityService::class);
-            $fingerprint   = $loginService->getDeviceFingerprint();
-            $deviceName    = $this->getDeviceName();
-            $service->trustDevice($user, $fingerprint, $deviceName, request()->ip());
+            $fingerprint = md5(request()->ip() . request()->userAgent());
+            $service->trustDevice($user, $fingerprint, 'Navigateur Confiance (30j)', request()->ip());
         }
 
         redirect()->route('dashboard');
-    }
-
-    private function getDeviceName(): string
-    {
-        $ua = request()->userAgent() ?? '';
-        $browser = match(true) {
-            str_contains($ua, 'Firefox') => 'Firefox',
-            str_contains($ua, 'Chrome')  => 'Chrome',
-            str_contains($ua, 'Safari')  => 'Safari',
-            str_contains($ua, 'Edge')    => 'Edge',
-            default                      => 'Browser',
-        };
-        $os = match(true) {
-            str_contains($ua, 'Windows') => 'Windows',
-            str_contains($ua, 'Mac')     => 'macOS',
-            str_contains($ua, 'Linux')   => 'Linux',
-            str_contains($ua, 'Android') => 'Android',
-            str_contains($ua, 'iPhone')  => 'iPhone',
-            default                      => 'Device',
-        };
-        return "$browser on $os";
     }
 
     public function render()
