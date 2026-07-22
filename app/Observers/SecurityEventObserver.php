@@ -16,6 +16,9 @@ class SecurityEventObserver
     public function handleLogin(Login $event): void
     {
         $user = $event->user;
+        if (!$user || !$user instanceof \App\Models\User) {
+            return;
+        }
 
         // Run the security service
         $service = app(LoginSecurityService::class);
@@ -29,8 +32,8 @@ class SecurityEventObserver
      */
     public function handleFailed(Failed $event): void
     {
-        if (!$event->user) {
-            return; // Unknown email — don't log user_id
+        if (!$event->user || !$event->user instanceof \App\Models\User) {
+            return; // Unknown email or non-User guard
         }
 
         $user    = $event->user;
