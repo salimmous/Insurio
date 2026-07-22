@@ -1,28 +1,35 @@
-<div class="p-6 space-y-6 font-sans">
+<div class="p-8 max-w-[1600px] mx-auto space-y-8 font-sans bg-[#F8FAFC]">
     @if (session()->has('message'))
-        <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl text-xs font-bold flex items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            <span>{{ session('message') }}</span>
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-4 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-xs">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <span>{{ session('message') }}</span>
+            </div>
+            <button class="text-emerald-500 hover:text-emerald-900 text-xs font-bold" @click="$el.parentElement.remove()">✕</button>
         </div>
     @endif
 
-    <!-- Header Section -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-5">
+    <!-- Clean Minimalist Header (Stripe / Framer Store style) -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
-            <div class="flex items-center gap-2">
-                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Theme Marketplace Store V2</h1>
-                <span class="px-2.5 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black rounded-full uppercase">10 Themes Live</span>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Theme Marketplace</h1>
+                <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-bold rounded-full">
+                    10 Production Themes
+                </span>
             </div>
-            <p class="text-xs text-slate-500 mt-1">Marketplace officiel de thèmes d'assurance White Label prêts pour la production. Prévisualisations interactives 100% réelles.</p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">Catalogue officiel des thèmes d'assurance White Label. Conçus selon les standards Stripe & Framer Studio.</p>
         </div>
 
-        <button wire:click="$set('showEditModal', true)" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            <span>Nouveau Thème Sur-Mesure</span>
-        </button>
+        <div class="flex items-center gap-3">
+            <button wire:click="$set('showEditModal', true)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>Create Custom Theme</span>
+            </button>
+        </div>
     </div>
 
-    <!-- Theme Store Grid (Framer / Shopify Store style with REAL LIVE PREVIEWS & HOVER SCROLL) -->
+    <!-- Theme Store 3-Column Grid (Apple Store / Webflow Templates style) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         @foreach($themes as $theme)
         @php
@@ -33,25 +40,26 @@
             $bg = $colors['bg'] ?? '#0F172A';
             $cardBg = $colors['card_bg'] ?? '#1E293B';
             $accent = $colors['accent'] ?? '#38BDF8';
+            $textColor = $colors['text'] ?? '#F8FAFC';
             $isDark = $configComp['dark'] ?? true;
         @endphp
-        <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group">
             
-            <!-- REAL LIVE PREVIEW IFRAME CONTAINER WITH AUTO-SCROLL ON HOVER -->
-            <div class="h-64 relative border-b border-slate-100 bg-slate-950 overflow-hidden" x-data="{ scrolling: false }" @mouseenter="scrolling = true" @mouseleave="scrolling = false">
+            <!-- REAL LIVE PREVIEW IFRAME CONTAINER (No Dark Background Rectangles) -->
+            <div class="h-64 relative border-b border-[#E5E7EB] bg-slate-50 overflow-hidden" x-data="{ scrolling: false }" @mouseenter="scrolling = true" @mouseleave="scrolling = false">
                 
-                <!-- Viewport Mode Badges -->
+                <!-- Status Badges -->
                 <div class="absolute top-3 left-3 right-3 flex items-center justify-between z-20 pointer-events-none">
-                    <span class="px-2.5 py-0.5 bg-slate-950/80 backdrop-blur-md text-white text-[9px] font-extrabold rounded-full border border-slate-700 shadow-md">
+                    <span class="px-2.5 py-1 bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-bold rounded-lg border border-slate-200 shadow-xs">
                         v{{ $theme->version }}
                     </span>
                     <div class="flex items-center gap-1.5">
-                        <span class="px-2 py-0.5 bg-emerald-500/20 backdrop-blur-md border border-emerald-500/40 text-emerald-400 text-[8.5px] font-black rounded-full uppercase shadow-md">
+                        <span class="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-bold rounded-full">
                             100% Live Website
                         </span>
                         @if($theme->is_locked)
-                            <span class="px-2 py-0.5 bg-rose-500/20 backdrop-blur-md border border-rose-500/40 text-rose-400 text-[8.5px] font-black rounded-full shadow-md">
-                                🔒 Locked
+                            <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[9px] font-bold rounded-full">
+                                Locked
                             </span>
                         @endif
                     </div>
@@ -63,61 +71,68 @@
                 </div>
 
                 <!-- Hover Overlay Trigger for Interactive Live Preview -->
-                <div class="absolute inset-0 bg-slate-950/40 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-30">
-                    <button wire:click="openPreviewModal({{ $theme->id }})" class="bg-white text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl shadow-xl hover:bg-slate-100 transition flex items-center gap-2">
-                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                        <span>Live Preview</span>
+                <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-30">
+                    <button wire:click="openPreviewModal({{ $theme->id }})" class="bg-white text-slate-900 font-bold text-xs px-5 py-2.5 rounded-xl shadow-md hover:bg-slate-50 transition flex items-center gap-2 border border-slate-200">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>Live Demo</span>
                     </button>
                 </div>
             </div>
 
             <!-- Theme Meta Information Specs -->
-            <div class="p-5 space-y-4">
+            <div class="p-6 space-y-4">
                 <div>
-                    <h3 class="font-black text-base text-slate-900 tracking-tight">{{ $theme->name }}</h3>
-                    <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{{ $theme->description }}</p>
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-base text-slate-900 tracking-tight">{{ $theme->name }}</h3>
+                        <span class="text-[10px] text-slate-400 font-medium">Insurio Studio</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed font-medium">{{ $theme->description }}</p>
                 </div>
 
-                <!-- Specs Pill Grid -->
-                <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <!-- Clean Specs Pill Grid (Lucide Line Icons Only) -->
+                <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 font-semibold bg-slate-50/70 p-3 rounded-xl border border-slate-100">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-indigo-600">📦</span> 12+ Composants
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                        <span>12+ Components</span>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <span class="text-indigo-600">📄</span> 7 Pages Prêtes
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>7 Pages Included</span>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <span class="text-indigo-600">🎨</span> Lucide Icons
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        <span>FR 🇫🇷 / AR 🇲🇦 RTL</span>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <span class="text-indigo-600">⚡</span> SEO 98/100
+                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+                        <span>SEO 98/100</span>
                     </div>
                 </div>
 
-                <!-- Color Palette Swatches -->
+                <!-- Color Swatches -->
                 <div class="flex items-center justify-between pt-1">
-                    <span class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Palette</span>
+                    <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Palette</span>
                     <div class="flex items-center gap-1.5">
-                        <span class="w-4 h-4 rounded-full border border-slate-200 shadow-xs" style="background-color: {{ $primary }}" title="Primary"></span>
-                        <span class="w-4 h-4 rounded-full border border-slate-200 shadow-xs" style="background-color: {{ $secondary }}" title="Secondary"></span>
-                        <span class="w-4 h-4 rounded-full border border-slate-200 shadow-xs" style="background-color: {{ $bg }}" title="Background"></span>
-                        <span class="w-4 h-4 rounded-full border border-slate-200 shadow-xs" style="background-color: {{ $accent }}" title="Accent"></span>
+                        <span class="w-4 h-4 rounded-full border border-slate-200" style="background-color: {{ $primary }}" title="Primary"></span>
+                        <span class="w-4 h-4 rounded-full border border-slate-200" style="background-color: {{ $secondary }}" title="Secondary"></span>
+                        <span class="w-4 h-4 rounded-full border border-slate-200" style="background-color: {{ $bg }}" title="Background"></span>
+                        <span class="w-4 h-4 rounded-full border border-slate-200" style="background-color: {{ $accent }}" title="Accent"></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Marketplace Action Bar -->
-            <div class="p-5 pt-0 space-y-2">
-                <button wire:click="openAssignModal({{ $theme->id }})" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-                    <span>Choose & Assign To Agency</span>
+            <!-- Clean Outline Action Bar -->
+            <div class="p-6 pt-0 space-y-2">
+                <button wire:click="openAssignModal({{ $theme->id }})" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-3 rounded-xl transition shadow-xs flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                    <span>Assign To Agency</span>
                 </button>
 
                 <div class="grid grid-cols-2 gap-2">
-                    <button wire:click="openDetailsModal({{ $theme->id }})" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] py-2 rounded-xl transition text-center">
+                    <button wire:click="openDetailsModal({{ $theme->id }})" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-[11px] py-2 rounded-xl border border-slate-200 transition text-center">
                         Details Specs
                     </button>
-                    <button wire:click="editTheme({{ $theme->id }})" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] py-2 rounded-xl transition text-center">
+                    <button wire:click="editTheme({{ $theme->id }})" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-[11px] py-2 rounded-xl border border-slate-200 transition text-center">
                         Customize Tokens
                     </button>
                 </div>
@@ -129,41 +144,43 @@
 
     <!-- 1. MULTI-STEP ASSIGNMENT WORKFLOW MODAL -->
     @if($showAssignModal && $targetTheme)
-    <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl border border-slate-200 max-w-xl w-full p-6 space-y-6 shadow-2xl">
-            <!-- Modal Stepper Header -->
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 space-y-6 shadow-xl">
+            <!-- Modal Header -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                    <span class="text-[10px] font-black text-teal-600 uppercase tracking-widest">Workflow Affectation • Étape {{ $assignStep }}/2</span>
-                    <h2 class="text-lg font-black text-slate-900 mt-0.5">Appliquer "{{ $targetTheme->name }}"</h2>
+                    <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Workflow Affectation • Étape {{ $assignStep }}/2</span>
+                    <h2 class="text-lg font-bold text-slate-900 mt-0.5">Appliquer "{{ $targetTheme->name }}"</h2>
                 </div>
-                <button wire:click="$set('showAssignModal', false)" class="text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
+                <button wire:click="$set('showAssignModal', false)" class="text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
             </div>
 
             @if($assignStep === 1)
             <!-- Step 1: Search & Choose Agency -->
             <div class="space-y-4">
                 <div class="relative">
-                    <span class="absolute left-3.5 top-3 text-slate-400 text-xs">🔍</span>
-                    <input type="text" wire:model.live="searchAgency" placeholder="Rechercher agence par nom ou sous-domaine..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-800 focus:ring-teal-500 font-semibold">
+                    <span class="absolute left-3.5 top-3 text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
+                    </span>
+                    <input type="text" wire:model.live="searchAgency" placeholder="Rechercher agence par nom ou sous-domaine..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500/20 font-medium">
                 </div>
 
                 <div class="max-h-64 overflow-y-auto space-y-2 pr-1 text-xs">
                     @forelse($filteredTenants as $tenant)
-                    <div wire:click="selectAgencyForAssign('{{ $tenant->id }}')" class="flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition border-slate-200 hover:border-teal-500 hover:bg-teal-50/50">
+                    <div wire:click="selectAgencyForAssign('{{ $tenant->id }}')" class="flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition border-slate-200 hover:border-indigo-500 hover:bg-slate-50">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                            <div class="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-xs">
                                 {{ substr($tenant->name ?? $tenant->id, 0, 1) }}
                             </div>
                             <div>
-                                <span class="block font-black text-slate-900">{{ $tenant->name ?? $tenant->id }}</span>
+                                <span class="block font-bold text-slate-900">{{ $tenant->name ?? $tenant->id }}</span>
                                 <span class="block text-[10px] text-slate-400 font-mono">{{ $tenant->id }}.sc7mosa1422.universe.wf</span>
                             </div>
                         </div>
-                        <span class="text-[11px] font-bold text-teal-600">Sélectionner →</span>
+                        <span class="text-[11px] font-semibold text-indigo-600">Sélectionner →</span>
                     </div>
                     @empty
-                    <div class="text-center py-6 text-slate-400 text-xs">
+                    <div class="text-center py-6 text-slate-400 text-xs font-medium">
                         Aucune agence trouvée pour "{{ $searchAgency }}".
                     </div>
                     @endforelse
@@ -173,24 +190,24 @@
             @elseif($assignStep === 2 && $selectedTenant)
             <!-- Step 2: Preview & Confirm with Selected Agency -->
             <div class="space-y-4 text-xs">
-                <div class="p-4 bg-slate-900 text-white rounded-2xl space-y-2 border border-slate-800">
+                <div class="p-4 bg-slate-50 rounded-xl space-y-1.5 border border-slate-200">
                     <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-extrabold uppercase text-teal-400 tracking-wider">Agence Sélectionnée</span>
-                        <button wire:click="$set('assignStep', 1)" class="text-[10px] font-bold text-slate-400 hover:text-white underline">Changer d'agence</button>
+                        <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Agence Sélectionnée</span>
+                        <button wire:click="$set('assignStep', 1)" class="text-[10px] font-bold text-indigo-600 hover:underline">Changer d'agence</button>
                     </div>
-                    <div class="text-base font-black text-white">{{ $selectedTenant->name ?? $selectedTenant->id }}</div>
-                    <div class="text-xs text-slate-400 font-mono">{{ $selectedTenant->id }}.sc7mosa1422.universe.wf</div>
+                    <div class="text-base font-bold text-slate-900">{{ $selectedTenant->name ?? $selectedTenant->id }}</div>
+                    <div class="text-xs text-slate-500 font-mono">{{ $selectedTenant->id }}.sc7mosa1422.universe.wf</div>
                 </div>
 
-                <div class="p-4 bg-emerald-50 text-emerald-900 rounded-2xl border border-emerald-200 font-semibold space-y-1">
-                    <div class="font-black text-sm text-emerald-950">Vérification de Publication Live</div>
-                    <p class="text-xs text-emerald-800">Le thème <strong>{{ $targetTheme->name }}</strong> remplacera immédiatement l'identité visuelle du site sans altérer les textes, logos et contacts de l'agence.</p>
+                <div class="p-4 bg-indigo-50/60 text-indigo-950 rounded-xl border border-indigo-100 font-medium space-y-1">
+                    <div class="font-bold text-sm text-indigo-900">Vérification de Publication Live</div>
+                    <p class="text-xs text-indigo-800">Le thème structural <strong>{{ $targetTheme->name }}</strong> sera appliqué live immédiatement sur le sous-domaine agence.</p>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-2">
-                    <button wire:click="$set('assignStep', 1)" class="px-5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900">Retour</button>
-                    <button wire:click="confirmAssignToAgency" class="bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs px-6 py-2.5 rounded-xl shadow-lg transition">
-                        🚀 Confirmer & Publier Live
+                    <button wire:click="$set('assignStep', 1)" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900">Retour</button>
+                    <button wire:click="confirmAssignToAgency" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-xs transition">
+                        Confirm & Publish Live
                     </button>
                 </div>
             </div>
@@ -201,35 +218,35 @@
 
     <!-- 2. LIVE INTERACTIVE DEVICE PREVIEW MODAL -->
     @if($showPreviewModal && $targetTheme)
-    <div class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex flex-col p-4">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex flex-col p-6">
         <!-- Preview Device Toolbar -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4 flex items-center justify-between text-white max-w-5xl mx-auto w-full shadow-2xl">
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-4 flex items-center justify-between text-slate-900 max-w-5xl mx-auto w-full shadow-lg">
             <div class="flex items-center gap-3">
-                <span class="font-black text-base text-teal-400">{{ $targetTheme->name }}</span>
+                <span class="font-bold text-sm text-slate-900">{{ $targetTheme->name }}</span>
                 <span class="text-xs text-slate-400 font-mono">v{{ $targetTheme->version }}</span>
             </div>
 
             <!-- Device Selector Buttons -->
-            <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
-                <button wire:click="$set('previewDevice', 'desktop')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'desktop' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white' }}">
-                    💻 Desktop (100%)
+            <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button wire:click="$set('previewDevice', 'desktop')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition {{ $previewDevice === 'desktop' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                    Desktop (100%)
                 </button>
-                <button wire:click="$set('previewDevice', 'tablet')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'tablet' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white' }}">
-                    📱 Tablet (768px)
+                <button wire:click="$set('previewDevice', 'tablet')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition {{ $previewDevice === 'tablet' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                    Tablet (768px)
                 </button>
-                <button wire:click="$set('previewDevice', 'mobile')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition {{ $previewDevice === 'mobile' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white' }}">
-                    📲 Mobile (375px)
+                <button wire:click="$set('previewDevice', 'mobile')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition {{ $previewDevice === 'mobile' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                    Mobile (375px)
                 </button>
             </div>
 
-            <button wire:click="$set('showPreviewModal', false)" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-1.5 rounded-xl text-xs font-bold transition">
-                Fermer Preview ✕
+            <button wire:click="$set('showPreviewModal', false)" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-1.5 rounded-xl text-xs font-bold transition">
+                Close Preview ✕
             </button>
         </div>
 
         <!-- Viewport Container Frame Rendering Real Interactive Theme Landing -->
         <div class="flex-1 flex justify-center items-center overflow-hidden">
-            <div class="h-full transition-all duration-300 shadow-2xl rounded-2xl overflow-hidden border border-slate-700 bg-white"
+            <div class="h-full transition-all duration-300 shadow-xl rounded-2xl overflow-hidden border border-slate-300 bg-white"
                  style="width: {{ $previewDevice === 'mobile' ? '375px' : ($previewDevice === 'tablet' ? '768px' : '100%') }}">
                 <iframe src="{{ route('platform.theme.preview', $targetTheme->slug) }}" class="w-full h-full border-0"></iframe>
             </div>
@@ -239,50 +256,50 @@
 
     <!-- 3. THEME DETAILS & SPECIFICATIONS MODAL -->
     @if($showDetailsModal && $targetTheme)
-    <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl border border-slate-200 max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-6 shadow-xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Spécifications Thème</span>
-                    <h2 class="text-xl font-black text-slate-900 mt-0.5">{{ $targetTheme->name }}</h2>
+                    <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Specifications</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-0.5">{{ $targetTheme->name }}</h2>
                 </div>
-                <button wire:click="$set('showDetailsModal', false)" class="text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
+                <button wire:click="$set('showDetailsModal', false)" class="text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
             </div>
 
-            <div class="space-y-4 text-xs">
+            <div class="space-y-4 text-xs font-medium">
                 <p class="text-slate-600 leading-relaxed">{{ $targetTheme->description }}</p>
 
                 <!-- Spec Grid -->
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Auteur</span>
-                        <span class="font-bold text-slate-900 block">{{ $targetTheme->author ?? 'Insurio Design System' }}</span>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Author</span>
+                        <span class="font-bold text-slate-900 block">{{ $targetTheme->author ?? 'Insurio Studio' }}</span>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
                         <span class="text-[10px] font-bold text-slate-400 uppercase block">Version</span>
                         <span class="font-bold text-slate-900 block">v{{ $targetTheme->version }}</span>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Bibliothèque d'icônes</span>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Icons Library</span>
                         <span class="font-bold text-slate-900 block">Lucide Outline Icons</span>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Typographie</span>
-                        <span class="font-bold text-slate-900 block">Plus Jakarta Sans</span>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Typography</span>
+                        <span class="font-bold text-slate-900 block">Inter Variable</span>
                     </div>
                 </div>
 
-                <div class="p-4 bg-slate-900 text-white rounded-2xl space-y-2">
-                    <span class="text-[10px] font-bold text-teal-400 uppercase block">Score de Performance & SEO</span>
+                <div class="p-4 bg-slate-50 text-slate-900 rounded-xl border border-slate-200 space-y-2">
+                    <span class="text-[10px] font-bold text-indigo-600 uppercase block">Performance & Accessibility</span>
                     <div class="flex justify-between items-center text-xs">
-                        <span>Core Web Vitals: <strong class="text-emerald-400">98/100</strong></span>
-                        <span>SEO Indexing: <strong class="text-emerald-400">Conforme</strong></span>
+                        <span>Core Web Vitals: <strong class="text-emerald-600">98/100</strong></span>
+                        <span>SEO Indexing: <strong class="text-emerald-600">100% Ready</strong></span>
                     </div>
                 </div>
             </div>
 
             <div class="flex justify-end pt-4 border-t border-slate-100">
-                <button wire:click="$set('showDetailsModal', false)" class="bg-slate-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl">Fermer</button>
+                <button wire:click="$set('showDetailsModal', false)" class="bg-slate-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl">Close</button>
             </div>
         </div>
     </div>
@@ -290,47 +307,36 @@
 
     <!-- 4. EDIT TOKENS MODAL -->
     @if($showEditModal)
-    <div class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <h2 class="text-lg font-bold text-slate-900">Éditeur de Tokens & Couleurs Thème</h2>
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h2 class="text-lg font-bold text-slate-900">Theme Tokens & Styles</h2>
 
-            <div class="space-y-3 text-xs">
+            <div class="space-y-3 text-xs font-medium">
                 <div>
-                    <label class="block font-bold text-slate-600 mb-1">Nom du Thème</label>
+                    <label class="block font-bold text-slate-700 mb-1">Theme Name</label>
                     <input type="text" wire:model="name" class="w-full border border-slate-200 rounded-xl px-3 py-2">
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-600 mb-1">Description</label>
+                    <label class="block font-bold text-slate-700 mb-1">Description</label>
                     <textarea wire:model="description" class="w-full border border-slate-200 rounded-xl px-3 py-2"></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Couleur Primaire</label>
+                        <label class="block font-bold text-slate-700 mb-1">Primary Color</label>
                         <input type="color" wire:model="primary_color" class="w-full h-10 border border-slate-200 rounded-xl p-1 cursor-pointer">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Couleur Secondaire</label>
+                        <label class="block font-bold text-slate-700 mb-1">Secondary Color</label>
                         <input type="color" wire:model="secondary_color" class="w-full h-10 border border-slate-200 rounded-xl p-1 cursor-pointer">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Fond (Background)</label>
-                        <input type="color" wire:model="bg_color" class="w-full h-10 border border-slate-200 rounded-xl p-1 cursor-pointer">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Accent</label>
-                        <input type="color" wire:model="accent_color" class="w-full h-10 border border-slate-200 rounded-xl p-1 cursor-pointer">
                     </div>
                 </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                <button wire:click="$set('showEditModal', false)" class="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900">Annuler</button>
-                <button wire:click="saveTheme" class="bg-indigo-600 text-white font-bold text-xs px-5 py-2 rounded-xl">Enregistrer</button>
+                <button wire:click="$set('showEditModal', false)" class="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900">Cancel</button>
+                <button wire:click="saveTheme" class="bg-indigo-600 text-white font-bold text-xs px-5 py-2 rounded-xl">Save Changes</button>
             </div>
         </div>
     </div>
