@@ -2,23 +2,23 @@
     @if (session()->has('message'))
         <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-4 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-xs">
             <div class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 <span>{{ session('message') }}</span>
             </div>
             <button class="text-emerald-500 hover:text-emerald-900 text-xs font-bold" @click="$el.parentElement.remove()">✕</button>
         </div>
     @endif
 
-    <!-- Clean Minimalist Header (Stripe / Framer Store style) -->
+    <!-- Clean Minimalist Header (Shopify / Framer Theme Store style) -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
             <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Theme Marketplace</h1>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Theme Marketplace Engine V3</h1>
                 <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-bold rounded-full">
-                    10 Production Themes
+                    15 Premium Themes
                 </span>
             </div>
-            <p class="text-xs text-slate-500 mt-1 font-medium">Catalogue officiel des thèmes d'assurance White Label. Conçus selon les standards Stripe & Framer Studio.</p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">Marketplace officielle de thèmes d'assurance White Label prêts pour la production. Prévisualisations interactives 100% réelles.</p>
         </div>
 
         <div class="flex items-center gap-3">
@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <!-- Theme Store 3-Column Grid (Apple Store / Webflow Templates style) -->
+    <!-- Theme Store 3-Column Grid (15 Distinct Themes) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         @foreach($themes as $theme)
         @php
@@ -37,18 +37,15 @@
             $configComp = is_array($theme->components_config) ? $theme->components_config : json_decode($theme->components_config ?? '[]', true);
             $primary = $colors['primary'] ?? '#1E40AF';
             $secondary = $colors['secondary'] ?? '#3B82F6';
-            $bg = $colors['bg'] ?? '#0F172A';
-            $cardBg = $colors['card_bg'] ?? '#1E293B';
-            $accent = $colors['accent'] ?? '#38BDF8';
-            $textColor = $colors['text'] ?? '#F8FAFC';
-            $isDark = $configComp['dark'] ?? true;
+            $bg = $colors['bg'] ?? '#FFFFFF';
+            $accent = $colors['accent'] ?? '#2563EB';
         @endphp
         <div class="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group">
             
-            <!-- REAL LIVE PREVIEW IFRAME CONTAINER (No Dark Background Rectangles) -->
+            <!-- REAL LIVE PREVIEW IFRAME CONTAINER -->
             <div class="h-64 relative border-b border-[#E5E7EB] bg-slate-50 overflow-hidden" x-data="{ scrolling: false }" @mouseenter="scrolling = true" @mouseleave="scrolling = false">
                 
-                <!-- Status Badges -->
+                <!-- Badges -->
                 <div class="absolute top-3 left-3 right-3 flex items-center justify-between z-20 pointer-events-none">
                     <span class="px-2.5 py-1 bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-bold rounded-lg border border-slate-200 shadow-xs">
                         v{{ $theme->version }}
@@ -57,11 +54,6 @@
                         <span class="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-bold rounded-full">
                             100% Live Website
                         </span>
-                        @if($theme->is_locked)
-                            <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[9px] font-bold rounded-full">
-                                Locked
-                            </span>
-                        @endif
                     </div>
                 </div>
 
@@ -79,7 +71,7 @@
                 </div>
             </div>
 
-            <!-- Theme Meta Information Specs -->
+            <!-- Theme Meta Specs -->
             <div class="p-6 space-y-4">
                 <div>
                     <div class="flex items-center justify-between">
@@ -89,7 +81,7 @@
                     <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed font-medium">{{ $theme->description }}</p>
                 </div>
 
-                <!-- Clean Specs Pill Grid (Lucide Line Icons Only) -->
+                <!-- Specs Grid -->
                 <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 font-semibold bg-slate-50/70 p-3 rounded-xl border border-slate-100">
                     <div class="flex items-center gap-1.5">
                         <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
@@ -109,7 +101,7 @@
                     </div>
                 </div>
 
-                <!-- Color Swatches -->
+                <!-- Palette -->
                 <div class="flex items-center justify-between pt-1">
                     <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Palette</span>
                     <div class="flex items-center gap-1.5">
@@ -121,7 +113,7 @@
                 </div>
             </div>
 
-            <!-- Clean Outline Action Bar -->
+            <!-- Action Buttons -->
             <div class="p-6 pt-0 space-y-2">
                 <button wire:click="openAssignModal({{ $theme->id }})" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-3 rounded-xl transition shadow-xs flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
@@ -142,11 +134,10 @@
         @endforeach
     </div>
 
-    <!-- 1. MULTI-STEP ASSIGNMENT WORKFLOW MODAL -->
+    <!-- ASSIGNMENT MODAL -->
     @if($showAssignModal && $targetTheme)
     <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 space-y-6 shadow-xl">
-            <!-- Modal Header -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
                     <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Workflow Affectation • Étape {{ $assignStep }}/2</span>
@@ -156,7 +147,6 @@
             </div>
 
             @if($assignStep === 1)
-            <!-- Step 1: Search & Choose Agency -->
             <div class="space-y-4">
                 <div class="relative">
                     <span class="absolute left-3.5 top-3 text-slate-400">
@@ -188,7 +178,6 @@
             </div>
 
             @elseif($assignStep === 2 && $selectedTenant)
-            <!-- Step 2: Preview & Confirm with Selected Agency -->
             <div class="space-y-4 text-xs">
                 <div class="p-4 bg-slate-50 rounded-xl space-y-1.5 border border-slate-200">
                     <div class="flex justify-between items-center">
@@ -201,7 +190,7 @@
 
                 <div class="p-4 bg-indigo-50/60 text-indigo-950 rounded-xl border border-indigo-100 font-medium space-y-1">
                     <div class="font-bold text-sm text-indigo-900">Vérification de Publication Live</div>
-                    <p class="text-xs text-indigo-800">Le thème structural <strong>{{ $targetTheme->name }}</strong> sera appliqué live immédiatement sur le sous-domaine agence.</p>
+                    <p class="text-xs text-indigo-800">Le thème <strong>{{ $targetTheme->name }}</strong> sera appliqué live immédiatement sur le sous-domaine agence.</p>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-2">
@@ -216,17 +205,15 @@
     </div>
     @endif
 
-    <!-- 2. LIVE INTERACTIVE DEVICE PREVIEW MODAL -->
+    <!-- LIVE PREVIEW MODAL -->
     @if($showPreviewModal && $targetTheme)
     <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex flex-col p-6">
-        <!-- Preview Device Toolbar -->
         <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-4 flex items-center justify-between text-slate-900 max-w-5xl mx-auto w-full shadow-lg">
             <div class="flex items-center gap-3">
                 <span class="font-bold text-sm text-slate-900">{{ $targetTheme->name }}</span>
                 <span class="text-xs text-slate-400 font-mono">v{{ $targetTheme->version }}</span>
             </div>
 
-            <!-- Device Selector Buttons -->
             <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
                 <button wire:click="$set('previewDevice', 'desktop')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition {{ $previewDevice === 'desktop' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
                     Desktop (100%)
@@ -244,7 +231,6 @@
             </button>
         </div>
 
-        <!-- Viewport Container Frame Rendering Real Interactive Theme Landing -->
         <div class="flex-1 flex justify-center items-center overflow-hidden">
             <div class="h-full transition-all duration-300 shadow-xl rounded-2xl overflow-hidden border border-slate-300 bg-white"
                  style="width: {{ $previewDevice === 'mobile' ? '375px' : ($previewDevice === 'tablet' ? '768px' : '100%') }}">
@@ -254,7 +240,7 @@
     </div>
     @endif
 
-    <!-- 3. THEME DETAILS & SPECIFICATIONS MODAL -->
+    <!-- DETAILS MODAL -->
     @if($showDetailsModal && $targetTheme)
     <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-6 shadow-xl max-h-[90vh] overflow-y-auto">
@@ -269,7 +255,6 @@
             <div class="space-y-4 text-xs font-medium">
                 <p class="text-slate-600 leading-relaxed">{{ $targetTheme->description }}</p>
 
-                <!-- Spec Grid -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
                         <span class="text-[10px] font-bold text-slate-400 uppercase block">Author</span>
@@ -285,58 +270,13 @@
                     </div>
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
                         <span class="text-[10px] font-bold text-slate-400 uppercase block">Typography</span>
-                        <span class="font-bold text-slate-900 block">Inter Variable</span>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-slate-50 text-slate-900 rounded-xl border border-slate-200 space-y-2">
-                    <span class="text-[10px] font-bold text-indigo-600 uppercase block">Performance & Accessibility</span>
-                    <div class="flex justify-between items-center text-xs">
-                        <span>Core Web Vitals: <strong class="text-emerald-600">98/100</strong></span>
-                        <span>SEO Indexing: <strong class="text-emerald-600">100% Ready</strong></span>
+                        <span class="font-bold text-slate-900 block">Plus Jakarta Sans</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex justify-end pt-4 border-t border-slate-100">
                 <button wire:click="$set('showDetailsModal', false)" class="bg-slate-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl">Close</button>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    <!-- 4. EDIT TOKENS MODAL -->
-    @if($showEditModal)
-    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h2 class="text-lg font-bold text-slate-900">Theme Tokens & Styles</h2>
-
-            <div class="space-y-3 text-xs font-medium">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Theme Name</label>
-                    <input type="text" wire:model="name" class="w-full border border-slate-200 rounded-xl px-3 py-2">
-                </div>
-
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Description</label>
-                    <textarea wire:model="description" class="w-full border border-slate-200 rounded-xl px-3 py-2"></textarea>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Primary Color</label>
-                        <input type="color" wire:model="primary_color" class="w-full h-10 border border-slate-200 rounded-xl p-1 cursor-pointer">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Secondary Color</label>
-                        <input type="color" wire:model="secondary_color" class="w-full h-10 border border-slate-200 rounded-xl p-1 cursor-pointer">
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                <button wire:click="$set('showEditModal', false)" class="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900">Cancel</button>
-                <button wire:click="saveTheme" class="bg-indigo-600 text-white font-bold text-xs px-5 py-2 rounded-xl">Save Changes</button>
             </div>
         </div>
     </div>
