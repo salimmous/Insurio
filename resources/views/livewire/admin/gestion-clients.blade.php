@@ -58,7 +58,7 @@
         <!-- Filter / Search Bar -->
         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 flex gap-4">
             <div class="flex-1">
-                <input type="text" wire:model.live="search" placeholder="Rechercher par Nom, Prénom, CIN, Téléphone..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" wire:model.live="search" placeholder="Rechercher par Référence (ex: CL-00001), Nom, CIN, Téléphone..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             </div>
         </div>
 
@@ -67,8 +67,9 @@
             <!-- Desktop View -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-55 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                         <tr>
+                            <th class="px-6 py-3">Réf. Client</th>
                             <th class="px-6 py-3">Nom Complet</th>
                             <th class="px-6 py-3">CIN</th>
                             <th class="px-6 py-3">Téléphone</th>
@@ -81,6 +82,11 @@
                     <tbody class="divide-y divide-gray-200 text-sm text-gray-900">
                         @forelse($clients as $client)
                             <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-2xs">
+                                        {{ $client->formatted_reference }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="font-semibold text-indigo-600 hover:text-indigo-900">
                                         <a href="{{ route('admin.clients.profile', $client->id) }}" class="hover:underline">
@@ -126,7 +132,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-10 text-center text-gray-400">
+                                <td colspan="8" class="px-6 py-10 text-center text-gray-400">
                                     Aucun client particulier enregistré.
                                 </td>
                             </tr>
@@ -141,6 +147,9 @@
                     <div class="p-4 flex flex-col gap-2 hover:bg-gray-50">
                         <div class="flex justify-between items-start">
                             <div>
+                                <span class="inline-block px-2 py-0.5 text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded mb-1">
+                                    {{ $client->formatted_reference }}
+                                </span>
                                 <a href="{{ route('admin.clients.profile', $client->id) }}" class="font-bold text-indigo-650 hover:underline block">
                                     {{ $client->first_name }} {{ $client->last_name }}
                                 </a>
@@ -148,162 +157,117 @@
                             </div>
                             <div class="flex gap-1">
                                 @if($client->solvabilite === 'solvable')
-                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Solvable</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">Solvable</span>
                                 @else
-                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">Insolvable</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-800">Insolvable</span>
                                 @endif
                             </div>
                         </div>
-                        <div class="text-xs text-gray-600">
-                            @if($client->entreprise)
-                                <div class="mb-1"><strong>Société:</strong> {{ $client->entreprise->last_name }}</div>
-                            @endif
-                            <div><strong>Téléphone:</strong> {{ $client->phone ?? '-' }}</div>
-                            <div><strong>E-mail:</strong> {{ $client->email ?? '-' }}</div>
-                            <div><strong>Incidents:</strong> {{ $client->incident ? 'Oui' : 'Aucun' }}</div>
-                        </div>
-                        <div class="flex justify-end gap-3 text-xs mt-2 border-t pt-2 border-gray-100">
-                            <a href="{{ route('admin.clients.profile', $client->id) }}" class="text-emerald-600 font-semibold">CRM</a>
-                            <button wire:click="openModal({{ $client->id }})" class="text-indigo-600 font-semibold">Modifier</button>
-                            <button onclick="confirm('Supprimer ce client ?') || event.stopImmediatePropagation()" wire:click="delete({{ $client->id }})" class="text-rose-600 font-semibold">Supprimer</button>
+                        <div class="text-xs text-gray-500 flex justify-between items-center pt-2 border-t border-gray-100">
+                            <span>📞 {{ $client->phone ?? '-' }}</span>
+                            <div class="flex gap-2">
+                                <a href="{{ route('admin.clients.profile', $client->id) }}" class="text-emerald-600 font-medium">CRM</a>
+                                <button wire:click="openModal({{ $client->id }})" class="text-indigo-600 font-medium">Modifier</button>
+                            </div>
                         </div>
                     </div>
                 @empty
-                    <div class="p-8 text-center text-gray-400 text-sm">
-                        Aucun client particulier enregistré.
+                    <div class="p-6 text-center text-gray-400 text-sm">
+                        Aucun client trouvé.
                     </div>
                 @endforelse
             </div>
 
             <!-- Pagination -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div class="p-4 border-t border-gray-200">
                 {{ $clients->links() }}
             </div>
         </div>
-
-        <!-- Form Modal -->
-        @if($isModalOpen)
-            <div class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                    
-                    <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                        <div class="bg-white px-6 py-6 border-b border-gray-150">
-                            <h3 class="text-lg font-bold text-gray-900" id="modal-title">
-                                {{ $clientId ? 'Modifier le client' : 'Ajouter un client' }}
-                            </h3>
-                        </div>
-                        <form wire:submit.prevent="save" class="p-6 flex flex-col gap-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Prénom</label>
-                                    <input type="text" wire:model="first_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('first_name') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nom</label>
-                                    <input type="text" wire:model="last_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('last_name') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">CIN</label>
-                                    <input type="text" wire:model="cin" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
-                                    @error('cin') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Passeport</label>
-                                    <input type="text" wire:model="passport" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
-                                    @error('passport') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Téléphone</label>
-                                    <input type="text" wire:model="phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('phone') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">WhatsApp</label>
-                                    <input type="text" wire:model="whatsapp_number" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('whatsapp_number') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Date de naissance</label>
-                                    <input type="date" wire:model="date_of_birth" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('date_of_birth') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Profession</label>
-                                    <input type="text" wire:model="profession" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('profession') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Ville</label>
-                                    <input type="text" wire:model="city" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('city') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">E-mail</label>
-                                    <input type="email" wire:model="email" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Adresse complète</label>
-                                <textarea wire:model="address" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                                @error('address') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Société Rattachée (Facultatif)</label>
-                                <select wire:model="entreprise_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="">-- Aucune (Client Indépendant) --</option>
-                                    @foreach($entreprises as $ent)
-                                        <option value="{{ $ent->id }}">{{ $ent->last_name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('entreprise_id') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4 flex-col">
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Solvabilité</label>
-                                    <select wire:model="solvabilite" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                        <option value="solvable">Solvable</option>
-                                        <option value="non-solvable">Non solvable / Litige</option>
-                                    </select>
-                                    @error('solvabilite') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="col-span-1 flex items-center pl-4 mt-6">
-                                    <input type="checkbox" id="incident" wire:model="incident" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                    <label for="incident" class="ml-2 block text-sm text-gray-700 font-semibold text-rose-600">Incident signalé</label>
-                                </div>
-                            </div>
-
-                            <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 -mx-6 -mb-6 border-t border-gray-150">
-                                <button type="button" wire:click="closeModal" class="inline-flex justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Annuler
-                                </button>
-                                <button type="submit" class="inline-flex justify-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Valider
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @endif
     </div>
+
+    <!-- Modal Client Form -->
+    @if($isModalOpen)
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div class="bg-white rounded-xl max-w-2xl w-full p-6 space-y-4 shadow-xl">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="text-lg font-bold text-gray-900">
+                        {{ $clientId ? 'Modifier le Client' : 'Nouveau Client Particulier' }}
+                    </h3>
+                    <button wire:click="closeModal" class="text-gray-400 hover:text-gray-600">✕</button>
+                </div>
+
+                <form wire:submit.prevent="save" class="space-y-4 text-xs font-medium">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Référence Client (Auto)</label>
+                            <input type="text" wire:model="reference" placeholder="Auto-généré ex: CL-00001" class="w-full border border-gray-300 rounded-lg p-2.5 font-mono bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Rattacher à une Entreprise (Optionnel)</label>
+                            <select wire:model="entreprise_id" class="w-full border border-gray-300 rounded-lg p-2.5">
+                                <option value="">Aucune (Client Particulier Indépendant)</option>
+                                @foreach($entreprises as $ent)
+                                    <option value="{{ $ent->id }}">{{ $ent->last_name }} ({{ $ent->cin ?? 'Entreprise' }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Prénom *</label>
+                            <input type="text" wire:model="first_name" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            @error('first_name') <span class="text-red-500">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Nom *</label>
+                            <input type="text" wire:model="last_name" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            @error('last_name') <span class="text-red-500">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">CIN / Carte Nationale</label>
+                            <input type="text" wire:model="cin" placeholder="ex: AB123456" class="w-full border border-gray-300 rounded-lg p-2.5 font-mono">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Téléphone</label>
+                            <input type="text" wire:model="phone" placeholder="ex: 0661234567" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">WhatsApp Direct</label>
+                            <input type="text" wire:model="whatsapp_number" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Adresse E-mail</label>
+                            <input type="email" wire:model="email" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Solvabilité</label>
+                            <select wire:model="solvabilite" class="w-full border border-gray-300 rounded-lg p-2.5">
+                                <option value="solvable">Solvable</option>
+                                <option value="non-solvable">Non Solvable / Risque</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Incident / Impayé</label>
+                            <select wire:model="incident" class="w-full border border-gray-300 rounded-lg p-2.5">
+                                <option value="0">Aucun incident</option>
+                                <option value="1">Incident / Impayé Enregistré</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Adresse Complète</label>
+                        <textarea wire:model="address" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <button type="button" wire:click="closeModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-bold hover:bg-gray-50">Annuler</button>
+                        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-md">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 </div>

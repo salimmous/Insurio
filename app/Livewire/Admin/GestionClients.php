@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Client;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 
 class GestionClients extends Component
 {
@@ -15,6 +16,7 @@ class GestionClients extends Component
     
     // Form fields
     public $clientId = null;
+    public $reference = '';
     public $first_name = '';
     public $last_name = '';
     public $email = '';
@@ -69,6 +71,7 @@ class GestionClients extends Component
 
         if ($id) {
             $client = Client::findOrFail($id);
+            $this->reference = $client->formatted_reference;
             $this->first_name = $client->first_name;
             $this->last_name = $client->last_name;
             $this->email = $client->email;
@@ -105,6 +108,7 @@ class GestionClients extends Component
     private function resetForm()
     {
         $this->clientId = null;
+        $this->reference = '';
         $this->first_name = '';
         $this->last_name = '';
         $this->email = '';
@@ -144,27 +148,33 @@ class GestionClients extends Component
 
         $this->validate();
 
+        $data = [
+            'uuid' => $this->clientId ? Client::findOrFail($this->clientId)->uuid : (string) Str::uuid(),
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'whatsapp_number' => $this->whatsapp_number,
+            'cin' => $this->cin,
+            'passport' => $this->passport,
+            'date_of_birth' => $this->date_of_birth ?: null,
+            'profession' => $this->profession,
+            'address' => $this->address,
+            'city' => $this->city,
+            'notes' => $this->notes,
+            'solvabilite' => $this->solvabilite,
+            'incident' => $this->incident,
+            'entreprise_id' => $this->entreprise_id ?: null,
+            'client_type' => 'individual',
+        ];
+
+        if (Schema::hasColumn('clients', 'reference')) {
+            $data['reference'] = $this->reference ?: 'CL-' . str_pad(($this->clientId ?? ((Client::max('id') ?? 0) + 1)), 5, '0', STR_PAD_LEFT);
+        }
+
         Client::updateOrCreate(
             ['id' => $this->clientId],
-            [
-                'uuid' => $this->clientId ? Client::findOrFail($this->clientId)->uuid : (string) Str::uuid(),
-                'first_name' => $this->first_name,
-                'last_name' => $this->last_name,
-                'email' => $this->email,
-                'phone' => $this->phone,
-                'whatsapp_number' => $this->whatsapp_number,
-                'cin' => $this->cin,
-                'passport' => $this->passport,
-                'date_of_birth' => $this->date_of_birth ?: null,
-                'profession' => $this->profession,
-                'address' => $this->address,
-                'city' => $this->city,
-                'notes' => $this->notes,
-                'solvabilite' => $this->solvabilite,
-                'incident' => $this->incident,
-                'entreprise_id' => $this->entreprise_id ?: null,
-                'client_type' => 'individual',
-            ]
+            $data
         );
 
         $this->closeModal();
@@ -195,7 +205,12 @@ class GestionClients extends Component
                   ->orWhere('last_name', 'like', '%' . $this->search . '%')
                   ->orWhere('cin', 'like', '%' . $this->search . '%')
                   ->orWhere('phone', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
+                  ->orWhere('email', 'like', '%' . $this->search . '%')
+                  ->orWhere('id', 'like', '%' . str_replace(['CL-', 'REF-'], '', $this->search) . '%');
+
+                if (Schema::hasColumn('clients', 'reference')) {
+                    $q->orWhere('reference', 'like', '%' . $this->search . '%');
+                }
             });
         }
 

@@ -15,6 +15,7 @@ class Client extends Model
 
     protected $fillable = [
         'uuid',
+        'reference',
         'first_name',
         'last_name',
         'company_name',
@@ -47,6 +48,24 @@ class Client extends Model
         'date_of_birth' => 'date',
         'incident' => 'boolean',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($client) {
+            if (empty($client->reference)) {
+                $nextId = (static::max('id') ?? 0) + 1;
+                $client->reference = 'CL-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+            }
+        });
+    }
+
+    public function getFormattedReferenceAttribute()
+    {
+        if (!empty($this->attributes['reference'])) {
+            return $this->attributes['reference'];
+        }
+        return 'CL-' . str_pad($this->id ?? 1, 5, '0', STR_PAD_LEFT);
+    }
 
     public function newEloquentBuilder($query)
     {
