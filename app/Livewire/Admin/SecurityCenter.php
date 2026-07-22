@@ -2,36 +2,133 @@
 
 namespace App\Livewire\Admin;
 
+use Livewire\Component;
 use App\Services\Auth\TwoFactorService;
-use App\Services\Auth\PasswordPolicyService;
+use App\Models\User;
+use App\Models\TwoFactorSetting;
+use App\Models\TwoFactorAuditLog;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Livewire\Component;
 
 class SecurityCenter extends Component
 {
-    public string $activeTab = 'sessions';
+    public string $activeTab = 'security'; // security, admin_2fa, audit_logs, sessions
 
-    // Password change
-    public string $current_password = '';
-    public string $new_password = '';
-    public string $new_password_confirmation = '';
-    public array $passwordErrors = [];
-    public string $passwordSuccess = '';
+    // 2FA Setup State
+    public bool $showSetupModal = false;
+    public string $setupSecret = '';
+    public string $qrCodeSvg = '';
+    public string $verificationCode = '';
+    public int $setupStep = 1; // 1: QR Scan & Verify, 2: Display Recovery Codes
+    public array $recoveryCodes = [];
 
-    // MFA
-    public string $mfa_code = '';
-    public string $mfaError = '';
-    public bool $mfaSuccess = false;
+    // Trusted Devices & Password
+    public bool $trustCurrentDevice = true;
+
+    // Super Admin 2FA Force Policies
+    public bool $force_2fa_all = false;
+    public bool $force_2fa_admins = false;
+    public bool $force_2fa_finance = false;
+    public bool $force_2fa_managers = false;
+
+    public function mount()
+    {
+        $setting = TwoFactorSetting::first();
+        if ($setting) {
+            $this->force_2fa_all = (bool) $setting->force_2fa_all;
+            $this->force_2fa_admins = (bool) $setting->force_2fa_admins;
+            $this->force_2fa_finance = (bool) $setting->force_2fa_finance;
+            $this->force_2fa_managers = (bool) $setting->force_2fa_managers;
+        }
+    }
 
     public function setTab(string $tab): void
     {
         $this->activeTab = $tab;
     }
 
-    // -------------------------------------------------------------------
-    // Sessions
-    // -------------------------------------------------------------------
+    public function start2faSetup()
+    {
+        $service = app(TwoFactorService::class);
+        $this->setupSecret = $service->generateSecretKey();
+        $this->qrCodeSvg = $service->getQrCodeSvg(auth()->user(), $this->setupSecret);
+        $this->verificationCode = '';
+        $this->setupStep = 1;
+        $this->showSetupModal = true;
+    }
+
+    public function confirm2faSetup()
+    {
+        $this->validate([
+            'verificationCode' => 'required|string|size:6',
+        ]);
+
+        $service = app(TwoFactorService::class);
+
+        if (!$service->verifyTotp($this->setupSecret, $this->verificationCode)) {
+            $this->addError('verificationCode', 'Code TOTP invalide. Veuillez vérifier votre application authentificateur.');
+            $service->logEvent(auth()->user(), 'Failed Verification');
+            return;
+        }
+
+        $this->recoveryCodes = $service->generateRecoveryCodes();
+        $service->confirmTwoFactor(auth()->user(), $this->setupSecret, $this->recoveryCodes);
+
+        if ($this->trustCurrentDevice) {
+            $fingerprint = md5(request()->ip() . request()->userAgent());
+            $service->trustDevice(auth()->user(), $fingerprint, 'Navigateur Actuel', request()->ip());
+        }
+
+        $service->logEvent(auth()->user(), 'Successful Verification');
+        $this->setupStep = 2;
+    }
+
+    public function closeSetupModal()
+    {
+        $this->showSetupModal = false;
+        $this->reset(['setupSecret', 'qrCodeSvg', 'verificationCode', 'setupStep', 'recoveryCodes']);
+    }
+
+    public function disable2fa()
+    {
+        $service = app(TwoFactorService::class);
+        $service->disableTwoFactor(auth()->user());
+        $this->dispatch('swal:success', ['message' => 'L\'authentification à deux facteurs a été désactivée.']);
+    }
+
+    public function regenerateRecoveryCodes()
+    {
+        $service = app(TwoFactorService::class);
+        $this->recoveryCodes = $service->generateRecoveryCodes();
+        $encryptedCodes = Crypt::encryptString(json_encode($this->recoveryCodes));
+        auth()->user()->update(['two_factor_recovery_codes' => $encryptedCodes]);
+        $service->logEvent(auth()->user(), 'Recovery Codes Regenerated');
+        $this->dispatch('swal:success', ['message' => 'Nouveaux codes de récupération générés.']);
+    }
+
+    public function removeTrustedDevice($deviceId)
+    {
+        $service = app(TwoFactorService::class);
+        auth()->user()->trustedDevices()->where('id', $deviceId)->delete();
+        $service->logEvent(auth()->user(), 'Device Removed');
+        $this->dispatch('swal:success', ['message' => 'Appareil de confiance supprimé.']);
+    }
+
+    public function saveForce2faPolicies()
+    {
+        TwoFactorSetting::updateOrCreate(
+            ['id' => 1],
+            [
+                'force_2fa_all' => $this->force_2fa_all,
+                'force_2fa_admins' => $this->force_2fa_admins,
+                'force_2fa_finance' => $this->force_2fa_finance,
+                'force_2fa_managers' => $this->force_2fa_managers,
+            ]
+        );
+
+        $this->dispatch('swal:success', ['message' => 'Politiques d\'obligation 2FA enregistrées.']);
+    }
 
     public function revokeSession(string $sessionId): void
     {
@@ -41,161 +138,34 @@ class SecurityCenter extends Component
             ->where('user_id', $user->id)
             ->delete();
 
-        $this->dispatch('notify', ['type' => 'success', 'message' => 'Session revoked.']);
-    }
-
-    public function revokeAllSessions(): void
-    {
-        $user = auth()->user();
-        DB::table('sessions')
-            ->where('user_id', $user->id)
-            ->where('id', '!=', session()->getId())
-            ->delete();
-
-        $this->dispatch('notify', ['type' => 'success', 'message' => 'All other sessions revoked.']);
-    }
-
-    // -------------------------------------------------------------------
-    // Trusted Devices
-    // -------------------------------------------------------------------
-
-    public function revokeDevice(int $deviceId): void
-    {
-        auth()->user()->trustedDevices()->where('id', $deviceId)->delete();
-        $this->dispatch('notify', ['type' => 'success', 'message' => 'Device removed.']);
-    }
-
-    // -------------------------------------------------------------------
-    // Two-Factor Auth
-    // -------------------------------------------------------------------
-
-    public function enableMfa(): void
-    {
-        $user    = auth()->user();
-        $service = app(TwoFactorService::class);
-        $service->sendCode($user);
-        $this->mfaError   = '';
-        $this->mfaSuccess = false;
-        $this->dispatch('notify', ['type' => 'info', 'message' => 'A verification code has been sent to your email.']);
-    }
-
-    public function confirmEnableMfa(): void
-    {
-        $user    = auth()->user();
-        $service = app(TwoFactorService::class);
-
-        if (!$service->verify($user, $this->mfa_code)) {
-            $this->mfaError = 'Invalid or expired code.';
-            return;
-        }
-
-        $service->enable($user);
-        $this->mfaError   = '';
-        $this->mfaSuccess = true;
-        $this->mfa_code   = '';
-        $this->dispatch('notify', ['type' => 'success', 'message' => 'Two-factor authentication enabled.']);
-    }
-
-    public function disableMfa(): void
-    {
-        $user = auth()->user();
-        $this->validate(['current_password' => 'required']);
-
-        if (!Hash::check($this->current_password, $user->password)) {
-            $this->addError('current_password', 'Incorrect password.');
-            return;
-        }
-
-        app(TwoFactorService::class)->disable($user);
-        session(['two_factor_verified' => true]);
-        $this->dispatch('notify', ['type' => 'warning', 'message' => 'Two-factor authentication disabled.']);
-    }
-
-    // -------------------------------------------------------------------
-    // Password Change
-    // -------------------------------------------------------------------
-
-    public function changePassword(): void
-    {
-        $this->validate([
-            'current_password'        => 'required',
-            'new_password'            => 'required|string|confirmed',
-            'new_password_confirmation' => 'required|string',
-        ]);
-
-        $user = auth()->user();
-
-        if (!Hash::check($this->current_password, $user->password)) {
-            $this->passwordErrors = ['Current password is incorrect.'];
-            return;
-        }
-
-        $service = app(PasswordPolicyService::class);
-        $errors  = $service->validate($this->new_password, $user);
-
-        if (!empty($errors)) {
-            $this->passwordErrors = $errors;
-            return;
-        }
-
-        if ($service->isReused($this->new_password, $user)) {
-            $this->passwordErrors = ['You cannot reuse any of your last 5 passwords.'];
-            return;
-        }
-
-        $user->recordPasswordHistory();
-        $user->update([
-            'password'            => Hash::make($this->new_password),
-            'password_changed_at' => now(),
-        ]);
-
-        auth()->logoutOtherDevices($this->new_password);
-
-        $this->passwordErrors = [];
-        $this->passwordSuccess = 'Password updated successfully. All other devices have been logged out.';
-        $this->current_password = '';
-        $this->new_password = '';
-        $this->new_password_confirmation = '';
+        $this->dispatch('swal:success', ['message' => 'Session révoquée.']);
     }
 
     public function render()
     {
-        $user     = auth()->user();
-        $sessions = DB::table('sessions')
-            ->where('user_id', $user->id)
-            ->orderByDesc('last_activity')
-            ->get()
-            ->map(function ($session) {
-                $ua = $session->user_agent ?? '';
-                return (object) [
-                    'id'            => $session->id,
-                    'ip_address'    => $session->ip_address,
-                    'user_agent'    => $ua,
-                    'last_activity' => \Carbon\Carbon::createFromTimestamp($session->last_activity),
-                    'is_current'    => $session->id === session()->getId(),
-                    'browser'       => match(true) {
-                        str_contains($ua, 'Firefox') => 'Firefox',
-                        str_contains($ua, 'Chrome')  => 'Chrome',
-                        str_contains($ua, 'Safari')  => 'Safari',
-                        str_contains($ua, 'Edge')    => 'Edge',
-                        default                      => 'Browser',
-                    },
-                    'os'            => match(true) {
-                        str_contains($ua, 'Windows') => 'Windows',
-                        str_contains($ua, 'Mac')     => 'macOS',
-                        str_contains($ua, 'Linux')   => 'Linux',
-                        str_contains($ua, 'Android') => 'Android',
-                        str_contains($ua, 'iPhone')  => 'iOS',
-                        default                      => 'Device',
-                    },
-                ];
-            });
+        $user = auth()->user();
+        $service = app(TwoFactorService::class);
 
-        $loginHistories = $user->loginHistories()->take(30)->get();
+        $is2faEnabled = (bool) $user->two_factor_confirmed_at;
+        $decryptedCodes = $service->getDecryptedRecoveryCodes($user);
         $trustedDevices = $user->trustedDevices()->where('expires_at', '>', now())->get();
+        $auditLogs = TwoFactorAuditLog::where('user_id', $user->id)->latest()->take(15)->get();
 
-        return view('livewire.admin.security-center', compact(
-            'sessions', 'loginHistories', 'trustedDevices'
-        ));
+        $score = 40;
+        if ($is2faEnabled) $score += 40;
+        if ($user->password_changed_at && $user->password_changed_at->diffInDays(now()) < 90) $score += 10;
+        if ($trustedDevices->count() > 0) $score += 10;
+
+        $allUsersSecurity = User::withCount('trustedDevices')->get();
+
+        return view('livewire.admin.security-center', [
+            'user' => $user,
+            'is2faEnabled' => $is2faEnabled,
+            'securityScore' => $score,
+            'decryptedCodes' => $decryptedCodes,
+            'trustedDevices' => $trustedDevices,
+            'auditLogs' => $auditLogs,
+            'allUsersSecurity' => $allUsersSecurity,
+        ])->layout('layouts.app');
     }
 }
