@@ -4,7 +4,7 @@
     @if(session()->has('message'))
         <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-700 dark:text-emerald-300 flex items-center justify-between shadow-sm">
             <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>{{ session('message') }}</span>
@@ -15,7 +15,7 @@
     @if(session()->has('error'))
         <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center justify-between shadow-sm">
             <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>{{ session('error') }}</span>
@@ -27,8 +27,9 @@
     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-2">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                    <path d="m9 12 2 2 4-4"/>
                 </svg>
                 <span>GESTION DES ÉQUIPES & SÉCURITÉ 2FA</span>
             </div>
@@ -44,16 +45,17 @@
             <!-- Test SMTP Button -->
             <button wire:click="testSmtp" title="Tester la configuration de messagerie SMTP" 
                     class="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs px-4 py-3.5 rounded-2xl transition-all border border-slate-200 dark:border-slate-700">
-                <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
                 <span>Tester SMTP</span>
             </button>
 
             <!-- New Employee Button -->
             <button wire:click="openCreateModal" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs px-6 py-3.5 rounded-2xl shadow-lg shadow-indigo-600/30 transition-all">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14" />
                 </svg>
                 <span>Inviter un Nouvel Employé</span>
             </button>
@@ -79,7 +81,7 @@
         </div>
     </div>
 
-    <!-- Table of Employees with Lucide Icon Action Suite -->
+    <!-- Table of Employees with Modern Lucide Action Suite -->
     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
@@ -90,7 +92,7 @@
                         <th class="py-4 px-6">Succursale & Poste</th>
                         <th class="py-4 px-6">Commission</th>
                         <th class="py-4 px-6">Statut Compte & 2FA</th>
-                        <th class="py-4 px-6 text-right">Actions de Sécurité</th>
+                        <th class="py-4 px-6 text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800/80 font-medium">
@@ -150,85 +152,129 @@
                                     </span>
                                 @elseif($statusKey === 'suspended')
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 text-[10px] font-mono font-bold">
-                                        <span>⏸️ Suspendu</span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                                        <span>Suspendu</span>
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-mono font-bold">
-                                        <span>🚫 Désactivé</span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                        <span>Désactivé</span>
                                     </span>
                                 @endif
                             </td>
 
-                            <!-- Lucide SVG Action Suite -->
+                            <!-- Lucide Action Buttons Suite (40x40px, rounded-[12px], smooth hover animations) -->
                             <td class="py-4 px-6 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
+                                <div class="flex items-center justify-end gap-2">
                                     
-                                    <!-- 1. Edit Employee (Lucide Pencil) -->
+                                    <!-- 1. Eye → View Profile -->
                                     <button wire:click="edit({{ $emp->id }})" 
-                                            title="Modifier le profil employé"
-                                            class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                            title="Voir le profil"
+                                            class="w-10 h-10 rounded-[12px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                        <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+                                            <circle cx="12" cy="12" r="3"/>
                                         </svg>
                                     </button>
 
-                                    <!-- 2. Resend Invitation (Lucide Send) -->
+                                    <!-- 2. SquarePen → Edit Employee -->
+                                    <button wire:click="edit({{ $emp->id }})" 
+                                            title="Modifier l'employé"
+                                            class="w-10 h-10 rounded-[12px] bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                        <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"/>
+                                        </svg>
+                                    </button>
+
+                                    <!-- 3. Mail / MailCheck → Send Invitation / Invitation Sent -->
                                     @if($emp->statut === 'invitation_sent' || $emp->statut === 'invitation_pending')
                                         <button wire:click="resendInvitation({{ $emp->id }})" 
-                                                title="Réenvoyer l'email d'invitation (Lien 48h)"
-                                                class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition">
-                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                                title="Envoyer l'invitation"
+                                                class="w-10 h-10 rounded-[12px] bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                            <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                            </svg>
+                                        </button>
+                                    @else
+                                        <button wire:click="resendInvitation({{ $emp->id }})" 
+                                                title="Invitation envoyée"
+                                                class="w-10 h-10 rounded-[12px] bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                            <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h9"/>
+                                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                                <path d="m16 19 2 2 4-4"/>
                                             </svg>
                                         </button>
                                     @endif
 
-                                    <!-- 3. Reset Password Trigger (Lucide Key) -->
+                                    <!-- 4. KeyRound → Reset Password -->
                                     <button wire:click="resetPassword({{ $emp->id }})" 
                                             onclick="confirm('Confirmer l\'envoi d\'un email de réinitialisation de mot de passe à cet employé ?') || event.stopImmediatePropagation()"
-                                            title="Réinitialiser le mot de passe (Envoie un lien d'activation sécurisé par email)"
-                                            class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                            title="Réinitialiser le mot de passe"
+                                            class="w-10 h-10 rounded-[12px] bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                        <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"/>
+                                            <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/>
                                         </svg>
                                     </button>
 
-                                    <!-- 4. Reset 2FA (Lucide ShieldOff) -->
+                                    <!-- 5. ShieldCheck → Reset 2FA -->
                                     <button wire:click="resetTwoFactor({{ $emp->id }})" 
                                             onclick="confirm('Confirmer la réinitialisation de la clé 2FA TOTP pour cet employé ?') || event.stopImmediatePropagation()"
-                                            title="Réinitialiser l'authentification 2FA TOTP"
-                                            class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900 transition">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v4m0 4h.01" />
+                                            title="Réinitialiser le 2FA"
+                                            class="w-10 h-10 rounded-[12px] bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                        <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                                            <path d="m9 12 2 2 4-4"/>
                                         </svg>
                                     </button>
 
-                                    <!-- 5. Suspend / Reactivate (Lucide UserX / UserCheck) -->
+                                    <!-- 6. UserX → Suspend / RotateCcw → Reactivate / UserCheck → Activate -->
                                     @if($emp->statut === 'actif' || $emp->statut === 'active')
                                         <button wire:click="toggleStatut({{ $emp->id }}, 'suspended')" 
-                                                onclick="confirm('Confirmer la suspension temporaire du compte de cet employé ?') || event.stopImmediatePropagation()"
-                                                title="Suspendre l'accès de l'employé"
-                                                class="p-2 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900 transition">
-                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                onclick="confirm('Confirmer la suspension de cet employé ?') || event.stopImmediatePropagation()"
+                                                title="Suspendre l'employé"
+                                                class="w-10 h-10 rounded-[12px] bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                            <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                                <circle cx="9" cy="7" r="4"/>
+                                                <line x1="17" x2="22" y1="11" y2="16"/>
+                                                <line x1="22" x2="17" y1="11" y2="16"/>
+                                            </svg>
+                                        </button>
+                                    @elseif($emp->statut === 'suspended')
+                                        <button wire:click="toggleStatut({{ $emp->id }}, 'actif')" 
+                                                title="Réactiver l'employé"
+                                                class="w-10 h-10 rounded-[12px] bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                            <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                                <path d="M3 3v5h5"/>
                                             </svg>
                                         </button>
                                     @else
                                         <button wire:click="toggleStatut({{ $emp->id }}, 'actif')" 
-                                                title="Réactiver l'employé"
-                                                class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition">
-                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                title="Activer l'employé"
+                                                class="w-10 h-10 rounded-[12px] bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                            <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                                <circle cx="9" cy="7" r="4"/>
+                                                <polyline points="16 11 18 13 22 9"/>
                                             </svg>
                                         </button>
                                     @endif
 
-                                    <!-- 6. Delete Employee with Guardrails Check (Lucide Trash2) -->
+                                    <!-- 7. Trash2 → Delete Employee -->
                                     <button wire:click="confirmDelete({{ $emp->id }})" 
-                                            title="Supprimer définitivement l'employé (Sous réserve de garde-fous)"
-                                            class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900 transition">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            title="Supprimer l'employé"
+                                            class="w-10 h-10 rounded-[12px] bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center shadow-2xs">
+                                        <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 6h18"/>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                            <line x1="10" x2="10" y1="11" y2="17"/>
+                                            <line x1="14" x2="14" y1="11" y2="17"/>
                                         </svg>
                                     </button>
 
@@ -265,7 +311,13 @@
                 </div>
 
                 <div class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 text-xs text-indigo-900 dark:text-indigo-200 space-y-1">
-                    <strong class="font-bold block">🔒 Sécurité Enterprise Insurio:</strong>
+                    <strong class="font-bold flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <span>Sécurité Enterprise Insurio:</span>
+                    </strong>
                     <p class="text-[11px] leading-relaxed text-indigo-700 dark:text-indigo-300">
                         L'administrateur ne saisit et ne connaît JAMAIS le mot de passe de l'employé. Un lien d'activation sécurisé valable 48h sera transmis par email. L'employé créera son propre mot de passe et configurera 2FA lors de son premier accès.
                     </p>
@@ -355,7 +407,13 @@
                 
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center font-bold text-xl border border-rose-500/20 shrink-0">
-                        🗑️
+                        <svg class="w-6 h-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"/>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            <line x1="10" x2="10" y1="11" y2="17"/>
+                            <line x1="14" x2="14" y1="11" y2="17"/>
+                        </svg>
                     </div>
                     <div>
                         <h3 class="font-black text-lg text-slate-900 dark:text-white">Confirmation de Suppression</h3>
@@ -367,7 +425,10 @@
                     <!-- Deletion Blocked Alert -->
                     <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/80 text-xs text-amber-900 dark:text-amber-200 space-y-2">
                         <strong class="font-bold flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
-                            <span>⚠️ Suppression Définitive Impossible</span>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span>Suppression Définitive Impossible</span>
                         </strong>
                         <p class="text-xs leading-relaxed text-amber-800 dark:text-amber-300">
                             This employee has related business records and cannot be permanently deleted. Suspend the employee instead.
@@ -381,8 +442,12 @@
                         <button type="button" wire:click="$set('showDeleteModal', false)" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 transition text-xs">
                             Fermer
                         </button>
-                        <button type="button" wire:click="toggleStatut({{ $deletingEmployeId }}, 'suspended'); $set('showDeleteModal', false)" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-md transition">
-                            ⏸️ Suspendre l'Employé à la Place
+                        <button type="button" wire:click="toggleStatut({{ $deletingEmployeId }}, 'suspended'); $set('showDeleteModal', false)" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-md transition inline-flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <line x1="17" x2="22" y1="11" y2="16"/>
+                                <line x1="22" x2="17" y1="11" y2="16"/>
+                            </svg>
+                            <span>Suspendre l'Employé à la Place</span>
                         </button>
                     </div>
                 @else
@@ -395,8 +460,12 @@
                         <button type="button" wire:click="$set('showDeleteModal', false)" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 transition text-xs">
                             Annuler
                         </button>
-                        <button type="button" wire:click="deleteEmployee" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md transition">
-                            🗑️ Confirmer la Suppression Définitive
+                        <button type="button" wire:click="deleteEmployee" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md transition inline-flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                            </svg>
+                            <span>Confirmer la Suppression Définitive</span>
                         </button>
                     </div>
                 @endif
