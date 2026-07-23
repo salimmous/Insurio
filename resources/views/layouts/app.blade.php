@@ -20,7 +20,7 @@
                 --color-accent: {{ tenant('couleur_primaire') ?: '#0EA5A0' }};
                 --color-accent-hover: {{ tenant('couleur_secondaire') ?: '#0D9488' }};
             }
-            /* Sleek thin transparent scrollbar for sidebar */
+            /* Sleek thin transparent scrollbar for sidebar - only shows when truly overflowing */
             .sidebar-scrollbar::-webkit-scrollbar {
                 width: 4px;
             }
@@ -63,11 +63,11 @@
             </div>
         @endif
 
-        <!-- GLOBAL ENTERPRISE SAAS SHELL (Stripe / Linear / Vercel Inspired - Zero Horizontal Overflow) -->
-        <div class="flex h-screen w-full max-w-full overflow-hidden p-3 lg:p-4 gap-6 box-border">
+        <!-- GLOBAL ENTERPRISE SAAS SHELL (Stripe / Linear / Vercel Inspired - Zero Unnecessary Scrollbars) -->
+        <div class="flex h-screen h-[100dvh] w-full max-w-full overflow-hidden p-3 lg:p-4 gap-6 box-border">
 
-            <!-- 1. DESKTOP FLOATING SIDEBAR (Visually Separated with 24px Gap) -->
-            <aside class="hidden lg:flex lg:flex-col bg-[#0F172A] border border-slate-800/80 rounded-[20px] flex-shrink-0 text-slate-300 transition-all duration-200 ease-in-out relative z-30 shadow-2xl overflow-hidden"
+            <!-- 1. DESKTOP FLOATING SIDEBAR (Fixed height 100%, 24px Gap, Scrollable ONLY when content exceeds viewport) -->
+            <aside class="hidden lg:flex lg:flex-col bg-[#0F172A] border border-slate-800/80 rounded-[20px] flex-shrink-0 text-slate-300 transition-all duration-200 ease-in-out relative z-30 shadow-2xl overflow-hidden h-full box-border"
                    :class="sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'">
                 @include('layouts.partials.sidebar-content')
             </aside>
@@ -86,16 +86,16 @@
             </div>
 
             <!-- 3. MOBILE OFF-CANVAS DRAWER -->
-            <aside class="fixed top-0 bottom-0 left-0 w-[280px] bg-[#0F172A] border-r border-[#1E293B] z-50 transform transition-transform duration-200 ease-in-out lg:hidden flex flex-col shadow-2xl"  
+            <aside class="fixed top-0 bottom-0 left-0 w-[280px] h-[100dvh] bg-[#0F172A] border-r border-[#1E293B] z-50 transform transition-transform duration-200 ease-in-out lg:hidden flex flex-col shadow-2xl overflow-hidden box-border"  
                    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
                 @include('layouts.partials.sidebar-content')
             </aside>
 
-            <!-- 4. MAIN CONTENT ROUNDED CONTAINER (Container radius: 20px, 24px Content Padding, Zero Overflow) -->
-            <div class="flex-1 flex flex-col min-w-0 max-w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-[20px] shadow-2xl shadow-slate-950/20 overflow-hidden relative">
+            <!-- 4. MAIN CONTENT ROUNDED CONTAINER (Container radius: 20px, 24px Content Padding) -->
+            <div class="flex-1 flex flex-col min-w-0 max-w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-[20px] shadow-2xl shadow-slate-950/20 overflow-hidden relative h-full box-border">
                 
                 <!-- Integrated Top Header Bar -->
-                <header class="h-16 w-full max-w-full bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-10 box-border">
+                <header class="h-14 w-full max-w-full bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-10 box-border">
                     <div class="flex items-center gap-4">
                         <!-- Mobile Hamburger Toggle -->
                         <button @click="sidebarOpen = true" class="text-slate-500 hover:text-slate-800 dark:hover:text-white lg:hidden p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
