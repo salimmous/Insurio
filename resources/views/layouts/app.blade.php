@@ -68,7 +68,7 @@
 
             <!-- 1. DESKTOP FLOATING SIDEBAR (Fixed height 100%, 24px Gap, Scrollable ONLY when content exceeds viewport) -->
             <aside class="hidden lg:flex lg:flex-col bg-[#0F172A] border border-slate-800/80 rounded-[20px] flex-shrink-0 text-slate-300 transition-all duration-200 ease-in-out relative z-30 shadow-2xl overflow-hidden h-full box-border"
-                   :class="sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'">
+                   :class="sidebarCollapsed ? 'w-[76px]' : 'w-[295px]'">
                 @include('layouts.partials.sidebar-content')
             </aside>
 
@@ -86,7 +86,7 @@
             </div>
 
             <!-- 3. MOBILE OFF-CANVAS DRAWER -->
-            <aside class="fixed top-0 bottom-0 left-0 w-[280px] h-[100dvh] bg-[#0F172A] border-r border-[#1E293B] z-50 transform transition-transform duration-200 ease-in-out lg:hidden flex flex-col shadow-2xl overflow-hidden box-border"  
+            <aside class="fixed top-0 bottom-0 left-0 w-[295px] h-[100dvh] bg-[#0F172A] border-r border-[#1E293B] z-50 transform transition-transform duration-200 ease-in-out lg:hidden flex flex-col shadow-2xl overflow-hidden box-border"  
                    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
                 @include('layouts.partials.sidebar-content')
             </aside>
