@@ -115,6 +115,22 @@ class EmployeeActivation extends Component
             ]);
         }
 
+        // Send Welcome Email & Password Changed Alert
+        try {
+            if ($this->employe) {
+                \Illuminate\Support\Facades\Mail::to($this->user->email)->send(new \App\Mail\EmployeeWelcomeMail($this->user, $this->employe));
+            }
+            \Illuminate\Support\Facades\Mail::to($this->user->email)->send(new \App\Mail\PasswordChangedMail($this->user, request()->ip()));
+        } catch (\Throwable $e) {
+            // Log mail exception if any
+        }
+
+        // Audit Log
+        \App\Models\ActivityLog::writeLog('employee.activated', $this->employe ?: $this->user, null, [
+            'activated_at' => now()->toIso8601String(),
+            'ip' => request()->ip(),
+        ]);
+
         // Automatically log the user in
         Auth::login($this->user);
 

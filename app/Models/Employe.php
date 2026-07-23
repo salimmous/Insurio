@@ -61,4 +61,29 @@ class Employe extends Model
     {
         return "{$this->nom} {$this->prenom}";
     }
+
+    public function canBeDeleted(&$reason = null): bool
+    {
+        if ($this->contrats()->exists()) {
+            $reason = "Cet employé est lié à des contrats enregistrés.";
+            return false;
+        }
+
+        if ($this->commissions()->exists()) {
+            $reason = "Cet employé possède un historique de commissions.";
+            return false;
+        }
+
+        if (\Illuminate\Support\Facades\Schema::hasTable('dossiers') && \App\Models\Dossier::where('assigned_agent_id', $this->id)->exists()) {
+            $reason = "Cet employé est assigné à des dossiers en cours.";
+            return false;
+        }
+
+        if ($this->user_id && \App\Models\ActivityLog::where('user_id', $this->user_id)->exists()) {
+            $reason = "Cet employé possède un historique d'activité d'audit dans le système.";
+            return false;
+        }
+
+        return true;
+    }
 }

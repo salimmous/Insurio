@@ -6,18 +6,20 @@ use Livewire\Component;
 use App\Models\Employe;
 use App\Models\Succursale;
 use App\Models\User;
+use App\Models\ActivityLog;
 use App\Mail\EmployeeInvitationMail;
+use App\Mail\EmployeePasswordResetMail;
+
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 
 class GestionEmployes extends Component
 {
     public $employes = [];
     public $succursales = [];
 
-    // Form fields (Step 1: Admin fills profile only, NO password fields)
+    // Form fields
     public $employeId;
     public $nom;
     public $prenom;
@@ -31,6 +33,10 @@ class GestionEmployes extends Component
 
     public $isEditing = false;
     public $showModal = false;
+    public $showDeleteModal = false;
+    public $deletingEmployeId = null;
+    public $deleteError = '';
+
     public $searchQuery = '';
     public $filterStatut = '';
 
@@ -111,8 +117,7 @@ class GestionEmployes extends Component
     }
 
     /**
-     * Save employee profile (Step 1 & Step 2).
-     * The admin NEVER enters a password.
+     * Save employee profile. Administrator NEVER enters password.
      */
     public function save()
     {
@@ -140,14 +145,18 @@ class GestionEmployes extends Component
                 $this->syncUserRole($employe->user, $this->poste);
             }
 
+            ActivityLog::writeLog('employee.profile_updated', $employe, null, [
+                'updated_by' => auth()->user()->name,
+                'ip' => request()->ip(),
+            ]);
+
             session()->flash('message', 'Profil employé mis à jour avec succès.');
         } else {
-            // STEP 2: Automatic Creation & Invitation Token Generation
+            // STEP 2: Automatic Creation & Token Generation
             $token = Str::random(64);
             $expiresAt = now()->addHours(48);
             $matricule = 'EMP-' . strtoupper(Str::random(5));
 
-            // Create User account without password (un-usable random hash until activated)
             $user = User::create([
                 'name' => "{$this->prenom} {$this->nom}",
                 'email' => $this->email,
@@ -161,7 +170,6 @@ class GestionEmployes extends Component
 
             $this->syncUserRole($user, $this->poste);
 
-            // Create Employe record
             $employe = Employe::create([
                 'user_id' => $user->id,
                 'matricule_employe' => $matricule,
@@ -177,14 +185,20 @@ class GestionEmployes extends Component
                 'statut' => 'invitation_sent',
             ]);
 
-            // STEP 3: Send professional invitation email
+            // STEP 3: Send Professional Invitation Email
             $activationUrl = route('employee.activate', ['token' => $token]);
             try {
                 Mail::to($this->email)->send(new EmployeeInvitationMail($user, $employe, $activationUrl));
                 session()->flash('message', 'Employé créé et invitation envoyée par email (Lien valable 48h).');
             } catch (\Exception $e) {
-                session()->flash('message', 'Employé créé. Erreur lors de l\'envoi de l\'email: ' . $e->getMessage());
+                session()->flash('message', 'Employé créé. Erreur SMTP lors de l\'envoi de l\'email: ' . $e->getMessage());
             }
+
+            ActivityLog::writeLog('employee.invitation_sent', $employe, null, [
+                'sent_by' => auth()->user()->name,
+                'email' => $this->email,
+                'ip' => request()->ip(),
+            ]);
         }
 
         $this->showModal = false;
@@ -192,7 +206,7 @@ class GestionEmployes extends Component
     }
 
     /**
-     * Resend invitation link with fresh 48h token.
+     * Resend Activation Email (48h Token)
      */
     public function resendInvitation($employeId)
     {
@@ -220,33 +234,55 @@ class GestionEmployes extends Component
             Mail::to($employe->email)->send(new EmployeeInvitationMail($employe->user, $employe, $activationUrl));
             session()->flash('message', "Invitation réenvoyée avec succès à {$employe->email} (Valable 48h).");
         } catch (\Exception $e) {
-            session()->flash('error', "Erreur d'envoi de l'email: " . $e->getMessage());
+            session()->flash('error', "Erreur d'envoi SMTP: " . $e->getMessage());
         }
+
+        ActivityLog::writeLog('employee.invitation_resent', $employe, null, [
+            'admin' => auth()->user()->name,
+            'ip' => request()->ip(),
+        ]);
 
         $this->loadData();
     }
 
     /**
-     * Revoke active invitation.
+     * Password Reset Trigger by Admin
      */
-    public function revokeInvitation($employeId)
+    public function resetPassword($employeId)
     {
         $employe = Employe::with('user')->findOrFail($employeId);
-        if ($employe->user) {
-            $employe->user->update([
-                'invitation_token' => null,
-                'invitation_expires_at' => null,
-                'status' => 'disabled',
-            ]);
-        }
-        $employe->update(['statut' => 'disabled']);
 
-        session()->flash('message', "L'invitation pour {$employe->nom_complet} a été révoquée.");
+        if (!$employe->user) {
+            session()->flash('error', 'Aucun compte utilisateur associé à cet employé.');
+            return;
+        }
+
+        $token = Str::random(64);
+        $expiresAt = now()->addHours(48);
+
+        $employe->user->update([
+            'invitation_token' => $token,
+            'invitation_expires_at' => $expiresAt,
+        ]);
+
+        $resetUrl = route('employee.activate', ['token' => $token]);
+        try {
+            Mail::to($employe->email)->send(new EmployeePasswordResetMail($employe->user, $employe, $resetUrl));
+            session()->flash('message', "Email de réinitialisation de mot de passe envoyé à {$employe->email}. L'employé créera lui-même son nouveau mot de passe.");
+        } catch (\Exception $e) {
+            session()->flash('error', "Erreur d'envoi SMTP: " . $e->getMessage());
+        }
+
+        ActivityLog::writeLog('employee.password_reset_requested', $employe, null, [
+            'admin' => auth()->user()->name,
+            'ip' => request()->ip(),
+        ]);
+
         $this->loadData();
     }
 
     /**
-     * Reset 2FA configuration for employee.
+     * Reset 2FA configuration
      */
     public function resetTwoFactor($employeId)
     {
@@ -257,21 +293,19 @@ class GestionEmployes extends Component
                 'two_factor_confirmed_at' => null,
                 'two_factor_recovery_codes' => null,
             ]);
-            session()->flash('message', "L'authentification 2FA pour {$employe->nom_complet} a été réinitialisée. L'employé devra configurer 2FA lors de sa prochaine connexion.");
         }
+
+        ActivityLog::writeLog('employee.2fa_reset', $employe, null, [
+            'admin' => auth()->user()->name,
+            'ip' => request()->ip(),
+        ]);
+
+        session()->flash('message', "L'authentification 2FA pour {$employe->nom_complet} a été réinitialisée.");
         $this->loadData();
     }
 
     /**
-     * Force password reset (generates new activation/reset link).
-     */
-    public function forcePasswordReset($employeId)
-    {
-        $this->resendInvitation($employeId);
-    }
-
-    /**
-     * Change employee status (Active / Suspended / Disabled).
+     * Suspend / Reactivate Employee
      */
     public function toggleStatut($employeId, $newStatut)
     {
@@ -281,8 +315,80 @@ class GestionEmployes extends Component
             $employe->user->update(['status' => $newStatut]);
         }
 
+        ActivityLog::writeLog("employee.{$newStatut}", $employe, null, [
+            'admin' => auth()->user()->name,
+            'new_status' => $newStatut,
+            'ip' => request()->ip(),
+        ]);
+
         session()->flash('message', "Statut de {$employe->nom_complet} changé en {$newStatut}.");
         $this->loadData();
+    }
+
+    /**
+     * Confirm Secure Deletion Check
+     */
+    public function confirmDelete($id)
+    {
+        $this->deletingEmployeId = $id;
+        $this->deleteError = '';
+        $employe = Employe::findOrFail($id);
+
+        $reason = '';
+        if (!$employe->canBeDeleted($reason)) {
+            $this->deleteError = "Cet employé possède des enregistrements commerciaux ou comptables liés et ne peut pas être supprimé définitivement. Veuillez suspendre l'employé à la place.\n\nRaison: {$reason}";
+        }
+
+        $this->showDeleteModal = true;
+    }
+
+    /**
+     * Delete Employee if Guardrails pass
+     */
+    public function deleteEmployee()
+    {
+        if (!$this->deletingEmployeId) return;
+
+        $employe = Employe::with('user')->findOrFail($this->deletingEmployeId);
+
+        $reason = '';
+        if (!$employe->canBeDeleted($reason)) {
+            $this->deleteError = "Suppression impossible: {$reason}";
+            return;
+        }
+
+        $nom = $employe->nom_complet;
+        if ($employe->user) {
+            $employe->user->delete();
+        }
+        $employe->delete();
+
+        ActivityLog::writeLog('employee.deleted', null, null, [
+            'admin' => auth()->user()->name,
+            'deleted_employee_name' => $nom,
+            'ip' => request()->ip(),
+        ]);
+
+        $this->showDeleteModal = false;
+        $this->deletingEmployeId = null;
+        session()->flash('message', "Employé {$nom} supprimé définitivement.");
+        $this->loadData();
+    }
+
+    /**
+     * Test SMTP Connection
+     */
+    public function testSmtp()
+    {
+        try {
+            Mail::raw("Test de connexion SMTP Insurio réussi à " . date('d/m/Y H:i:s'), function ($message) {
+                $message->to(auth()->user()->email)
+                        ->subject("✅ Test de Connexion SMTP Insurio");
+            });
+            session()->flash('message', "Test SMTP réussi ! Email de test envoyé avec succès à " . auth()->user()->email);
+        } catch (\Exception $e) {
+            session()->flash('error', "Échec du test SMTP : " . $e->getMessage());
+        }
     }
 
     private function syncUserRole(User $user, string $poste)
