@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full max-w-full overflow-x-hidden">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -43,7 +43,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="h-full font-sans antialiased bg-[#0B0F19] text-slate-100" 
+    <body class="h-full font-sans antialiased bg-[#0B0F19] text-slate-100 max-w-full overflow-x-hidden" 
           x-data="{ 
               sidebarOpen: false, 
               sidebarCollapsed: localStorage.getItem('insurio_sidebar_collapsed') === 'true' 
@@ -63,8 +63,8 @@
             </div>
         @endif
 
-        <!-- GLOBAL ENTERPRISE SAAS SHELL (Stripe / Linear / Vercel Inspired) -->
-        <div class="flex h-screen w-screen overflow-hidden p-3 lg:p-4 gap-6">
+        <!-- GLOBAL ENTERPRISE SAAS SHELL (Stripe / Linear / Vercel Inspired - Zero Horizontal Overflow) -->
+        <div class="flex h-screen w-full max-w-full overflow-hidden p-3 lg:p-4 gap-6 box-border">
 
             <!-- 1. DESKTOP FLOATING SIDEBAR (Visually Separated with 24px Gap) -->
             <aside class="hidden lg:flex lg:flex-col bg-[#0F172A] border border-slate-800/80 rounded-[20px] flex-shrink-0 text-slate-300 transition-all duration-200 ease-in-out relative z-30 shadow-2xl overflow-hidden"
@@ -91,11 +91,11 @@
                 @include('layouts.partials.sidebar-content')
             </aside>
 
-            <!-- 4. MAIN CONTENT ROUNDED CONTAINER (Container radius: 20px, 24px Content Padding, Subtle Shadow) -->
-            <div class="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-[20px] shadow-2xl shadow-slate-950/20 overflow-hidden relative">
+            <!-- 4. MAIN CONTENT ROUNDED CONTAINER (Container radius: 20px, 24px Content Padding, Zero Overflow) -->
+            <div class="flex-1 flex flex-col min-w-0 max-w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-[20px] shadow-2xl shadow-slate-950/20 overflow-hidden relative">
                 
                 <!-- Integrated Top Header Bar -->
-                <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-10">
+                <header class="h-16 w-full max-w-full bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-10 box-border">
                     <div class="flex items-center gap-4">
                         <!-- Mobile Hamburger Toggle -->
                         <button @click="sidebarOpen = true" class="text-slate-500 hover:text-slate-800 dark:hover:text-white lg:hidden p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
@@ -131,8 +131,8 @@
                     </div>
                 </header>
 
-                <!-- Independent Scrollable Main Content Area (24px Padding = p-6) -->
-                <main class="flex-1 overflow-y-auto bg-[#F8FAFC] dark:bg-slate-950 p-6">
+                <!-- Independent Scrollable Main Content Area (Vertical Scroll Only) -->
+                <main class="flex-1 min-w-0 max-w-full overflow-y-auto overflow-x-hidden bg-[#F8FAFC] dark:bg-slate-950 p-6 box-border">
                     @if(function_exists('tenant') && tenant() && tenant()->getDaysRemaining() !== null && tenant()->getDaysRemaining() >= 0 && tenant()->getDaysRemaining() <= 7)
                         <div class="mb-6 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900 rounded-2xl px-6 py-3 flex items-center justify-between text-amber-800 dark:text-amber-200 text-xs font-medium shadow-xs">
                             <div class="flex items-center gap-2">
