@@ -36,53 +36,67 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div>
-    <form wire:submit="register">
+<div class="space-y-6">
+    <!-- Form Header -->
+    <div class="space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            Créer un Compte Agence
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            Rejoignez Insurio SaaS et automatisez la gestion de votre cabinet d'assurance.
+        </p>
+    </div>
+
+    <form wire:submit="register" class="space-y-5">
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" class="block mt-1 w-full" type="text" name="name" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-input-label for="name" value="Nom Complet / Raison Sociale" />
+            <x-text-input wire:model="name" id="name" class="block w-full" type="text" name="name" placeholder="ex: Agence Atlas Assurance" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
         </div>
 
         <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div>
+            <x-input-label for="email" value="Adresse Email Professionnelle" />
+            <x-text-input wire:model="email" id="email" class="block w-full" type="email" name="email" placeholder="contact@agence-atlas.ma" required autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
         </div>
 
         <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input wire:model="password" id="password" class="block mt-1 w-full"
+        <div>
+            <x-input-label for="password" value="Mot de Passe Sécurisé" />
+            <x-text-input wire:model="password" id="password" class="block w-full"
                             type="password"
                             name="password"
+                            placeholder="••••••••••••"
                             required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
         </div>
 
         <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input wire:model="password_confirmation" id="password_confirmation" class="block mt-1 w-full"
+        <div>
+            <x-input-label for="password_confirmation" value="Confirmer le Mot de Passe" />
+            <x-text-input wire:model="password_confirmation" id="password_confirmation" class="block w-full"
                             type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                            name="password_confirmation"
+                            placeholder="••••••••••••"
+                            required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1.5" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}" wire:navigate>
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
+        <!-- Submit Button -->
+        <div class="pt-2">
+            <x-primary-button>
+                <span>Créer Mon Compte Insurio ➔</span>
             </x-primary-button>
+        </div>
+
+        <!-- Login Link -->
+        <div class="text-center pt-4 border-t border-slate-200 dark:border-slate-800/80 text-xs text-slate-500">
+            Vous avez déjà un compte ? 
+            <a href="{{ route('login') }}" wire:navigate class="font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                Se connecter ➔
+            </a>
         </div>
     </form>
 </div>

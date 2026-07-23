@@ -33,29 +33,36 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+<div class="space-y-6">
+    <!-- Form Header -->
+    <div class="space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            Zone Sécurisée — Confirmation
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            Il s'agit d'une zone hautement sécurisée de l'application. Veuillez confirmer votre mot de passe pour continuer.
+        </p>
     </div>
 
-    <form wire:submit="confirmPassword">
+    <form wire:submit="confirmPassword" class="space-y-5">
         <!-- Password -->
         <div>
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" value="Mot de Passe Actuel" />
 
             <x-text-input wire:model="password"
                           id="password"
-                          class="block mt-1 w-full"
+                          class="block w-full"
                           type="password"
                           name="password"
+                          placeholder="••••••••••••"
                           required autocomplete="current-password" />
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
         </div>
 
-        <div class="flex justify-end mt-4">
+        <div class="pt-2">
             <x-primary-button>
-                {{ __('Confirm') }}
+                <span>Confirmer et Continuer ➔</span>
             </x-primary-button>
         </div>
     </form>

@@ -17,9 +17,6 @@ new #[Layout('layouts.guest')] class extends Component
             'email' => ['required', 'string', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
         $status = Password::sendResetLink(
             $this->only('email')
         );
@@ -36,26 +33,40 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+<div class="space-y-6">
+    <!-- Form Header -->
+    <div class="space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            Mot de passe oublié ?
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            Saisissez l'adresse email associée à votre compte agence. Nous vous enverrons un lien sécurisé pour réinitialiser votre mot de passe.
+        </p>
     </div>
 
-    <!-- Session Status -->
+    <!-- Session Status Alert -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form wire:submit="sendPasswordResetLink">
+    <form wire:submit="sendPasswordResetLink" class="space-y-5">
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-label for="email" value="Adresse Email Professionnelle" />
+            <x-text-input wire:model="email" id="email" class="block w-full" type="email" name="email" placeholder="nom@agence-assurance.ma" required autofocus />
+            <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        <!-- Submit Button -->
+        <div class="pt-2">
             <x-primary-button>
-                {{ __('Email Password Reset Link') }}
+                <span>Envoyer le Lien de Réinitialisation ➔</span>
             </x-primary-button>
+        </div>
+
+        <!-- Back to Login Link -->
+        <div class="text-center pt-4 border-t border-slate-200 dark:border-slate-800/80 text-xs text-slate-500">
+            <a href="{{ route('login') }}" wire:navigate class="font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center justify-center gap-1">
+                <span>← Retour à la page de connexion</span>
+            </a>
         </div>
     </form>
 </div>
