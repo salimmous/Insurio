@@ -27,11 +27,14 @@ new #[Layout('layouts.guest')] class extends Component
 <div class="space-y-6">
     <!-- Form Header -->
     <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">
+            <span>🔐 ENTERPRISE AUTHENTICATION</span>
+        </div>
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
             Connexion au Portail Agence
         </h2>
         <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Saisissez vos identifiants pour accéder à votre espace de courtage.
+            Saisissez vos identifiants d'administrateur d'agence pour accéder à la plateforme.
         </p>
     </div>
 
@@ -41,15 +44,15 @@ new #[Layout('layouts.guest')] class extends Component
     <form wire:submit="login" class="space-y-5">
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" value="Adresse Email Pro" />
-            <x-text-input wire:model="form.email" id="email" class="block w-full" type="email" name="email" placeholder="nom@agence-assurance.ma" required autofocus autocomplete="username" />
+            <x-input-label for="email" value="Adresse Email Professionnelle" />
+            <x-text-input wire:model="form.email" id="email" class="block w-full" type="email" name="email" placeholder="admin@agence-assurance.ma" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('form.email')" class="mt-1.5" />
         </div>
 
         <!-- Password -->
         <div>
             <div class="flex items-center justify-between mb-1.5">
-                <x-input-label for="password" value="Mot de passe" />
+                <x-input-label for="password" value="Mot de Passe" />
                 @if (Route::has('password.request'))
                     <a class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline" href="{{ route('password.request') }}" wire:navigate>
                         Mot de passe oublié ?
@@ -77,18 +80,8 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Submit Button -->
         <div class="pt-2">
             <x-primary-button>
-                <span>Se connecter au Portail Insurio ➔</span>
+                <span>Se connecter à l'Espace Agence ➔</span>
             </x-primary-button>
         </div>
-
-        <!-- Register Link -->
-        @if (Route::has('register'))
-            <div class="text-center pt-4 border-t border-slate-200 dark:border-slate-800/80 text-xs text-slate-500">
-                Vous n'avez pas encore de compte agence ? 
-                <a href="{{ route('register') }}" wire:navigate class="font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
-                    Créer un compte ➔
-                </a>
-            </div>
-        @endif
     </form>
 </div>
