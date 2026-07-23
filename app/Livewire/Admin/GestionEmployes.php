@@ -420,14 +420,20 @@ class GestionEmployes extends Component
         }
 
         $agencyName = \App\Models\Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
+        $tempPassword = $employe->invitation_token ? substr(md5($employe->invitation_token), 0, 4) . '#92Lm' : 'A7xP#92Lm';
         
-        $text = "Bonjour {$employe->prenom} {$employe->nom},\n\n";
-        $text .= "Voici la fiche de votre compte employé au sein de l'agence {$agencyName} :\n";
-        $text .= "• Matricule : {$employe->matricule_employe}\n";
-        $text .= "• Poste : {$employe->poste}\n";
-        $text .= "• Email Pro : {$employe->email}\n";
-        $text .= "• Statut : " . strtoupper($employe->statut) . "\n\n";
-        $text .= "Accéder à l'espace de travail : " . route('login');
+        $text = "🔑 *KIT D'ACTIVATION EMPLOYÉ — {$agencyName}*\n\n";
+        $text .= "Bonjour *{$employe->nom_complet}*,\n\n";
+        $text .= "Votre compte d'entreprise a été créé. Voici vos accès d'accréditation :\n";
+        $text .= "• *Matricule* : {$employe->matricule_employe}\n";
+        $text .= "• *Email Pro* : {$employe->email}\n";
+        $text .= "• *Mot de passe temporaire* : {$tempPassword}\n\n";
+        $text .= "📌 *Procédure d'activation de votre compte :*\n";
+        $text .= "1. Se connecter avec votre Email & Mot de Passe temporaire.\n";
+        $text .= "2. Scanner le QR Code 2FA avec Google Authenticator.\n";
+        $text .= "3. Saisir le code temporaire à 6 chiffres.\n";
+        $text .= "4. Définir votre mot de passe personnel sécurisé.\n\n";
+        $text .= "🌐 *Espace Agence :* " . route('login');
 
         $url = "https://wa.me/{$phone}?text=" . urlencode($text);
 

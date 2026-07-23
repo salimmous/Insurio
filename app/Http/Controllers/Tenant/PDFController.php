@@ -63,6 +63,71 @@ class PDFController extends Controller
         ]);
     }
 
+    public function generateEmployeeWelcomePdf(int $employeId)
+    {
+        $employe = \App\Models\Employe::with(['succursale', 'user'])->findOrFail($employeId);
+        $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
+        $agencyAddress = Setting::get('agency_address', 'Casablanca, Maroc');
+        $agencyPhone = Setting::get('agency_phone', '+212 5 22 00 00 00');
+        $agencyEmail = Setting::get('agency_email', 'contact@insurio.com');
+        $agencyWebsite = Setting::get('agency_website', 'https://' . (tenant('domain') ?? 'www.insurio.ma'));
+
+        $google2fa = new \PragmaRX\Google2FA\Google2FA();
+        $twoFactorSecret = optional($employe->user)->two_factor_secret ?: $google2fa->generateSecretKey();
+        
+        $qrCodeUrl = $google2fa->getQRCodeUrl($agencyName, $employe->email, $twoFactorSecret);
+        $qrCodeSvg = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(180)->margin(1)->generate($qrCodeUrl);
+        $qrCodeBase64 = base64_encode($qrCodeSvg);
+
+        $tempPassword = $employe->invitation_token ? substr(md5($employe->invitation_token), 0, 4) . '#92Lm' : 'A7xP#92Lm';
+
+        $data = [
+            'employe' => $employe,
+            'agencyName' => $agencyName,
+            'agencyAddress' => $agencyAddress,
+            'agencyPhone' => $agencyPhone,
+            'agencyEmail' => $agencyEmail,
+            'agencyWebsite' => $agencyWebsite,
+            'tempPassword' => $tempPassword,
+            'twoFactorSecret' => $twoFactorSecret,
+            'qrCodeBase64' => $qrCodeBase64,
+        ];
+
+        $pdf = Pdf::loadView('pdf.employee-welcome', $data);
+        return $pdf->download('kit_onboarding_' . $employe->matricule_employe . '.pdf');
+    }
+
+    public function printEmployeeWelcomeCard(int $employeId)
+    {
+        $employe = \App\Models\Employe::with(['succursale', 'user'])->findOrFail($employeId);
+        $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
+        $agencyAddress = Setting::get('agency_address', 'Casablanca, Maroc');
+        $agencyPhone = Setting::get('agency_phone', '+212 5 22 00 00 00');
+        $agencyEmail = Setting::get('agency_email', 'contact@insurio.com');
+        $agencyWebsite = Setting::get('agency_website', 'https://' . (tenant('domain') ?? 'www.insurio.ma'));
+
+        $google2fa = new \PragmaRX\Google2FA\Google2FA();
+        $twoFactorSecret = optional($employe->user)->two_factor_secret ?: $google2fa->generateSecretKey();
+        
+        $qrCodeUrl = $google2fa->getQRCodeUrl($agencyName, $employe->email, $twoFactorSecret);
+        $qrCodeSvg = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(180)->margin(1)->generate($qrCodeUrl);
+        $qrCodeBase64 = base64_encode($qrCodeSvg);
+
+        $tempPassword = $employe->invitation_token ? substr(md5($employe->invitation_token), 0, 4) . '#92Lm' : 'A7xP#92Lm';
+
+        return view('pdf.employee-welcome', [
+            'employe' => $employe,
+            'agencyName' => $agencyName,
+            'agencyAddress' => $agencyAddress,
+            'agencyPhone' => $agencyPhone,
+            'agencyEmail' => $agencyEmail,
+            'agencyWebsite' => $agencyWebsite,
+            'tempPassword' => $tempPassword,
+            'twoFactorSecret' => $twoFactorSecret,
+            'qrCodeBase64' => $qrCodeBase64,
+        ]);
+    }
+
     private function getTitle(string $type): string
     {
         return match ($type) {

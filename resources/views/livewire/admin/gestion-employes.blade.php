@@ -267,15 +267,32 @@
                                             <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
 
                                             <!-- Group 3: Export & Sharing -->
+                                            <a href="{{ Route::has('admin.employes.welcome-pdf') ? route('admin.employes.welcome-pdf', ['id' => $emp->id]) : '#' }}" target="_blank" @click="open = false" 
+                                               class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
+                                                <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                                                    <polyline points="14 2 14 8 20 8"/>
+                                                </svg>
+                                                <span>Générer Kit Onboarding (PDF)</span>
+                                            </a>
+
+                                            <a href="{{ Route::has('admin.employes.welcome-print') ? route('admin.employes.welcome-print', ['id' => $emp->id]) : '#' }}" target="_blank" @click="open = false" 
+                                               class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
+                                                <svg class="w-4 h-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="6 9 6 2 18 2 18 9"/>
+                                                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                                                    <rect width="12" height="8" x="6" y="14"/>
+                                                </svg>
+                                                <span>Imprimer Kit Onboarding</span>
+                                            </a>
+
                                             <a href="{{ Route::has('admin.employes.pdf') ? route('admin.employes.pdf', ['id' => $emp->id]) : '#' }}" target="_blank" @click="open = false" 
                                                class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
                                                 <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
                                                     <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-                                                    <path d="M12 18v-6"/>
-                                                    <path d="m9 15 3 3 3-3"/>
                                                 </svg>
-                                                <span>Générer Fiche PDF</span>
+                                                <span>Carte Accréditation (PDF)</span>
                                             </a>
 
                                             <a href="{{ Route::has('admin.employes.print') ? route('admin.employes.print', ['id' => $emp->id]) : '#' }}" target="_blank" @click="open = false" 
@@ -418,10 +435,22 @@
                 <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Actions Rapides & Exportation :</span>
                     <div class="flex flex-wrap gap-2">
+                        <a href="{{ Route::has('admin.employes.welcome-pdf') ? route('admin.employes.welcome-pdf', ['id' => $viewingEmploye->id]) : '#' }}" target="_blank" 
+                           class="px-4 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold text-xs hover:bg-indigo-100 transition inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span>Kit Onboarding PDF</span>
+                        </a>
+
+                        <a href="{{ Route::has('admin.employes.welcome-print') ? route('admin.employes.welcome-print', ['id' => $viewingEmploye->id]) : '#' }}" target="_blank" 
+                           class="px-4 py-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 font-bold text-xs hover:bg-teal-100 transition inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><rect width="12" height="8" x="6" y="14"/></svg>
+                            <span>Imprimer Kit</span>
+                        </a>
+
                         <a href="{{ Route::has('admin.employes.pdf') ? route('admin.employes.pdf', ['id' => $viewingEmploye->id]) : '#' }}" target="_blank" 
                            class="px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-bold text-xs hover:bg-emerald-100 transition inline-flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
-                            <span>Générer PDF</span>
+                            <span>Carte Accréditation</span>
                         </a>
 
                         <a href="{{ Route::has('admin.employes.print') ? route('admin.employes.print', ['id' => $viewingEmploye->id]) : '#' }}" target="_blank" 
