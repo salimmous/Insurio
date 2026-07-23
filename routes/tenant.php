@@ -76,6 +76,8 @@ Route::middleware($tenantMiddleware)->group(function () {
 
         Route::get('/admin/succursales', \App\Livewire\Admin\GestionSuccursales::class)->name('admin.succursales')->middleware('can:expenses.view');
         Route::get('/admin/employes', \App\Livewire\Admin\GestionEmployes::class)->name('admin.employes')->middleware('can:expenses.view');
+        Route::get('/admin/employes/{id}/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'generateEmployeePdf'])->name('admin.employes.pdf')->middleware('can:expenses.view');
+        Route::get('/admin/employes/{id}/print', [\App\Http\Controllers\Tenant\PDFController::class, 'printEmployeeCard'])->name('admin.employes.print')->middleware('can:expenses.view');
         Route::get('/admin/commissions', \App\Livewire\Admin\GestionCommissions::class)->name('admin.commissions')->middleware('can:commissions.view');
         Route::get('/admin/charges', \App\Livewire\Admin\GestionCharges::class)->name('admin.charges')->middleware('can:expenses.view');
         Route::get('/admin/automation', \App\Livewire\Admin\AutomationControl::class)->name('admin.automation')->middleware('can:expenses.view');
