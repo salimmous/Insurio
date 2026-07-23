@@ -25,20 +25,22 @@
     $radius = $configComp['radius'] ?? 'rounded-2xl';
     $slug = $theme->slug ?? 'corporate-insurance';
 
-    // Mapping slugs to modular theme templates in tenant/themes/
     $themeMap = [
-        'corporate-insurance' => 'tenant.themes.corporate_insurance',
-        'axa-inspire' => 'tenant.themes.corporate_insurance',
-        'apple-insurance' => 'tenant.themes.apple_insurance',
-        'luxury-gold' => 'tenant.themes.luxury_gold',
-        'luxury-private' => 'tenant.themes.luxury_gold',
-        'modern-saas' => 'tenant.themes.modern_saas',
-        'startup-insurance' => 'tenant.themes.modern_saas',
-        'healthcare-insurance' => 'tenant.themes.healthcare_insurance',
-        'healthcare' => 'tenant.themes.healthcare_insurance',
+        'corporate-insurance' => 'themes.corporate-blue.landing',
+        'axa-inspire' => 'themes.corporate-blue.landing',
+        'apple-insurance' => 'themes.apple.landing',
+        'luxury-gold' => 'themes.luxury-gold.landing',
+        'luxury-private' => 'themes.luxury-gold.landing',
+        'modern-saas' => 'themes.stripe-saas.landing',
+        'startup-insurance' => 'themes.startup.landing',
+        'healthcare-insurance' => 'themes.healthcare.landing',
+        'healthcare' => 'themes.healthcare.landing',
     ];
 
-    $viewName = $themeMap[$slug] ?? null;
+    $viewName = "themes.{$slug}.landing";
+    if (!view()->exists($viewName)) {
+        $viewName = $themeMap[$slug] ?? null;
+    }
 ?>
 <!DOCTYPE html>
 <html lang="fr" x-data="{ lang: 'fr', quoteModal: false, claimModal: false }" :dir="lang === 'ar' ? 'rtl' : 'ltr'" class="scroll-smooth">
