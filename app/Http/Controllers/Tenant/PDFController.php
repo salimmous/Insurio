@@ -38,6 +38,31 @@ class PDFController extends Controller
         return $pdf->download(strtolower($type) . '_' . $contrat->numero_contrat . '.pdf');
     }
 
+    public function generateEmployeePdf(int $employeId)
+    {
+        $employe = \App\Models\Employe::with(['succursale', 'user'])->findOrFail($employeId);
+        $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
+        
+        $data = [
+            'employe' => $employe,
+            'agencyName' => $agencyName,
+        ];
+
+        $pdf = Pdf::loadView('pdf.employee-card', $data);
+        return $pdf->download('fiche_employe_' . $employe->matricule_employe . '.pdf');
+    }
+
+    public function printEmployeeCard(int $employeId)
+    {
+        $employe = \App\Models\Employe::with(['succursale', 'user'])->findOrFail($employeId);
+        $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
+
+        return view('pdf.employee-card', [
+            'employe' => $employe,
+            'agencyName' => $agencyName,
+        ]);
+    }
+
     private function getTitle(string $type): string
     {
         return match ($type) {

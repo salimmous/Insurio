@@ -86,6 +86,8 @@ if (app()->environment('testing')) {
     Route::view('automobile/create', 'dashboard')->name('automobile.create');
     Route::post('logout', function () {})->name('logout');
     Route::get('/automobile/pdf/{contratId}/{type}', [\App\Http\Controllers\Tenant\PDFController::class, 'generate'])->name('automobile.pdf');
+    Route::get('/admin/employes/{id}/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'generateEmployeePdf'])->name('admin.employes.pdf');
+    Route::get('/admin/employes/{id}/print', [\App\Http\Controllers\Tenant\PDFController::class, 'printEmployeeCard'])->name('admin.employes.print');
 }
 
 Route::get('livewire/update', function () {

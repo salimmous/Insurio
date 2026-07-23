@@ -34,6 +34,9 @@ class GestionEmployes extends Component
     public $isEditing = false;
     public $showModal = false;
     public $showDeleteModal = false;
+    public $showProfileModal = false;
+    public $viewingEmploye = null;
+
     public $deletingEmployeId = null;
     public $deleteError = '';
 
@@ -373,6 +376,68 @@ class GestionEmployes extends Component
         $this->deletingEmployeId = null;
         session()->flash('message', "Employé {$nom} supprimé définitivement.");
         $this->loadData();
+    }
+
+    /**
+     * View Employee Profile Modal
+     */
+    public function viewProfile($id)
+    {
+        $this->viewingEmploye = Employe::with(['succursale', 'user'])->findOrFail($id);
+        $this->showProfileModal = true;
+    }
+
+    /**
+     * Send Employee Profile Badge via Email using Laravel Mail
+     */
+    public function sendByEmail($id)
+    {
+        $employe = Employe::with('user')->findOrFail($id);
+        
+        try {
+            Mail::to($employe->email)->send(new EmployeeWelcomeMail($employe->user, $employe));
+            session()->flash('message', "La fiche de profil employé a été envoyée par email à {$employe->email}.");
+            ActivityLog::writeLog('employee.profile_emailed', $employe, null, [
+                'admin' => auth()->user()->name,
+                'recipient' => $employe->email,
+                'ip' => request()->ip(),
+            ]);
+        } catch (\Exception $e) {
+            session()->flash('error', "Échec de l'envoi de l'email : " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Share Employee Profile Details via WhatsApp (wa.me)
+     */
+    public function sendWhatsApp($id)
+    {
+        $employe = Employe::with(['succursale', 'user'])->findOrFail($id);
+        
+        $phone = preg_replace('/[^0-9]/', '', $employe->telephone ?: '');
+        if (str_starts_with($phone, '0')) {
+            $phone = '212' . substr($phone, 1);
+        }
+
+        $agencyName = \App\Models\Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
+        
+        $text = "Bonjour {$employe->prenom} {$employe->nom},\n\n";
+        $text .= "Voici la fiche de votre compte employé au sein de l'agence {$agencyName} :\n";
+        $text .= "• Matricule : {$employe->matricule_employe}\n";
+        $text .= "• Poste : {$employe->poste}\n";
+        $text .= "• Email Pro : {$employe->email}\n";
+        $text .= "• Statut : " . strtoupper($employe->statut) . "\n\n";
+        $text .= "Accéder à l'espace de travail : " . route('login');
+
+        $url = "https://wa.me/{$phone}?text=" . urlencode($text);
+
+        ActivityLog::writeLog('employee.whatsapp_shared', $employe, null, [
+            'admin' => auth()->user()->name,
+            'ip' => request()->ip(),
+        ]);
+
+        $this->dispatch('open-url', ['url' => $url]);
+        session()->flash('message', "Lien WhatsApp généré pour {$employe->nom_complet}.");
     }
 
     /**
