@@ -18,6 +18,9 @@ Route::middleware('guest:web')->group(function () {
 
     Volt::route('reset-password/{token}', 'pages.auth.reset-password')
         ->name('password.reset');
+
+    Route::get('employee/activate/{token}', \App\Livewire\Auth\EmployeeActivation::class)
+        ->name('employee.activate');
 });
 
 Route::middleware('auth')->group(function () {

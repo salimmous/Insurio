@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable([
-    'name', 'email', 'password', 'branch_id',
+    'name', 'email', 'password', 'branch_id', 'status',
+    'invitation_token', 'invitation_expires_at', 'invitation_sent_at',
     'failed_login_attempts', 'locked_until', 'last_login_at', 'last_login_ip',
     'password_changed_at', 'two_factor_secret', 'two_factor_confirmed_at',
     'two_factor_recovery_codes', 'two_factor_code', 'two_factor_expires_at',
@@ -42,6 +43,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'password_changed_at'      => 'datetime',
             'two_factor_confirmed_at'  => 'datetime',
             'two_factor_expires_at'    => 'datetime',
+            'invitation_expires_at'    => 'datetime',
+            'invitation_sent_at'       => 'datetime',
             'failed_login_attempts'    => 'integer',
         ];
     }

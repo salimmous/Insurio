@@ -6,53 +6,58 @@ use Livewire\Component;
 use App\Models\Employe;
 use App\Models\Succursale;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
+use App\Mail\EmployeeInvitationMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class GestionEmployes extends Component
 {
     public $employes = [];
     public $succursales = [];
-    public $usersWithoutEmployee = [];
 
-    // Form fields
+    // Form fields (Step 1: Admin fills profile only, NO password fields)
     public $employeId;
-    public $user_id;
-    public $matricule_employe;
     public $nom;
     public $prenom;
     public $cin;
     public $telephone;
     public $email;
     public $succursale_id;
-    public $poste; // Administrateur, Responsable succursale, Agent commercial, Comptable, Consultation
+    public $poste = 'Agent commercial';
     public $taux_commission_defaut = 0.00;
-    public $date_embauche;
-    public $date_sortie;
-    public $statut = 'actif';
+    public $statut = 'invitation_pending';
 
     public $isEditing = false;
     public $showModal = false;
+    public $searchQuery = '';
+    public $filterStatut = '';
 
-    protected $rules = [
-        'user_id' => 'nullable|exists:users,id',
-        'matricule_employe' => 'required|string|max:50|unique:employes,matricule_employe',
-        'nom' => 'required|string|max:100',
-        'prenom' => 'required|string|max:100',
-        'cin' => 'nullable|string|max:50',
-        'telephone' => 'nullable|string|max:50',
-        'email' => 'nullable|email|max:150',
-        'succursale_id' => 'required|exists:succursales,id',
-        'poste' => 'required|string|in:Administrateur,Responsable succursale,Agent commercial,Comptable,Consultation',
-        'taux_commission_defaut' => 'required|numeric|min:0|max:100',
-        'date_embauche' => 'nullable|date',
-        'date_sortie' => 'nullable|date',
-        'statut' => 'required|string|in:actif,inactif',
-    ];
+    protected function rules()
+    {
+        $rules = [
+            'nom' => 'required|string|max:100',
+            'prenom' => 'required|string|max:100',
+            'cin' => 'nullable|string|max:50',
+            'telephone' => 'nullable|string|max:50',
+            'succursale_id' => 'required|exists:succursales,id',
+            'poste' => 'required|string|in:Administrateur,Responsable succursale,Agent commercial,Comptable,Consultation',
+            'taux_commission_defaut' => 'required|numeric|min:0|max:100',
+        ];
+
+        if ($this->isEditing) {
+            $rules['email'] = 'required|email|max:150|unique:users,email,' . optional(Employe::find($this->employeId))->user_id;
+        } else {
+            $rules['email'] = 'required|email|max:150|unique:users,email';
+        }
+
+        return $rules;
+    }
 
     public function mount()
     {
-        if (!auth()->user() || !auth()->user()->hasRole('agency-admin')) {
+        if (!auth()->user() || (!auth()->user()->hasRole('agency-admin') && !auth()->user()->hasRole('super-admin'))) {
             abort(403, 'Accès non autorisé.');
         }
         $this->loadData();
@@ -60,24 +65,28 @@ class GestionEmployes extends Component
 
     public function loadData()
     {
-        $this->employes = Employe::with(['succursale', 'user'])->get();
+        $query = Employe::with(['succursale', 'user']);
+
+        if ($this->searchQuery) {
+            $query->where(function($q) {
+                $q->where('nom', 'like', '%' . $this->searchQuery . '%')
+                  ->orWhere('prenom', 'like', '%' . $this->searchQuery . '%')
+                  ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
+                  ->orWhere('cin', 'like', '%' . $this->searchQuery . '%');
+            });
+        }
+
+        if ($this->filterStatut) {
+            $query->where('statut', $this->filterStatut);
+        }
+
+        $this->employes = $query->get();
         $this->succursales = Succursale::all();
-        
-        // Find users that are not yet linked to an employee (excluding current editing user_id)
-        $linkedUserIds = Employe::whereNotNull('user_id')
-            ->when($this->employeId, function($q) {
-                $q->where('id', '!=', $this->employeId);
-            })
-            ->pluck('user_id')
-            ->toArray();
-            
-        $this->usersWithoutEmployee = User::whereNotIn('id', $linkedUserIds)->get();
     }
 
     public function openCreateModal()
     {
         $this->resetForm();
-        $this->matricule_employe = 'EMP-' . strtoupper(Str::random(5));
         $this->isEditing = false;
         $this->loadData();
         $this->showModal = true;
@@ -87,8 +96,6 @@ class GestionEmployes extends Component
     {
         $employe = Employe::findOrFail($id);
         $this->employeId = $employe->id;
-        $this->user_id = $employe->user_id;
-        $this->matricule_employe = $employe->matricule_employe;
         $this->nom = $employe->nom;
         $this->prenom = $employe->prenom;
         $this->cin = $employe->cin;
@@ -97,72 +104,213 @@ class GestionEmployes extends Component
         $this->succursale_id = $employe->succursale_id;
         $this->poste = $employe->poste;
         $this->taux_commission_defaut = $employe->taux_commission_defaut;
-        $this->date_embauche = $employe->date_embauche ? $employe->date_embauche->format('Y-m-d') : null;
-        $this->date_sortie = $employe->date_sortie ? $employe->date_sortie->format('Y-m-d') : null;
         $this->statut = $employe->statut;
 
         $this->isEditing = true;
-        $this->loadData();
         $this->showModal = true;
     }
 
+    /**
+     * Save employee profile (Step 1 & Step 2).
+     * The admin NEVER enters a password.
+     */
     public function save()
     {
-        $rules = $this->rules;
-        if ($this->isEditing) {
-            $rules['matricule_employe'] = 'required|string|max:50|unique:employes,matricule_employe,' . $this->employeId;
-        }
-
-        $validated = $this->validate($rules);
+        $this->validate();
 
         if ($this->isEditing) {
             $employe = Employe::findOrFail($this->employeId);
-            $employe->update($validated);
+            $employe->update([
+                'nom' => $this->nom,
+                'prenom' => $this->prenom,
+                'cin' => $this->cin,
+                'telephone' => $this->telephone,
+                'email' => $this->email,
+                'succursale_id' => $this->succursale_id,
+                'poste' => $this->poste,
+                'taux_commission_defaut' => $this->taux_commission_defaut,
+            ]);
+
+            if ($employe->user) {
+                $employe->user->update([
+                    'name' => "{$this->prenom} {$this->nom}",
+                    'email' => $this->email,
+                    'branch_id' => $this->succursale_id,
+                ]);
+                $this->syncUserRole($employe->user, $this->poste);
+            }
+
+            session()->flash('message', 'Profil employé mis à jour avec succès.');
         } else {
-            $employe = Employe::create($validated);
-        }
+            // STEP 2: Automatic Creation & Invitation Token Generation
+            $token = Str::random(64);
+            $expiresAt = now()->addHours(48);
+            $matricule = 'EMP-' . strtoupper(Str::random(5));
 
-        // Sync Spatie role if user is linked
-        if ($employe->user_id) {
-            $user = User::find($employe->user_id);
-            if ($user) {
-                // Map employee post to Spatie role
-                $roleMap = [
-                    'Administrateur' => 'agency-admin',
-                    'Responsable succursale' => 'responsable-succursale',
-                    'Agent commercial' => 'agent-commercial',
-                    'Comptable' => 'comptable',
-                    'Consultation' => 'consultation',
-                ];
+            // Create User account without password (un-usable random hash until activated)
+            $user = User::create([
+                'name' => "{$this->prenom} {$this->nom}",
+                'email' => $this->email,
+                'password' => Hash::make(Str::random(32)),
+                'branch_id' => $this->succursale_id,
+                'status' => 'invitation_sent',
+                'invitation_token' => $token,
+                'invitation_expires_at' => $expiresAt,
+                'invitation_sent_at' => now(),
+            ]);
 
-                $roleName = $roleMap[$employe->poste] ?? 'consultation';
-                
-                // Clear existing roles and assign the new one
-                $user->syncRoles([$roleName]);
+            $this->syncUserRole($user, $this->poste);
+
+            // Create Employe record
+            $employe = Employe::create([
+                'user_id' => $user->id,
+                'matricule_employe' => $matricule,
+                'nom' => $this->nom,
+                'prenom' => $this->prenom,
+                'cin' => $this->cin,
+                'telephone' => $this->telephone,
+                'email' => $this->email,
+                'succursale_id' => $this->succursale_id,
+                'poste' => $this->poste,
+                'taux_commission_defaut' => $this->taux_commission_defaut,
+                'date_embauche' => now(),
+                'statut' => 'invitation_sent',
+            ]);
+
+            // STEP 3: Send professional invitation email
+            $activationUrl = route('employee.activate', ['token' => $token]);
+            try {
+                Mail::to($this->email)->send(new EmployeeInvitationMail($user, $employe, $activationUrl));
+                session()->flash('message', 'Employé créé et invitation envoyée par email (Lien valable 48h).');
+            } catch (\Exception $e) {
+                session()->flash('message', 'Employé créé. Erreur lors de l\'envoi de l\'email: ' . $e->getMessage());
             }
         }
 
         $this->showModal = false;
         $this->loadData();
-        $this->dispatch('swal:success', ['message' => 'Employé enregistré avec succès.']);
+    }
+
+    /**
+     * Resend invitation link with fresh 48h token.
+     */
+    public function resendInvitation($employeId)
+    {
+        $employe = Employe::with('user')->findOrFail($employeId);
+
+        if (!$employe->user) {
+            session()->flash('error', 'Aucun compte utilisateur associé à cet employé.');
+            return;
+        }
+
+        $token = Str::random(64);
+        $expiresAt = now()->addHours(48);
+
+        $employe->user->update([
+            'status' => 'invitation_sent',
+            'invitation_token' => $token,
+            'invitation_expires_at' => $expiresAt,
+            'invitation_sent_at' => now(),
+        ]);
+
+        $employe->update(['statut' => 'invitation_sent']);
+
+        $activationUrl = route('employee.activate', ['token' => $token]);
+        try {
+            Mail::to($employe->email)->send(new EmployeeInvitationMail($employe->user, $employe, $activationUrl));
+            session()->flash('message', "Invitation réenvoyée avec succès à {$employe->email} (Valable 48h).");
+        } catch (\Exception $e) {
+            session()->flash('error', "Erreur d'envoi de l'email: " . $e->getMessage());
+        }
+
+        $this->loadData();
+    }
+
+    /**
+     * Revoke active invitation.
+     */
+    public function revokeInvitation($employeId)
+    {
+        $employe = Employe::with('user')->findOrFail($employeId);
+        if ($employe->user) {
+            $employe->user->update([
+                'invitation_token' => null,
+                'invitation_expires_at' => null,
+                'status' => 'disabled',
+            ]);
+        }
+        $employe->update(['statut' => 'disabled']);
+
+        session()->flash('message', "L'invitation pour {$employe->nom_complet} a été révoquée.");
+        $this->loadData();
+    }
+
+    /**
+     * Reset 2FA configuration for employee.
+     */
+    public function resetTwoFactor($employeId)
+    {
+        $employe = Employe::with('user')->findOrFail($employeId);
+        if ($employe->user) {
+            $employe->user->update([
+                'two_factor_secret' => null,
+                'two_factor_confirmed_at' => null,
+                'two_factor_recovery_codes' => null,
+            ]);
+            session()->flash('message', "L'authentification 2FA pour {$employe->nom_complet} a été réinitialisée. L'employé devra configurer 2FA lors de sa prochaine connexion.");
+        }
+        $this->loadData();
+    }
+
+    /**
+     * Force password reset (generates new activation/reset link).
+     */
+    public function forcePasswordReset($employeId)
+    {
+        $this->resendInvitation($employeId);
+    }
+
+    /**
+     * Change employee status (Active / Suspended / Disabled).
+     */
+    public function toggleStatut($employeId, $newStatut)
+    {
+        $employe = Employe::with('user')->findOrFail($employeId);
+        $employe->update(['statut' => $newStatut]);
+        if ($employe->user) {
+            $employe->user->update(['status' => $newStatut]);
+        }
+
+        session()->flash('message', "Statut de {$employe->nom_complet} changé en {$newStatut}.");
+        $this->loadData();
+    }
+
+    private function syncUserRole(User $user, string $poste)
+    {
+        $roleMap = [
+            'Administrateur' => 'agency-admin',
+            'Responsable succursale' => 'responsable-succursale',
+            'Agent commercial' => 'agent-commercial',
+            'Comptable' => 'comptable',
+            'Consultation' => 'consultation',
+        ];
+
+        $roleName = $roleMap[$poste] ?? 'consultation';
+        $user->syncRoles([$roleName]);
     }
 
     public function resetForm()
     {
         $this->employeId = null;
-        $this->user_id = null;
-        $this->matricule_employe = '';
         $this->nom = '';
         $this->prenom = '';
         $this->cin = '';
         $this->telephone = '';
         $this->email = '';
-        $this->succursale_id = null;
-        $this->poste = '';
+        $this->succursale_id = optional($this->succursales->first())->id;
+        $this->poste = 'Agent commercial';
         $this->taux_commission_defaut = 0.00;
-        $this->date_embauche = null;
-        $this->date_sortie = null;
-        $this->statut = 'actif';
+        $this->statut = 'invitation_pending';
     }
 
     public function render()
