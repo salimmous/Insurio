@@ -102,7 +102,6 @@ class LoginSecurityService
             $user,
             "Échec de connexion (Identifiants invalides)"
         );
-    }
 
         // Send lockout notification if just locked
         if ($user->isLocked()) {
