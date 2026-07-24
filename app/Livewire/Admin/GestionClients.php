@@ -56,10 +56,10 @@ class GestionClients extends Component
         'address' => 'nullable|string|max:500',
         'city' => 'nullable|string|max:255',
         'notes' => 'nullable|string|max:1000',
-        'solvabilite' => 'required|in:solvable,non-solvable',
-        'incident' => 'required|boolean',
+        'solvabilite' => 'nullable|string',
+        'incident' => 'nullable|boolean',
         'type_incident' => 'nullable|string|max:255',
-        'entreprise_id' => 'nullable|integer|exists:clients,id',
+        'entreprise_id' => 'nullable|integer',
     ];
 
     public function updatingSearch()
