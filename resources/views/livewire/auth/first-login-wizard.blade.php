@@ -10,38 +10,58 @@
             </div>
 
             <div class="space-y-2">
-                <h2 class="text-2xl font-black text-slate-900 tracking-tight">Lien d'Activation Expiré ou Invalide</h2>
+                <h2 class="text-2xl font-black text-slate-900 tracking-tight">Lien d'Activation Expiré</h2>
                 <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-medium">
-                    Ce lien d'activation a expiré (validité 24h) ou est invalide. Veuillez contacter votre Administrateur Système pour générer un nouveau lien d'activation.
+                    Ce lien d'activation a expiré (validité 24h) ou est invalide. Veuillez contacter votre Administrateur Système pour générer un nouveau lien.
                 </p>
             </div>
 
             <div class="pt-4">
                 <a href="{{ route('login') }}" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 transition-all">
-                    Retour à la Connexion ➔
+                    <span>Retour à la Connexion ➔</span>
                 </a>
             </div>
         </div>
     @else
 
-        <!-- STEPPER PROGRESS BAR (Steps 1 to 6) INSIDE CARD -->
-        <div class="space-y-2 pb-2">
-            <div class="overflow-hidden h-2 rounded-full bg-slate-100 border border-slate-200">
-                <div style="width: {{ ($currentStep / 6) * 100 }}%" class="h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out"></div>
-            </div>
-            <div class="flex justify-between text-[10px] font-mono font-extrabold tracking-wider text-slate-400">
-                <span class="{{ $currentStep >= 1 ? 'text-indigo-600 font-black' : '' }}">1. Bienvenue</span>
-                <span class="{{ $currentStep >= 2 ? 'text-indigo-600 font-black' : '' }}">2. Mot de Passe</span>
-                <span class="{{ $currentStep >= 3 ? 'text-indigo-600 font-black' : '' }}">3. Scan 2FA</span>
-                <span class="{{ $currentStep >= 4 ? 'text-indigo-600 font-black' : '' }}">4. Code 2FA</span>
-                <span class="{{ $currentStep >= 5 ? 'text-indigo-600 font-black' : '' }}">5. Secours</span>
-                <span class="{{ $currentStep >= 6 ? 'text-emerald-600 font-black' : '' }}">6. Finalisé</span>
+        <!-- PREMIUM NUMBERED CIRCLE STEPPER -->
+        <div class="relative px-1 pb-2">
+            <div class="flex items-center justify-between relative">
+                <!-- Progress Line Background -->
+                <div class="absolute top-4 left-4 right-4 h-0.5 bg-slate-200 z-0"></div>
+                <div class="absolute top-4 left-4 h-0.5 bg-indigo-600 transition-all duration-500 z-0" style="width: {{ (($currentStep - 1) / 5) * 100 }}%"></div>
+
+                @php
+                    $steps = [
+                        1 => 'Accueil',
+                        2 => 'Mot de Passe',
+                        3 => 'Scan 2FA',
+                        4 => 'Validation',
+                        5 => 'Secours',
+                        6 => 'Finalisé'
+                    ];
+                @endphp
+
+                @foreach($steps as $stepNum => $stepLabel)
+                    <div class="relative z-10 flex flex-col items-center gap-1.5 cursor-pointer" wire:click="goToStep({{ $stepNum }})">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all duration-300 {{ $currentStep === $stepNum ? 'bg-indigo-600 text-white ring-4 ring-indigo-100 shadow-md shadow-indigo-600/30 scale-110' : ($currentStep > $stepNum ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white text-slate-400 border border-slate-300') }}">
+                            @if($currentStep > $stepNum)
+                                <svg class="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            @else
+                                {{ $stepNum }}
+                            @endif
+                        </div>
+                        <span class="text-[10px] font-extrabold font-mono tracking-tight hidden sm:block {{ $currentStep === $stepNum ? 'text-indigo-600' : ($currentStep > $stepNum ? 'text-emerald-700' : 'text-slate-400') }}">
+                            {{ $stepLabel }}
+                        </span>
+                    </div>
+                @endforeach
             </div>
         </div>
 
         <!-- STEP 1: WELCOME TO INSURIO -->
         @if($currentStep === 1)
-            <div class="space-y-6 text-left">
+            <div class="space-y-6 text-left animate-fadeIn">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-mono font-bold text-indigo-700">
                         <span>👋 BIENVENUE SUR INSURIO</span>
@@ -56,7 +76,7 @@
 
                 <!-- User & Agency Profile Details Card -->
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                         <div>
                             <span class="text-slate-400 font-mono uppercase text-[10px] block font-bold">Plateforme Enterprise</span>
                             <span class="text-slate-900 font-black text-sm">Insurio SaaS Infrastructure</span>
@@ -86,7 +106,7 @@
 
         <!-- STEP 2: FORCE PASSWORD CHANGE -->
         @if($currentStep === 2)
-            <form wire:submit.prevent="saveNewPassword" class="space-y-5 text-left">
+            <form wire:submit.prevent="saveNewPassword" class="space-y-5 text-left animate-fadeIn">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-xs font-mono font-bold text-amber-700">
                         <span>🔑 ÉTAPE 2 : CHANGEMENT DE MOT DE PASSE</span>
@@ -100,43 +120,57 @@
                 </div>
 
                 <div class="space-y-4">
-                    <div class="space-y-1.5">
+                    <!-- New Password Input with Show/Hide Toggle -->
+                    <div class="space-y-1.5" x-data="{ show: false }">
                         <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">Nouveau Mot de Passe *</label>
-                        <input type="password" wire:model.live="new_password" placeholder="••••••••••••"
-                               class="w-full px-4 py-3.5 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400">
+                        <div class="relative">
+                            <input :type="show ? 'text' : 'password'" wire:model.live="new_password" placeholder="••••••••••••"
+                                   class="w-full h-12 px-4 pr-11 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400">
+                            <button type="button" @click="show = !show" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1">
+                                <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <svg x-show="show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 013.98-.863c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m-6.177-6.177a3 3 0 004.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                            </button>
+                        </div>
                         @error('new_password') <span class="text-xs font-semibold text-rose-600 mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="space-y-1.5">
+                    <!-- Confirm Password Input with Show/Hide Toggle -->
+                    <div class="space-y-1.5" x-data="{ show: false }">
                         <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">Confirmer le Nouveau Mot de Passe *</label>
-                        <input type="password" wire:model.live="new_password_confirmation" placeholder="••••••••••••"
-                               class="w-full px-4 py-3.5 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400">
+                        <div class="relative">
+                            <input :type="show ? 'text' : 'password'" wire:model.live="new_password_confirmation" placeholder="••••••••••••"
+                                   class="w-full h-12 px-4 pr-11 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400">
+                            <button type="button" @click="show = !show" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1">
+                                <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <svg x-show="show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 013.98-.863c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m-6.177-6.177a3 3 0 004.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Live Password Rules Checklist -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2 font-mono">
-                    <span class="text-slate-500 font-bold uppercase text-[10px] block mb-1">Exigences de Sécurité du Mot de Passe :</span>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div class="flex items-center gap-2 {{ strlen($new_password) >= 12 ? 'text-emerald-700 font-bold' : 'text-slate-400' }}">
-                            <span>{{ strlen($new_password) >= 12 ? '✓' : '○' }}</span>
+                <!-- REDESIGNED TWO-COLUMN PASSWORD REQUIREMENTS -->
+                <div class="bg-slate-50 p-4.5 rounded-2xl border border-slate-200 space-y-2.5">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block">Exigences de Sécurité :</span>
+                    <div class="grid grid-cols-2 gap-2.5 text-xs font-semibold">
+                        <div class="flex items-center gap-2 {{ strlen($new_password) >= 12 ? 'text-emerald-700 font-extrabold' : 'text-slate-400' }}">
+                            <svg class="w-4 h-4 shrink-0 {{ strlen($new_password) >= 12 ? 'text-emerald-600' : 'text-slate-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                             <span>Au moins 12 caractères</span>
                         </div>
-                        <div class="flex items-center gap-2 {{ preg_match('/[A-Z]/', $new_password) ? 'text-emerald-700 font-bold' : 'text-slate-400' }}">
-                            <span>{{ preg_match('/[A-Z]/', $new_password) ? '✓' : '○' }}</span>
-                            <span>Une lettre majuscule (A-Z)</span>
+                        <div class="flex items-center gap-2 {{ preg_match('/[A-Z]/', $new_password) ? 'text-emerald-700 font-extrabold' : 'text-slate-400' }}">
+                            <svg class="w-4 h-4 shrink-0 {{ preg_match('/[A-Z]/', $new_password) ? 'text-emerald-600' : 'text-slate-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <span>Une majuscule (A-Z)</span>
                         </div>
-                        <div class="flex items-center gap-2 {{ preg_match('/[a-z]/', $new_password) ? 'text-emerald-700 font-bold' : 'text-slate-400' }}">
-                            <span>{{ preg_match('/[a-z]/', $new_password) ? '✓' : '○' }}</span>
-                            <span>Une lettre minuscule (a-z)</span>
+                        <div class="flex items-center gap-2 {{ preg_match('/[a-z]/', $new_password) ? 'text-emerald-700 font-extrabold' : 'text-slate-400' }}">
+                            <svg class="w-4 h-4 shrink-0 {{ preg_match('/[a-z]/', $new_password) ? 'text-emerald-600' : 'text-slate-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <span>Une minuscule (a-z)</span>
                         </div>
-                        <div class="flex items-center gap-2 {{ preg_match('/[0-9]/', $new_password) ? 'text-emerald-700 font-bold' : 'text-slate-400' }}">
-                            <span>{{ preg_match('/[0-9]/', $new_password) ? '✓' : '○' }}</span>
-                            <span>Au moins un chiffre (0-9)</span>
+                        <div class="flex items-center gap-2 {{ preg_match('/[0-9]/', $new_password) ? 'text-emerald-700 font-extrabold' : 'text-slate-400' }}">
+                            <svg class="w-4 h-4 shrink-0 {{ preg_match('/[0-9]/', $new_password) ? 'text-emerald-600' : 'text-slate-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <span>Un chiffre (0-9)</span>
                         </div>
-                        <div class="flex items-center gap-2 col-span-1 sm:col-span-2 {{ preg_match('/[@$!%*?&#^()_+\-=\[\]{};\':"\\|,.<>\/?]/', $new_password) ? 'text-emerald-700 font-bold' : 'text-slate-400' }}">
-                            <span>{{ preg_match('/[@$!%*?&#^()_+\-=\[\]{};\':"\\|,.<>\/?]/', $new_password) ? '✓' : '○' }}</span>
-                            <span>Au moins un symbole spécial (@, #, $, %, etc.)</span>
+                        <div class="flex items-center gap-2 col-span-2 {{ preg_match('/[@$!%*?&#^()_+\-=\[\]{};\':"\\|,.<>\/?]/', $new_password) ? 'text-emerald-700 font-extrabold' : 'text-slate-400' }}">
+                            <svg class="w-4 h-4 shrink-0 {{ preg_match('/[@$!%*?&#^()_+\-=\[\]{};\':"\\|,.<>\/?]/', $new_password) ? 'text-emerald-600' : 'text-slate-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <span>Un symbole spécial (@, #, $, %, etc.)</span>
                         </div>
                     </div>
                 </div>
@@ -151,7 +185,7 @@
 
         <!-- STEP 3: SETUP TWO-FACTOR AUTHENTICATION -->
         @if($currentStep === 3)
-            <div class="space-y-6 text-center">
+            <div class="space-y-6 text-center animate-fadeIn">
                 <div class="space-y-2 text-left">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-mono font-bold text-emerald-700">
                         <span>🛡️ ÉTAPE 3 : CONFIGURATION 2FA</span>
@@ -187,7 +221,7 @@
 
         <!-- STEP 4: VERIFICATION -->
         @if($currentStep === 4)
-            <form wire:submit.prevent="verifyTotpCode" class="space-y-6 text-left">
+            <form wire:submit.prevent="verifyTotpCode" class="space-y-6 text-left animate-fadeIn">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-mono font-bold text-indigo-700">
                         <span>🔢 ÉTAPE 4 : VÉRIFICATION DU CODE 2FA</span>
@@ -222,7 +256,7 @@
 
         <!-- STEP 5: RECOVERY CODES -->
         @if($currentStep === 5)
-            <div class="space-y-6 text-left">
+            <div class="space-y-6 text-left animate-fadeIn">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-mono font-bold text-emerald-700">
                         <span>🔑 ÉTAPE 5 : CODES DE SECOURS</span>
@@ -267,9 +301,9 @@
 
         <!-- STEP 6: ACTIVATION COMPLETE -->
         @if($currentStep === 6)
-            <div class="space-y-6 text-center py-2">
+            <div class="space-y-6 text-center py-2 animate-fadeIn">
                 <div class="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <svg class="w-8 h-8 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
@@ -284,19 +318,19 @@
                 <!-- Summary Checklist Badges -->
                 <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-xs font-semibold text-left max-w-md mx-auto space-y-2.5">
                     <div class="flex items-center justify-between text-emerald-700">
-                        <span>✅ Compte Utilisateur Activé</span>
+                        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Compte Utilisateur Activé</span>
                         <span class="font-mono text-[10px] text-slate-400">{{ now()->format('d/m/Y H:i') }}</span>
                     </div>
                     <div class="flex items-center justify-between text-emerald-700">
-                        <span>✅ Mot de Passe Personnel Sécurisé</span>
+                        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Mot de Passe Sécurisé</span>
                         <span class="font-mono text-[10px] text-slate-400">Mot de passe fort</span>
                     </div>
                     <div class="flex items-center justify-between text-emerald-700">
-                        <span>✅ Double Authentification (2FA) Activée</span>
+                        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Double Authentification (2FA)</span>
                         <span class="font-mono text-[10px] text-slate-400">TOTP Hardened</span>
                     </div>
                     <div class="flex items-center justify-between text-emerald-700">
-                        <span>✅ Codes de Secours Générés</span>
+                        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Codes de Secours Générés</span>
                         <span class="font-mono text-[10px] text-slate-400">10 Codes</span>
                     </div>
                 </div>

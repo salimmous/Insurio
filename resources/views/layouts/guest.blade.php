@@ -184,8 +184,8 @@
                     </div>
                 </div>
 
-                <!-- Form Content Slot Container -->
-                <div class="w-full max-w-md mx-auto my-auto space-y-6 py-6">
+                <!-- Form Content Slot Container (520px-580px optimal card width) -->
+                <div class="w-full max-w-[560px] mx-auto my-auto space-y-6 py-6">
                     {{ $slot }}
                 </div>
 
