@@ -58,7 +58,7 @@
         <!-- Filter / Search Bar -->
         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 flex gap-4">
             <div class="flex-1">
-                <input type="text" wire:model.live="search" placeholder="Rechercher par Raison Sociale, ICE, RC, Téléphone..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" wire:model.live="search" placeholder="Rechercher par Référence (ex: ENT-00001), Raison Sociale, ICE, RC, Téléphone..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             </div>
         </div>
 
@@ -67,8 +67,9 @@
             <!-- Desktop View -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-55 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                         <tr>
+                            <th class="px-6 py-3">RÉFÉRENCE</th>
                             <th class="px-6 py-3">Raison Sociale</th>
                             <th class="px-6 py-3">ICE / RC</th>
                             <th class="px-6 py-3">Téléphone</th>
@@ -81,9 +82,14 @@
                     <tbody class="divide-y divide-gray-200 text-sm text-gray-900">
                         @forelse($entreprises as $ent)
                             <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-mono font-bold text-xs select-all">
+                                    <span class="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-mono font-bold text-xs">
+                                        {{ $ent->reference ?? ('ENT-' . str_pad($ent->id, 5, '0', STR_PAD_LEFT)) }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="font-semibold text-indigo-600 hover:text-indigo-900">
-                                        <a href="{{ route('admin.clients.profile', $ent->id) }}" class="hover:underline">
+                                        <a href="{{ Route::has('admin.clients.profile') ? route('admin.clients.profile', $ent->id) : (Route::has('clients.profile') ? route('clients.profile', $ent->id) : '#') }}" class="hover:underline">
                                             {{ $ent->last_name }}
                                         </a>
                                     </div>
@@ -122,14 +128,14 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right flex justify-end gap-3">
-                                    <a href="{{ route('admin.clients.profile', $ent->id) }}" class="text-emerald-600 hover:text-emerald-900 font-medium">Profil CRM</a>
+                                    <a href="{{ Route::has('admin.clients.profile') ? route('admin.clients.profile', $ent->id) : (Route::has('clients.profile') ? route('clients.profile', $ent->id) : '#') }}" class="text-emerald-600 hover:text-emerald-900 font-medium">Profil CRM</a>
                                     <button wire:click="openModal({{ $ent->id }})" class="text-indigo-600 hover:text-indigo-900 font-medium">Modifier</button>
                                     <button onclick="confirm('Supprimer cette entreprise ?') || event.stopImmediatePropagation()" wire:click="delete({{ $ent->id }})" class="text-rose-600 hover:text-rose-900 font-medium">Supprimer</button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-10 text-center text-gray-400">
+                                <td colspan="8" class="px-6 py-10 text-center text-gray-400">
                                     Aucune entreprise cliente enregistrée.
                                 </td>
                             </tr>
@@ -144,7 +150,12 @@
                     <div class="p-4 flex flex-col gap-2 hover:bg-gray-50">
                         <div class="flex justify-between items-start">
                             <div>
-                                <a href="{{ route('admin.clients.profile', $ent->id) }}" class="font-bold text-indigo-600 hover:underline block">
+                                <div class="mb-1">
+                                    <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-mono font-bold text-[11px]">
+                                        Réf: {{ $ent->reference ?? ('ENT-' . str_pad($ent->id, 5, '0', STR_PAD_LEFT)) }}
+                                    </span>
+                                </div>
+                                <a href="{{ Route::has('admin.clients.profile') ? route('admin.clients.profile', $ent->id) : (Route::has('clients.profile') ? route('clients.profile', $ent->id) : '#') }}" class="font-bold text-indigo-600 hover:underline block text-base">
                                     {{ $ent->last_name }}
                                 </a>
                                 <span class="text-xs text-gray-400 font-mono block">ICE/RC: {{ $ent->cin ?? '-' }}</span>
@@ -172,7 +183,7 @@
                             @endif
                         </div>
                         <div class="flex justify-end gap-3 text-xs mt-2 border-t pt-2 border-gray-100">
-                            <a href="{{ route('admin.clients.profile', $ent->id) }}" class="text-emerald-600 font-semibold">CRM</a>
+                            <a href="{{ Route::has('admin.clients.profile') ? route('admin.clients.profile', $ent->id) : (Route::has('clients.profile') ? route('clients.profile', $ent->id) : '#') }}" class="text-emerald-600 font-semibold">CRM</a>
                             <button wire:click="openModal({{ $ent->id }})" class="text-indigo-600 font-semibold">Modifier</button>
                             <button onclick="confirm('Supprimer cette entreprise ?') || event.stopImmediatePropagation()" wire:click="delete({{ $ent->id }})" class="text-rose-600 font-semibold">Supprimer</button>
                         </div>
@@ -204,10 +215,18 @@
                             </h3>
                         </div>
                         <form wire:submit.prevent="save" class="p-6 flex flex-col gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Raison Sociale / Nom</label>
-                                <input type="text" wire:model="nom" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                @error('nom') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="col-span-1">
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Référence Entreprise</label>
+                                    <input type="text" wire:model="reference" placeholder="Auto (Ex: ENT-00001)" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
+                                    @error('reference') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Raison Sociale / Nom</label>
+                                    <input type="text" wire:model="nom" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    @error('nom') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
@@ -246,7 +265,7 @@
                                 </div>
                                 <div class="col-span-1 flex items-center pl-4 mt-6">
                                     <input type="checkbox" id="incident" wire:model="incident" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                    <label for="incident" class="ml-2 block text-sm text-gray-700 font-semibold text-rose-600">Incident signalé</label>
+                                    <label for="incident" class="ml-2 block text-sm font-semibold text-rose-600">Incident signalé</label>
                                 </div>
                             </div>
 
