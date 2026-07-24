@@ -35,10 +35,13 @@ ssh sc7mosa1422 << 'EOF'
     php artisan tenants:migrate --force
     
     echo "⚡ Optimizing Laravel cache..."
+    php artisan cache:clear
     php artisan config:cache
+    php artisan view:clear
     php artisan view:cache
     php artisan event:cache
     php artisan route:clear
+    php artisan optimize:clear
   fi
 
   echo "🌐 Copying public files to public_html..."
