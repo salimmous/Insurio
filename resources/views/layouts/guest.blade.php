@@ -165,10 +165,10 @@
             </div>
 
             <!-- RIGHT PANEL: 50% Enterprise Authentication Form Container -->
-            <div class="col-span-12 lg:col-span-6 flex flex-col justify-between p-8 sm:p-12 lg:p-16 xl:p-20 bg-slate-50 dark:bg-slate-950 overflow-y-auto">
+            <div class="col-span-12 lg:col-span-6 flex flex-col justify-between p-6 sm:p-10 lg:p-12 xl:p-16 bg-slate-950 text-slate-100 overflow-y-auto min-h-screen">
                 
                 <!-- Mobile Brand Header (Hidden on LG screens) -->
-                <div class="lg:hidden mb-8 text-center space-y-2">
+                <div class="lg:hidden mb-6 text-center space-y-2">
                     <div class="inline-flex items-center gap-3">
                         @if($agencyLogo)
                             <img src="{{ $agencyLogo }}" alt="{{ $agencyName }}" class="h-9 w-auto object-contain">
@@ -178,21 +178,21 @@
                             </div>
                         @endif
                         <div class="text-left">
-                            <span class="text-lg font-black text-slate-900 dark:text-white tracking-tight block">{{ $agencyName }}</span>
-                            <span class="text-[9px] font-mono text-slate-400 block -mt-1">Powered by Insurio</span>
+                            <span class="text-lg font-black text-white tracking-tight block">{{ $agencyName }}</span>
+                            <span class="text-[9px] font-mono text-indigo-400 block -mt-1">Powered by Insurio</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form Content Slot Container -->
-                <div class="w-full max-w-md mx-auto my-auto space-y-6 py-6">
+                <div class="w-full max-w-xl mx-auto my-auto py-6">
                     {{ $slot }}
                 </div>
 
                 <!-- Right Footer Disclaimers -->
-                <div class="pt-8 text-center text-xs text-slate-400 dark:text-slate-500 font-medium space-y-2">
+                <div class="pt-6 text-center text-xs text-slate-500 font-medium space-y-1">
                     <p>© {{ date('Y') }} {{ $agencyName }}. Tous droits réservés.</p>
-                    <p class="text-[11px] text-slate-500 font-mono">Plateforme d'Assurance Sécurisée • Propulsée par Insurio SaaS</p>
+                    <p class="text-[11px] text-slate-400 font-mono">Plateforme d'Assurance Sécurisée • Propulsée par Insurio SaaS</p>
                 </div>
             </div>
 
