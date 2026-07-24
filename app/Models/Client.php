@@ -36,6 +36,12 @@ class Client extends Model
         'entreprise_id',
         'succursale_id',
         'created_by',
+        'assigned_to',
+        'satisfaction_score',
+        'last_contact_at',
+        'next_contact_at',
+        'family_members',
+        'beneficiaries',
 
         // Keep old fillables for backward compatibility
         'nom',
@@ -48,7 +54,17 @@ class Client extends Model
     protected $casts = [
         'date_of_birth' => 'date',
         'incident' => 'boolean',
+        'family_members' => 'array',
+        'beneficiaries' => 'array',
+        'last_contact_at' => 'datetime',
+        'next_contact_at' => 'datetime',
+        'satisfaction_score' => 'integer',
     ];
+
+    public function advisor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
 
     protected static function booted()
     {
