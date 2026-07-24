@@ -12,6 +12,28 @@ html, body {
     overflow-x: hidden !important;
 }
 
+/* Global High-Contrast Legibility for Form Selects and Options */
+select {
+    color: #0f172a !important;
+    background-color: #ffffff;
+}
+
+select option {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+}
+
+/* Custom Indigo Utility Mappings */
+.bg-indigo-650 {
+    background-color: #4f46e5 !important;
+}
+.hover\:bg-indigo-750:hover {
+    background-color: #3730a3 !important;
+}
+.text-indigo-650 {
+    color: #4338ca !important;
+}
+
 /* Tenant White-Label Theme Customizations Overrides */
 :root {
     --color-accent: #0EA5A0;

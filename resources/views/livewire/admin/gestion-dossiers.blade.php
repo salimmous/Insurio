@@ -235,10 +235,10 @@
     <!-- Create Dossier Modal -->
     @if($showCreateModal)
         <div class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full overflow-hidden transform transition-all">
-                <div class="px-6 py-4 border-b border-gray-150 bg-slate-50 flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-gray-900">Créer un Nouveau Dossier / Incident</h3>
-                    <button wire:click="$set('showCreateModal', false)" class="text-gray-400 hover:text-gray-600">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden transform transition-all">
+                <div class="px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex items-center justify-between">
+                    <h3 class="text-lg font-extrabold text-slate-900">Créer un Nouveau Dossier / Incident</h3>
+                    <button wire:click="$set('showCreateModal', false)" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -248,39 +248,39 @@
                 <form wire:submit.prevent="createDossier" class="p-6 space-y-4">
                     <!-- Type of Dossier -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Type de Dossier</label>
-                        <select wire:model.live="type" class="w-full bg-slate-50 border border-gray-250 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm">
-                            <option value="claim">Claim / Sinistre (Automobile)</option>
-                            <option value="complaint">Complaint / Réclamation Client</option>
-                            <option value="payment_issue">Payment Issue / Impayé</option>
-                            <option value="returned_cheque">Returned Cheque / Chèque Impayé</option>
-                            <option value="missing_docs">Missing Documents / Pièces Manquantes</option>
-                            <option value="renewal">Renewal / Renouvellement</option>
-                            <option value="modification">Modification de Contrat</option>
-                            <option value="cancellation">Cancellation / Résiliation</option>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Type de Dossier</label>
+                        <select wire:model.live="type" class="w-full bg-white border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 shadow-xs cursor-pointer">
+                            <option value="claim" class="text-slate-900 bg-white font-semibold py-1">Claim / Sinistre (Automobile)</option>
+                            <option value="complaint" class="text-slate-900 bg-white font-semibold py-1">Complaint / Réclamation Client</option>
+                            <option value="payment_issue" class="text-slate-900 bg-white font-semibold py-1">Payment Issue / Impayé</option>
+                            <option value="returned_cheque" class="text-slate-900 bg-white font-semibold py-1">Returned Cheque / Chèque Impayé</option>
+                            <option value="missing_docs" class="text-slate-900 bg-white font-semibold py-1">Missing Documents / Pièces Manquantes</option>
+                            <option value="renewal" class="text-slate-900 bg-white font-semibold py-1">Renewal / Renouvellement</option>
+                            <option value="modification" class="text-slate-900 bg-white font-semibold py-1">Modification de Contrat</option>
+                            <option value="cancellation" class="text-slate-900 bg-white font-semibold py-1">Cancellation / Résiliation</option>
                         </select>
                     </div>
 
                     <!-- Client Select -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Client</label>
-                        <select wire:model.live="client_id" class="w-full bg-slate-50 border border-gray-250 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm">
-                            <option value="">Sélectionner un Client</option>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Client</label>
+                        <select wire:model.live="client_id" class="w-full bg-white border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 shadow-xs cursor-pointer">
+                            <option value="" class="text-slate-900 bg-white font-semibold py-1">Sélectionner un Client</option>
                             @foreach($clientsList as $c)
-                                <option value="{{ $c->id }}">{{ $c->nom_complet }} ({{ $c->national_id ?? $c->cin }})</option>
+                                <option value="{{ $c->id }}" class="text-slate-900 bg-white font-semibold py-1">{{ $c->nom_complet }} ({{ $c->national_id ?? $c->cin }})</option>
                             @endforeach
                         </select>
-                        @error('client_id') <span class="text-xs text-rose-600 mt-1 block">{{ $message }}</span> @enderror
+                        @error('client_id') <span class="text-xs text-rose-600 mt-1 block font-semibold">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Contract Select (Linked to Client) -->
                     @if($client_id)
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Contrat d'assurance (Optionnel)</label>
-                            <select wire:model.live="contract_id" class="w-full bg-slate-50 border border-gray-250 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm">
-                                <option value="">Sélectionner un Contrat</option>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Contrat d'assurance (Optionnel)</label>
+                            <select wire:model.live="contract_id" class="w-full bg-white border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 shadow-xs cursor-pointer">
+                                <option value="" class="text-slate-900 bg-white font-semibold py-1">Sélectionner un Contrat</option>
                                 @foreach($contractsList as $co)
-                                    <option value="{{ $co->id }}">{{ $co->policy_number }} ({{ $co->start_date?->format('d/m/Y') }} - {{ $co->end_date?->format('d/m/Y') }})</option>
+                                    <option value="{{ $co->id }}" class="text-slate-900 bg-white font-semibold py-1">{{ $co->policy_number }} ({{ $co->start_date?->format('d/m/Y') }} - {{ $co->end_date?->format('d/m/Y') }})</option>
                                 @endforeach
                             </select>
                         </div>
@@ -289,48 +289,48 @@
                     <div class="grid grid-cols-2 gap-4">
                         <!-- Compagnie -->
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Compagnie d'Assurance</label>
-                            <select wire:model.live="compagnie_id" class="w-full bg-slate-50 border border-gray-250 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm">
-                                <option value="">Sélectionner la Compagnie</option>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Compagnie d'Assurance</label>
+                            <select wire:model.live="compagnie_id" class="w-full bg-white border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 shadow-xs cursor-pointer">
+                                <option value="" class="text-slate-900 bg-white font-semibold py-1">Sélectionner la Compagnie</option>
                                 @foreach($compagniesList as $comp)
-                                    <option value="{{ $comp->id }}">{{ $comp->nom }}</option>
+                                    <option value="{{ $comp->id }}" class="text-slate-900 bg-white font-semibold py-1">{{ $comp->nom }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                         <!-- Succursale -->
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Succursale / Agence</label>
-                            <select wire:model.live="succursale_id" class="w-full bg-slate-50 border border-gray-250 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm">
-                                <option value="">Sélectionner la Succursale</option>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Succursale / Agence</label>
+                            <select wire:model.live="succursale_id" class="w-full bg-white border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 shadow-xs cursor-pointer">
+                                <option value="" class="text-slate-900 bg-white font-semibold py-1">Sélectionner la Succursale</option>
                                 @foreach($succursalesList as $s)
-                                    <option value="{{ $s->id }}">{{ $s->nom }}</option>
+                                    <option value="{{ $s->id }}" class="text-slate-900 bg-white font-semibold py-1">{{ $s->nom }}</option>
                                 @endforeach
                             </select>
-                            @error('succursale_id') <span class="text-xs text-rose-600 mt-1 block">{{ $message }}</span> @enderror
+                            @error('succursale_id') <span class="text-xs text-rose-600 mt-1 block font-semibold">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <!-- Priority -->
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Priorité</label>
-                            <select wire:model.live="priority" class="w-full bg-slate-50 border border-gray-250 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm">
-                                <option value="low">Low / Basse</option>
-                                <option value="medium">Medium / Moyenne</option>
-                                <option value="high">High / Haute</option>
-                                <option value="critical">Critical / Critique</option>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Priorité</label>
+                            <select wire:model.live="priority" class="w-full bg-white border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 shadow-xs cursor-pointer">
+                                <option value="low" class="text-slate-900 bg-white font-semibold py-1">Low / Basse</option>
+                                <option value="medium" class="text-slate-900 bg-white font-semibold py-1">Medium / Moyenne</option>
+                                <option value="high" class="text-slate-900 bg-white font-semibold py-1">High / Haute</option>
+                                <option value="critical" class="text-slate-900 bg-white font-semibold py-1">Critical / Critique</option>
                             </select>
                         </div>
 
                         <!-- Urgency -->
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Urgence</label>
-                            <select wire:model.live="urgency" class="w-full bg-slate-50 border border-gray-250 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm">
-                                <option value="low">Low / Basse</option>
-                                <option value="medium">Medium / Moyenne</option>
-                                <option value="high">High / Haute</option>
-                                <option value="critical">Critical / Critique</option>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Urgence</label>
+                            <select wire:model.live="urgency" class="w-full bg-white border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 shadow-xs cursor-pointer">
+                                <option value="low" class="text-slate-900 bg-white font-semibold py-1">Low / Basse</option>
+                                <option value="medium" class="text-slate-900 bg-white font-semibold py-1">Medium / Moyenne</option>
+                                <option value="high" class="text-slate-900 bg-white font-semibold py-1">High / Haute</option>
+                                <option value="critical" class="text-slate-900 bg-white font-semibold py-1">Critical / Critique</option>
                             </select>
                         </div>
                     </div>
@@ -338,19 +338,19 @@
                     <!-- Assignee -->
                     @if($succursale_id)
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Assigner à (Conseiller)</label>
-                            <select wire:model.live="assigned_employee_id" class="w-full bg-slate-50 border border-gray-250 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm">
-                                <option value="">Auto-assignation / Non assigné</option>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Assigner à (Conseiller)</label>
+                            <select wire:model.live="assigned_employee_id" class="w-full bg-white border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 shadow-xs cursor-pointer">
+                                <option value="" class="text-slate-900 bg-white font-semibold py-1">Auto-assignation / Non assigné</option>
                                 @foreach($employeesList as $emp)
-                                    <option value="{{ $emp->id }}">{{ $emp->nom_complet }}</option>
+                                    <option value="{{ $emp->id }}" class="text-slate-900 bg-white font-semibold py-1">{{ $emp->nom_complet }}</option>
                                 @endforeach
                             </select>
                         </div>
                     @endif
 
-                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-2">
-                        <button type="button" wire:click="$set('showCreateModal', false)" class="px-4 py-2 border border-gray-200 rounded-xl text-gray-600 hover:bg-slate-50 font-semibold text-sm">Annuler</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-650 hover:bg-indigo-700 text-white rounded-xl font-semibold text-sm shadow-sm shadow-indigo-900/10">Créer le Dossier</button>
+                    <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
+                        <button type="button" wire:click="$set('showCreateModal', false)" class="px-5 py-2.5 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-100 font-bold text-sm transition-all shadow-xs">Annuler</button>
+                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-md shadow-indigo-600/20">Créer le Dossier</button>
                     </div>
                 </form>
             </div>
