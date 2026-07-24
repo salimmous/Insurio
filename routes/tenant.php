@@ -46,9 +46,9 @@ Route::middleware($tenantMiddleware)->group(function () {
         return view('tenant.landing');
     });
 
-    // MFA Challenge — inside tenant, outside auth middleware
+    // MFA Challenge — inside tenant, outside auth middleware (Rate limited)
     Route::get('/two-factor-challenge', \App\Livewire\Auth\TwoFactorChallenge::class)
-        ->middleware('auth')
+        ->middleware(['auth', 'throttle:5,1'])
         ->name('two-factor-challenge');
 
     Route::get('/force-password-change', \App\Livewire\Auth\ForcePasswordChange::class)
@@ -56,14 +56,17 @@ Route::middleware($tenantMiddleware)->group(function () {
         ->name('force-password-change');
 
     Route::get('/activation', \App\Livewire\Auth\FirstLoginWizard::class)
-        ->middleware('auth')
+        ->middleware(['auth', 'throttle:10,1'])
         ->name('activation.wizard');
 
     Route::get('/activate/{token}', \App\Livewire\Auth\FirstLoginWizard::class)
+        ->middleware('throttle:10,1')
         ->name('activation.token');
 
-    // Public Client Portal / Verification link
-    Route::get('/c/{token}', [\App\Http\Controllers\Tenant\ClientPortalController::class, 'show'])->name('tenant.client-portal');
+    // Public Client Portal / Verification link (Rate limited)
+    Route::get('/c/{token}', [\App\Http\Controllers\Tenant\ClientPortalController::class, 'show'])
+        ->middleware('throttle:30,1')
+        ->name('tenant.client-portal');
 
     Route::middleware([
         'auth',
