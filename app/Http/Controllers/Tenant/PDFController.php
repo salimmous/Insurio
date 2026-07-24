@@ -66,65 +66,93 @@ class PDFController extends Controller
     public function generateEmployeeWelcomePdf(int $employeId)
     {
         $employe = \App\Models\Employe::with(['succursale', 'user'])->findOrFail($employeId);
+        $user = $employe->user;
+
         $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
         $agencyAddress = Setting::get('agency_address', 'Casablanca, Maroc');
         $agencyPhone = Setting::get('agency_phone', '+212 5 22 00 00 00');
         $agencyEmail = Setting::get('agency_email', 'contact@insurio.com');
         $agencyWebsite = Setting::get('agency_website', 'https://' . (tenant('domain') ?? 'www.insurio.ma'));
 
-        $google2fa = new \PragmaRX\Google2FA\Google2FA();
-        $twoFactorSecret = optional($employe->user)->two_factor_secret ?: $google2fa->generateSecretKey();
-        
-        $qrCodeUrl = $google2fa->getQRCodeUrl($agencyName, $employe->email, $twoFactorSecret);
-        $qrCodeSvg = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(180)->margin(1)->generate($qrCodeUrl);
+        $token = optional($user)->activation_token ?: optional($user)->invitation_token;
+        if (!$token) {
+            $token = \Illuminate\Support\Str::random(64);
+            if ($user) {
+                $user->update([
+                    'activation_token' => $token,
+                    'activation_token_expires_at' => now()->addHours(24),
+                    'invitation_token' => $token,
+                    'invitation_expires_at' => now()->addHours(24),
+                ]);
+            }
+        }
+
+        $activationUrl = route('activation.token', ['token' => $token]);
+        $qrCodeSvg = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(160)->margin(1)->generate($activationUrl);
         $qrCodeBase64 = base64_encode($qrCodeSvg);
 
-        $tempPassword = $employe->invitation_token ? substr(md5($employe->invitation_token), 0, 4) . '#92Lm' : 'A7xP#92Lm';
+        $tempPassword = session('created_temp_password_' . $employe->id) ?: ('Ins#' . substr(md5($token), 0, 4) . 'P!');
 
         $data = [
             'employe' => $employe,
+            'user' => $user,
             'agencyName' => $agencyName,
             'agencyAddress' => $agencyAddress,
             'agencyPhone' => $agencyPhone,
             'agencyEmail' => $agencyEmail,
             'agencyWebsite' => $agencyWebsite,
             'tempPassword' => $tempPassword,
-            'twoFactorSecret' => $twoFactorSecret,
+            'activationUrl' => $activationUrl,
             'qrCodeBase64' => $qrCodeBase64,
+            'expirationDate' => optional($user)->activation_token_expires_at ?: now()->addHours(24),
         ];
 
         $pdf = Pdf::loadView('pdf.employee-welcome', $data);
-        return $pdf->download('kit_onboarding_' . $employe->matricule_employe . '.pdf');
+        return $pdf->download('lettre_activation_' . $employe->matricule_employe . '.pdf');
     }
 
     public function printEmployeeWelcomeCard(int $employeId)
     {
         $employe = \App\Models\Employe::with(['succursale', 'user'])->findOrFail($employeId);
+        $user = $employe->user;
+
         $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
         $agencyAddress = Setting::get('agency_address', 'Casablanca, Maroc');
         $agencyPhone = Setting::get('agency_phone', '+212 5 22 00 00 00');
         $agencyEmail = Setting::get('agency_email', 'contact@insurio.com');
         $agencyWebsite = Setting::get('agency_website', 'https://' . (tenant('domain') ?? 'www.insurio.ma'));
 
-        $google2fa = new \PragmaRX\Google2FA\Google2FA();
-        $twoFactorSecret = optional($employe->user)->two_factor_secret ?: $google2fa->generateSecretKey();
-        
-        $qrCodeUrl = $google2fa->getQRCodeUrl($agencyName, $employe->email, $twoFactorSecret);
-        $qrCodeSvg = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(180)->margin(1)->generate($qrCodeUrl);
+        $token = optional($user)->activation_token ?: optional($user)->invitation_token;
+        if (!$token) {
+            $token = \Illuminate\Support\Str::random(64);
+            if ($user) {
+                $user->update([
+                    'activation_token' => $token,
+                    'activation_token_expires_at' => now()->addHours(24),
+                    'invitation_token' => $token,
+                    'invitation_expires_at' => now()->addHours(24),
+                ]);
+            }
+        }
+
+        $activationUrl = route('activation.token', ['token' => $token]);
+        $qrCodeSvg = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(160)->margin(1)->generate($activationUrl);
         $qrCodeBase64 = base64_encode($qrCodeSvg);
 
-        $tempPassword = $employe->invitation_token ? substr(md5($employe->invitation_token), 0, 4) . '#92Lm' : 'A7xP#92Lm';
+        $tempPassword = session('created_temp_password_' . $employe->id) ?: ('Ins#' . substr(md5($token), 0, 4) . 'P!');
 
         return view('pdf.employee-welcome', [
             'employe' => $employe,
+            'user' => $user,
             'agencyName' => $agencyName,
             'agencyAddress' => $agencyAddress,
             'agencyPhone' => $agencyPhone,
             'agencyEmail' => $agencyEmail,
             'agencyWebsite' => $agencyWebsite,
             'tempPassword' => $tempPassword,
-            'twoFactorSecret' => $twoFactorSecret,
+            'activationUrl' => $activationUrl,
             'qrCodeBase64' => $qrCodeBase64,
+            'expirationDate' => optional($user)->activation_token_expires_at ?: now()->addHours(24),
         ]);
     }
 

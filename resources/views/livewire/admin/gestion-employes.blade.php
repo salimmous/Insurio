@@ -136,31 +136,34 @@
                             <td class="py-4 px-6">
                                 @php
                                     $user = $emp->user;
-                                    $statusKey = $emp->statut;
-                                    if ($user && $user->status) {
-                                        $statusKey = $user->status;
-                                    }
+                                    $isActivated = $user && !$user->first_login && $user->activated_at;
+                                    $isExpired = $user && ($user->first_login || !$user->activated_at) && $user->activation_token_expires_at && $user->activation_token_expires_at->isPast();
+                                    $isPending = $user && ($user->first_login || !$user->activated_at) && !$isExpired;
                                 @endphp
 
-                                @if($statusKey === 'invitation_sent' || $statusKey === 'invitation_pending')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-mono font-bold">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                                        <span>Invitation Envoyée (48h)</span>
-                                    </span>
-                                @elseif($statusKey === 'actif' || $statusKey === 'active')
+                                @if($isActivated)
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-mono font-bold">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                        <span>Actif • 2FA Activé</span>
+                                        <span>Compte Activé • 2FA</span>
                                     </span>
-                                @elseif($statusKey === 'suspended')
+                                @elseif($isExpired)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-mono font-bold">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                                        <span>Lien Expiré (24h)</span>
+                                    </span>
+                                @elseif($isPending)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-mono font-bold">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                        <span>En Attente d'Activation</span>
+                                    </span>
+                                @elseif($emp->statut === 'suspended')
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 text-[10px] font-mono font-bold">
                                         <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
                                         <span>Suspendu</span>
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-mono font-bold">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                                        <span>Désactivé</span>
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 text-[10px] font-mono font-bold">
+                                        <span>Statut Inconnu</span>
                                     </span>
                                 @endif
                             </td>
@@ -211,9 +214,14 @@
                                              x-transition:leave="transition ease-in duration-100"
                                              x-transition:leave-start="opacity-100 scale-100"
                                              x-transition:leave-end="opacity-0 scale-95"
-                                             class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden text-left p-1.5 space-y-1">
+                                             class="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden text-left p-1.5 space-y-1">
                                             
-                                            <!-- Group 1: Profile & Edit -->
+                                            <!-- Group 1: Activation Package & Profile -->
+                                            <button wire:click="openActivationPackage({{ $emp->id }})" @click="open = false" 
+                                                    class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50 hover:bg-teal-100 rounded-xl transition">
+                                                <span>🛡️ Pack d'Activation (PDF / 2FA)</span>
+                                            </button>
+
                                             <button wire:click="viewProfile({{ $emp->id }})" @click="open = false" 
                                                     class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
                                                 <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -234,24 +242,24 @@
 
                                             <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
 
-                                            <!-- Group 2: Account & Security -->
+                                            <!-- Group 2: Account & Security Links -->
                                             <button wire:click="resendInvitation({{ $emp->id }})" @click="open = false" 
                                                     class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
                                                 <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <rect width="20" height="16" x="2" y="4" rx="2"/>
                                                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                                                 </svg>
-                                                <span>Envoyer l'Invitation</span>
+                                                <span>{{ $isExpired ? 'Générer Nouveau Lien (24h)' : 'Envoyer l\'Activation' }}</span>
                                             </button>
 
                                             <button wire:click="resetPassword({{ $emp->id }})" @click="open = false" 
-                                                    onclick="confirm('Confirmer la réinitialisation de mot de passe ?') || event.stopImmediatePropagation()"
+                                                    onclick="confirm('Confirmer la réinitialisation de mot de passe temporaire ?') || event.stopImmediatePropagation()"
                                                     class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
                                                 <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"/>
                                                     <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/>
                                                 </svg>
-                                                <span>Réinitialiser le Mot de Passe</span>
+                                                <span>{{ $isExpired ? 'Générer Mot de Passe Temporaire' : 'Reset Mot de Passe' }}</span>
                                             </button>
 
                                             <button wire:click="resetTwoFactor({{ $emp->id }})" @click="open = false" 
@@ -713,6 +721,122 @@
                         </button>
                     </div>
                 @endif
+            </div>
+        </div>
+    @endif
+
+    <!-- ACTIVATION PACKAGE MODAL -->
+    @if($showActivationPackageModal && $activationEmploye && $activationUser)
+        <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-8 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-6 text-slate-900 dark:text-slate-100 max-h-[90vh] overflow-y-auto font-sans">
+                
+                <!-- Modal Header -->
+                <div class="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-teal-500 text-white font-black text-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                            🛡️
+                        </div>
+                        <div>
+                            <h3 class="font-black text-xl text-slate-900 dark:text-white">
+                                Pack d'Activation Enterprise
+                            </h3>
+                            <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 block">
+                                {{ $activationEmploye->nom_complet }} • {{ $activationEmploye->poste }}
+                            </span>
+                        </div>
+                    </div>
+                    <button wire:click="$set('showActivationPackageModal', false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white font-bold text-lg">✕</button>
+                </div>
+
+                <!-- Credentials Card -->
+                <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono font-bold text-teal-400 uppercase tracking-wider">Identifiants d'Accès Temporaires :</span>
+                        <span class="text-[10px] font-mono text-slate-500">A transmettre à l'employé</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+                        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-500 uppercase font-bold block">Email Professionnel</span>
+                            <span class="text-slate-100 font-bold text-sm select-all">{{ $activationEmploye->email }}</span>
+                        </div>
+
+                        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-500 uppercase font-bold block">Mot de Passe Temporaire</span>
+                            <span class="text-indigo-400 font-black text-base tracking-wider select-all">{{ $activationTempPassword }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Activation Link Box -->
+                    <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1 font-mono text-xs">
+                        <span class="text-[10px] text-slate-500 uppercase font-bold block">Lien d'Activation Sécurisé (Validité 24h)</span>
+                        <div class="text-teal-400 font-bold text-xs truncate select-all">{{ $activationLink }}</div>
+                    </div>
+
+                    <!-- Expiration Time Notice -->
+                    <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1">
+                        <span>Expiration du Token (24h) :</span>
+                        <span class="text-amber-400 font-bold">
+                            {{ $activationUser->activation_token_expires_at ? $activationUser->activation_token_expires_at->format('d/m/Y H:i') : now()->addHours(24)->format('d/m/Y H:i') }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Action Toolbar: Copy, Print, Download, Regenerate -->
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Actions du Pack d'Activation :</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        
+                        <!-- 1. Copy Login Credentials -->
+                        <button type="button" 
+                                onclick="navigator.clipboard.writeText('Email: {{ $activationEmploye->email }}\nMot de passe: {{ $activationTempPassword }}\nLien: {{ $activationLink }}'); alert('Identifiants copiés dans le presse-papier !');" 
+                                class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition flex items-center justify-center gap-2">
+                            <span>📋 Copier Identifiants</span>
+                        </button>
+
+                        <!-- 2. Copy Activation Link -->
+                        <button type="button" 
+                                onclick="navigator.clipboard.writeText('{{ $activationLink }}'); alert('Lien d\'activation copié !');" 
+                                class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition flex items-center justify-center gap-2">
+                            <span>🔗 Copier le Lien</span>
+                        </button>
+
+                        <!-- 3. Print Welcome Letter -->
+                        <a href="{{ route('admin.employes.welcome-print', ['id' => $activationEmploye->id]) }}" target="_blank"
+                           class="px-3.5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold transition flex items-center justify-center gap-2 shadow-md">
+                            <span>🖨️ Imprimer Lettre</span>
+                        </a>
+
+                        <!-- 4. Download PDF -->
+                        <a href="{{ route('admin.employes.welcome-pdf', ['id' => $activationEmploye->id]) }}" target="_blank"
+                           class="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition flex items-center justify-center gap-2 shadow-md">
+                            <span>📥 Télécharger PDF</span>
+                        </a>
+
+                        <!-- 5. Regenerate Activation Link -->
+                        <button type="button" 
+                                wire:click="resendInvitation({{ $activationEmploye->id }})" 
+                                class="px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition flex items-center justify-center gap-2">
+                            <span>🔄 Régénérer Lien</span>
+                        </button>
+
+                        <!-- 6. Reset Temporary Password -->
+                        <button type="button" 
+                                wire:click="resetPassword({{ $activationEmploye->id }})" 
+                                onclick="confirm('Générer un nouveau mot de passe temporaire et réinitialiser le lien d\'activation (24h) ?') || event.stopImmediatePropagation()"
+                                class="px-3.5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold transition flex items-center justify-center gap-2">
+                            <span>🔑 Reset Password</span>
+                        </button>
+
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                    <button type="button" wire:click="$set('showActivationPackageModal', false)" class="px-6 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs">
+                        Fermer le Pack
+                    </button>
+                </div>
+
             </div>
         </div>
     @endif

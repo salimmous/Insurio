@@ -37,6 +37,12 @@ class GestionEmployes extends Component
     public $showProfileModal = false;
     public $viewingEmploye = null;
 
+    public $showActivationPackageModal = false;
+    public $activationEmploye = null;
+    public $activationUser = null;
+    public $activationTempPassword = '';
+    public $activationLink = '';
+
     public $deletingEmployeId = null;
     public $deleteError = '';
 
@@ -192,7 +198,10 @@ class GestionEmployes extends Component
                 'statut' => 'pending_activation',
             ]);
 
-            // STEP 3: Send Professional Invitation Email
+            // STEP 3: Save Created Temporary Password to session for Activation Package
+            session(['created_temp_password_' . $employe->id => $tempPassword]);
+
+            // STEP 4: Send Professional Invitation Email
             $activationUrl = route('activation.token', ['token' => $token]);
             try {
                 Mail::to($this->email)->send(new EmployeeInvitationMail($user, $employe, $activationUrl));
@@ -206,10 +215,43 @@ class GestionEmployes extends Component
                 'email' => $this->email,
                 'ip' => request()->ip(),
             ]);
+
+            // Auto-open Activation Package Modal for Super Admin
+            $this->openActivationPackage($employe->id);
         }
 
         $this->showModal = false;
         $this->loadData();
+    }
+
+    /**
+     * Open Activation Package Modal
+     */
+    public function openActivationPackage($employeId)
+    {
+        $this->activationEmploye = Employe::with(['succursale', 'user'])->findOrFail($employeId);
+        $this->activationUser = $this->activationEmploye->user;
+
+        if (!$this->activationUser) {
+            session()->flash('error', 'Aucun utilisateur associé à cet employé.');
+            return;
+        }
+
+        $token = $this->activationUser->activation_token ?: $this->activationUser->invitation_token;
+        if (!$token || ($this->activationUser->activation_token_expires_at && $this->activationUser->activation_token_expires_at->isPast())) {
+            $token = Str::random(64);
+            $expiresAt = now()->addHours(24);
+            $this->activationUser->update([
+                'activation_token' => $token,
+                'activation_token_expires_at' => $expiresAt,
+                'invitation_token' => $token,
+                'invitation_expires_at' => $expiresAt,
+            ]);
+        }
+
+        $this->activationTempPassword = session('created_temp_password_' . $employeId) ?: ('Ins#' . substr(md5($token), 0, 4) . 'P!');
+        $this->activationLink = route('activation.token', ['token' => $token]);
+        $this->showActivationPackageModal = true;
     }
 
     /**
