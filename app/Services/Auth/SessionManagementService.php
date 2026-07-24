@@ -166,6 +166,11 @@ class SessionManagementService
      */
     public function terminateSystemWideSessions(?string $revokedBy = null): int
     {
+        $user = auth()->user();
+        if (!$user || (!$user->is_super_admin && !session('impersonated_by_landlord'))) {
+            abort(403, 'Action d\'urgence réservée exclusivement au Super Admin Central Landlord.');
+        }
+
         $sessions = UserActiveSession::where('status', 'active')->get();
         $count = 0;
 
@@ -180,7 +185,7 @@ class SessionManagementService
         SecurityAuditService::log(
             SecurityAuditService::EVENT_SESSION_REVOKED,
             'critical',
-            auth()->user(),
+            $user,
             "RÉVOCATION D'URGENCE SYSTÈME: {$count} sessions actives interrompues par " . ($revokedBy ?: 'Super Admin')
         );
 

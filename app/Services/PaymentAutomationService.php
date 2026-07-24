@@ -137,11 +137,28 @@ class PaymentAutomationService
         $task->dossier_id = $dossier->id;
         $task->saveQuietly();
 
-        // 3. Log timeline activity
+        // 3. Create balancing Debit entry in FinancialLedger to correct cash balance
+        if (class_exists(\App\Models\FinancialLedger::class)) {
+            \App\Models\FinancialLedger::create([
+                'transaction_number' => 'REV-' . date('Y') . '-' . sprintf('%06d', $payment->id),
+                'entry_date' => now(),
+                'entry_type' => 'debit',
+                'category' => 'rejet_cheque',
+                'amount' => $payment->amount,
+                'payment_method' => 'cheque',
+                'reference_number' => $payment->cheque_number,
+                'description' => "Annulation & Revers du chèque N° {$payment->cheque_number} rejeté pour motif : {$reason}",
+                'client_name' => $payment->client ? $payment->client->name : null,
+                'user_id' => auth()->id() ?? $payment->created_by,
+                'status' => 'posted',
+            ]);
+        }
+
+        // 4. Log timeline activity
         $this->logActivity(
             $payment,
             'note',
-            "ALERTE: Rejet de chèque enregistré. Chèque N°: {$payment->cheque_number}. Raison: {$reason}. Dossier Incident {$dossier->dossier_number} créé."
+            "ALERTE: Rejet de chèque enregistré. Chèque N°: {$payment->cheque_number}. Raison: {$reason}. Dossier Incident {$dossier->dossier_number} créé. Revers comptable effectué."
         );
 
         // 4. Notify Manager (simulate timeline warning)
