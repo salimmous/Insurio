@@ -33,37 +33,40 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div class="space-y-6">
+<div class="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 space-y-6">
     <!-- Form Header -->
-    <div class="space-y-2">
-        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-            Zone Sécurisée — Confirmation
+    <div class="space-y-2 text-left">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-xs font-mono font-bold text-amber-700">
+            <span>🛡️ CONFIRMATION DE SÉCURITÉ</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Zone Sécurisée
         </h2>
-        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+        <p class="text-xs sm:text-sm text-slate-500 font-medium">
             Il s'agit d'une zone hautement sécurisée de l'application. Veuillez confirmer votre mot de passe pour continuer.
         </p>
     </div>
 
     <form wire:submit="confirmPassword" class="space-y-5">
         <!-- Password -->
-        <div>
-            <x-input-label for="password" value="Mot de Passe Actuel" />
-
-            <x-text-input wire:model="password"
-                          id="password"
-                          class="block w-full"
-                          type="password"
-                          name="password"
-                          placeholder="••••••••••••"
-                          required autocomplete="current-password" />
-
+        <div class="space-y-1.5 text-left">
+            <label for="password" class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">
+                Mot de Passe Actuel
+            </label>
+            <input wire:model="password"
+                   id="password"
+                   type="password"
+                   name="password"
+                   placeholder="••••••••••••"
+                   required autocomplete="current-password" 
+                   class="w-full px-4 py-3.5 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400" />
             <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
         </div>
 
         <div class="pt-2">
-            <x-primary-button>
+            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transition-all cursor-pointer">
                 <span>Confirmer et Continuer ➔</span>
-            </x-primary-button>
+            </button>
         </div>
     </form>
 </div>

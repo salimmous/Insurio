@@ -226,6 +226,7 @@ class FirstLoginWizard extends Component
 
     public function render()
     {
-        return view('livewire.auth.first-login-wizard');
+        return view('livewire.auth.first-login-wizard')
+            ->layout('layouts.guest');
     }
 }
