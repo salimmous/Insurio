@@ -111,7 +111,8 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/agenda', \App\Livewire\Admin\AgendaCenter::class)->name('admin.agenda')->middleware('can:clients.view');
         Route::get('/admin/communications', \App\Livewire\Admin\CommunicationCenter::class)->name('admin.communications')->middleware('can:clients.view');
 
-        // Security Center
+        // Security Center & Dashboard
+        Route::get('/admin/security-dashboard', \App\Livewire\Admin\SecurityDashboard::class)->name('admin.security-dashboard');
         Route::get('/admin/security', \App\Livewire\Admin\SecuritySettings::class)->name('admin.security');
         Route::get('/admin/security-audit', \App\Livewire\Admin\SecurityAuditCenter::class)->name('admin.security-audit');
         Route::get('/admin/security-audit/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'exportSecurityAuditPdf'])->name('admin.security-audit.pdf');

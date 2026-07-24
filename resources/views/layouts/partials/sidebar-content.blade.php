@@ -428,6 +428,19 @@
             </a>
         @endif
 
+        <!-- Dashboard Sécurité -->
+        <a href="{{ Route::has('admin.security-dashboard') ? route('admin.security-dashboard') : '#' }}" 
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security-dashboard*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
+            <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.security-dashboard*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span class="ml-[14px] truncate" x-show="!sidebarCollapsed">Dashboard Sécurité</span>
+            <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-2xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
+                Dashboard Sécurité
+            </div>
+        </a>
+
         <!-- Centre Sécurité -->
         <a href="{{ Route::has('admin.security') ? route('admin.security') : '#' }}" 
            class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"

@@ -34,6 +34,12 @@ return new class extends Migration
                 if (!Schema::hasColumn('users', 'two_factor_recovery_codes')) {
                     $table->text('two_factor_recovery_codes')->nullable();
                 }
+                if (!Schema::hasColumn('users', 'failed_attempts')) {
+                    $table->integer('failed_attempts')->default(0);
+                }
+                if (!Schema::hasColumn('users', 'locked_until')) {
+                    $table->timestamp('locked_until')->nullable();
+                }
             });
         }
     }
