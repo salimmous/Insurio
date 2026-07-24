@@ -63,8 +63,8 @@ class PaymentManager extends Component
         $this->validate([
             'client_id' => 'required|exists:clients,id',
             'contract_id' => 'required|exists:contracts,id',
-            'amount' => 'required|numeric|min:1',
-            'payment_method' => 'required|in:cash,bank_transfer,card',
+            'amount' => 'required|numeric|min:0.01',
+            'payment_method' => 'required|in:cash,bank_transfer,card,cheque',
             'status' => 'required|in:paid,pending,partial',
         ]);
 

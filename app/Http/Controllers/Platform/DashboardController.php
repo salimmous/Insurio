@@ -400,10 +400,10 @@ class DashboardController extends Controller
             'ip_address' => request()->ip(),
         ]);
 
-        // Redirect to the tenant domain's impersonate endpoint
-        $domain = $tenant->domains()->first()?->domain;
+        // Redirect to the tenant domain's signed impersonate endpoint
+        $url = \Illuminate\Support\Facades\URL::signedRoute('tenant.impersonate', ['token' => $token->token]);
 
-        return redirect("http://{$domain}/impersonate/{$token->token}");
+        return redirect($url);
     }
 
     public function destroy($tenantId, Request $request)

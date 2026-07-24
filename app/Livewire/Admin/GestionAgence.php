@@ -243,7 +243,7 @@ class GestionAgence extends Component
     public function saveWhiteLabel(): void
     {
         $this->validate([
-            'logo' => 'nullable|image|max:2048',
+            'logo' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:2048',
             'favicon' => 'nullable|mimes:png,jpg,ico|max:512',
             'couleur_primaire' => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',
             'couleur_secondaire' => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',

@@ -135,11 +135,11 @@ Route::middleware($tenantMiddleware)->group(function () {
         })->name('logout');
     });
 
-    // Impersonation route
+    // Impersonation route (Signed URL protected)
     Route::get('/impersonate/{token}', function ($token) {
         session(['impersonated_by_landlord' => true]);
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
-    })->name('tenant.impersonate');
+    })->middleware('signed')->name('tenant.impersonate');
 
     // API v1 routes (Tenant-isolated, token authenticated, rate-limited)
     Route::prefix('api/v1')->middleware(['tenant.api', 'throttle:60,1'])->group(function () {
