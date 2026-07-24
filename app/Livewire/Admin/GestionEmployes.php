@@ -155,17 +155,21 @@ class GestionEmployes extends Component
 
             session()->flash('message', 'Profil employé mis à jour avec succès.');
         } else {
-            // STEP 2: Automatic Creation & Token Generation
+            // STEP 2: Automatic Creation & 24h Token Generation
             $token = Str::random(64);
-            $expiresAt = now()->addHours(48);
+            $expiresAt = now()->addHours(24);
             $matricule = 'EMP-' . strtoupper(Str::random(5));
+            $tempPassword = 'Ins#' . rand(1000, 9999) . 'P';
 
             $user = User::create([
                 'name' => "{$this->prenom} {$this->nom}",
                 'email' => $this->email,
-                'password' => Hash::make(Str::random(32)),
+                'password' => Hash::make($tempPassword),
                 'branch_id' => $this->succursale_id,
-                'status' => 'invitation_sent',
+                'status' => 'pending_activation',
+                'first_login' => true,
+                'activation_token' => $token,
+                'activation_token_expires_at' => $expiresAt,
                 'invitation_token' => $token,
                 'invitation_expires_at' => $expiresAt,
                 'invitation_sent_at' => now(),
@@ -185,14 +189,14 @@ class GestionEmployes extends Component
                 'poste' => $this->poste,
                 'taux_commission_defaut' => $this->taux_commission_defaut,
                 'date_embauche' => now(),
-                'statut' => 'invitation_sent',
+                'statut' => 'pending_activation',
             ]);
 
             // STEP 3: Send Professional Invitation Email
-            $activationUrl = route('employee.activate', ['token' => $token]);
+            $activationUrl = route('activation.token', ['token' => $token]);
             try {
                 Mail::to($this->email)->send(new EmployeeInvitationMail($user, $employe, $activationUrl));
-                session()->flash('message', 'Employé créé et invitation envoyée par email (Lien valable 48h).');
+                session()->flash('message', 'Employé créé et lien d\'activation envoyé par email (Valable 24h).');
             } catch (\Exception $e) {
                 session()->flash('message', 'Employé créé. Erreur SMTP lors de l\'envoi de l\'email: ' . $e->getMessage());
             }
@@ -209,7 +213,7 @@ class GestionEmployes extends Component
     }
 
     /**
-     * Resend Activation Email (48h Token)
+     * Resend Activation Email / Link (24h Token)
      */
     public function resendInvitation($employeId)
     {
@@ -221,21 +225,23 @@ class GestionEmployes extends Component
         }
 
         $token = Str::random(64);
-        $expiresAt = now()->addHours(48);
+        $expiresAt = now()->addHours(24);
 
         $employe->user->update([
-            'status' => 'invitation_sent',
+            'status' => 'pending_activation',
+            'activation_token' => $token,
+            'activation_token_expires_at' => $expiresAt,
             'invitation_token' => $token,
             'invitation_expires_at' => $expiresAt,
             'invitation_sent_at' => now(),
         ]);
 
-        $employe->update(['statut' => 'invitation_sent']);
+        $employe->update(['statut' => 'pending_activation']);
 
-        $activationUrl = route('employee.activate', ['token' => $token]);
+        $activationUrl = route('activation.token', ['token' => $token]);
         try {
             Mail::to($employe->email)->send(new EmployeeInvitationMail($employe->user, $employe, $activationUrl));
-            session()->flash('message', "Invitation réenvoyée avec succès à {$employe->email} (Valable 48h).");
+            session()->flash('message', "Lien d'activation réenvoyé avec succès à {$employe->email} (Valable 24h).");
         } catch (\Exception $e) {
             session()->flash('error', "Erreur d'envoi SMTP: " . $e->getMessage());
         }
@@ -249,7 +255,7 @@ class GestionEmployes extends Component
     }
 
     /**
-     * Password Reset Trigger by Admin
+     * Password Reset & Force Re-activation Trigger by Admin
      */
     public function resetPassword($employeId)
     {
@@ -261,17 +267,27 @@ class GestionEmployes extends Component
         }
 
         $token = Str::random(64);
-        $expiresAt = now()->addHours(48);
+        $expiresAt = now()->addHours(24);
+        $tempPassword = 'Ins#' . rand(1000, 9999) . 'P';
 
         $employe->user->update([
+            'password' => Hash::make($tempPassword),
+            'first_login' => true,
+            'activated_at' => null,
+            'password_changed_at' => null,
+            'activation_token' => $token,
+            'activation_token_expires_at' => $expiresAt,
             'invitation_token' => $token,
             'invitation_expires_at' => $expiresAt,
+            'status' => 'pending_activation',
         ]);
 
-        $resetUrl = route('employee.activate', ['token' => $token]);
+        $employe->update(['statut' => 'pending_activation']);
+
+        $resetUrl = route('activation.token', ['token' => $token]);
         try {
             Mail::to($employe->email)->send(new EmployeePasswordResetMail($employe->user, $employe, $resetUrl));
-            session()->flash('message', "Email de réinitialisation de mot de passe envoyé à {$employe->email}. L'employé créera lui-même son nouveau mot de passe.");
+            session()->flash('message', "Réinitialisation et lien d'activation (24h) envoyés à {$employe->email}.");
         } catch (\Exception $e) {
             session()->flash('error', "Erreur d'envoi SMTP: " . $e->getMessage());
         }

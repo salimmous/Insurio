@@ -427,9 +427,64 @@
 
                     <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
                         <span class="text-[10px] font-mono text-slate-400 uppercase font-bold block">Statut Sécurité & 2FA</span>
-                        <span class="font-bold text-emerald-600 dark:text-emerald-400 text-sm uppercase">{{ $viewingEmploye->statut }}</span>
+                        @if(optional($viewingEmploye->user)->first_login || !optional($viewingEmploye->user)->activated_at)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">Pending Activation</span>
+                        @else
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Activated & 2FA Enforced</span>
+                        @endif
                     </div>
                 </div>
+
+                <!-- Security & Activation Status Box -->
+                @if($viewingEmploye->user)
+                    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 font-sans">
+                        <span class="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider block">Statut d'Activation & Sécurité Utilisateur :</span>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-0.5">
+                                <span class="text-[10px] text-slate-500 block font-mono uppercase">Statut Compte</span>
+                                @if($viewingEmploye->user->first_login || !$viewingEmploye->user->activated_at)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Pending Activation</span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Compte Activé</span>
+                                @endif
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-0.5">
+                                <span class="text-[10px] text-slate-500 block font-mono uppercase">Mot de passe</span>
+                                @if($viewingEmploye->user->password_changed_at)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Personnalisé</span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Temporaire</span>
+                                @endif
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-0.5">
+                                <span class="text-[10px] text-slate-500 block font-mono uppercase">Configuration 2FA</span>
+                                @if($viewingEmploye->user->two_factor_confirmed_at)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">2FA Configuré</span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">Non configuré</span>
+                                @endif
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-0.5">
+                                <span class="text-[10px] text-slate-500 block font-mono uppercase">Date d'Activation</span>
+                                <span class="font-mono text-slate-300 font-bold">{{ $viewingEmploye->user->activated_at ? $viewingEmploye->user->activated_at->format('d/m/Y H:i') : 'En attente' }}</span>
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-0.5">
+                                <span class="text-[10px] text-slate-500 block font-mono uppercase">Dernière Connexion</span>
+                                <span class="font-mono text-slate-300 font-bold">{{ $viewingEmploye->user->last_login_at ? $viewingEmploye->user->last_login_at->format('d/m/Y H:i') : 'Jamais' }}</span>
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-0.5">
+                                <span class="text-[10px] text-slate-500 block font-mono uppercase">Expiration Token</span>
+                                <span class="font-mono text-slate-300 font-bold">{{ $viewingEmploye->user->activation_token_expires_at ? $viewingEmploye->user->activation_token_expires_at->format('d/m/Y H:i') : 'N/A' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Action Toolbar Inside Profile Modal -->
                 <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">

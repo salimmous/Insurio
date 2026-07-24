@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\TwoFactorSetting;
 use Symfony\Component\HttpFoundation\Response;
 
 class RequireTwoFactor
@@ -13,6 +12,9 @@ class RequireTwoFactor
         'two-factor-challenge',
         'logout',
         'force-password-change',
+        'employee.activate',
+        'activation.wizard',
+        'activation.token',
     ];
 
     public function handle(Request $request, Closure $next): Response
@@ -29,25 +31,15 @@ class RequireTwoFactor
             }
         }
 
-        // Check if 2FA is forced globally or by role, or confirmed by user
-        $setting = TwoFactorSetting::first();
-        $isEnforced = false;
-        if ($setting) {
-            if ($setting->force_2fa_all) {
-                $isEnforced = true;
-            } elseif ($setting->force_2fa_admins && ($user->hasRole('admin') || $user->hasRole('super-admin'))) {
-                $isEnforced = true;
-            } elseif ($setting->force_2fa_finance && ($user->hasRole('finance') || $user->hasRole('caisse'))) {
-                $isEnforced = true;
-            } elseif ($setting->force_2fa_managers && $user->hasRole('manager')) {
-                $isEnforced = true;
-            }
+        // 1. FIRST LOGIN FLOW: If user has not completed onboarding wizard yet,
+        // redirect to First Time Account Activation Wizard. Never ask for 2FA yet.
+        if ($user->first_login || is_null($user->activated_at)) {
+            return redirect()->route('activation.wizard');
         }
 
-        $requires2fa = $isEnforced || (bool)$user->two_factor_confirmed_at;
-
-        // Mandatory check: no trusted device bypass, every session requires TOTP verification
-        if ($requires2fa && !session('two_factor_verified')) {
+        // 2. AFTER ACTIVATION: 2FA is strictly mandatory for every single login.
+        // No Remember Device, No Trust Browser, No Skip.
+        if (!session('two_factor_verified')) {
             return redirect()->route('two-factor-challenge');
         }
 

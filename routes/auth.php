@@ -19,11 +19,14 @@ Route::middleware('guest:web')->group(function () {
     Volt::route('reset-password/{token}', 'pages.auth.reset-password')
         ->name('password.reset');
 
-    Route::get('employee/activate/{token}', \App\Livewire\Auth\EmployeeActivation::class)
-        ->name('employee.activate');
+    Route::get('activate/{token}', \App\Livewire\Auth\FirstLoginWizard::class)
+        ->name('activation.token');
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('activation', \App\Livewire\Auth\FirstLoginWizard::class)
+        ->name('activation.wizard');
+
     Volt::route('verify-email', 'pages.auth.verify-email')
         ->name('verification.notice');
 

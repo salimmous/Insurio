@@ -62,34 +62,36 @@ Route::middleware(['auth:platform', 'central'])->group(function () {
 // Load Breeze auth routes on central domain ONLY in testing environment to make scaffolded tests pass
 if (app()->environment('testing')) {
     require __DIR__.'/auth.php';
-    Route::view('dashboard', 'dashboard')->name('dashboard');
-    Route::view('profile', 'profile')->name('profile');
-    Route::view('settings', 'settings')->name('settings');
-    Route::view('admin/succursales', 'dashboard')->name('admin.succursales');
-    Route::view('admin/employes', 'dashboard')->name('admin.employes');
-    Route::view('admin/commissions', 'dashboard')->name('admin.commissions');
-    Route::view('mes-commissions', 'dashboard')->name('agent.commissions');
-    Route::view('admin/clients', 'dashboard')->name('admin.clients');
-    Route::view('admin/entreprises', 'dashboard')->name('admin.entreprises');
-    Route::view('admin/produits', 'dashboard')->name('admin.products');
-    Route::view('admin/dossiers', 'dashboard')->name('admin.dossiers');
-    Route::view('admin/compagnies', 'dashboard')->name('admin.compagnies');
-    Route::view('admin/payments-center', 'dashboard')->name('admin.payments.center');
-    Route::view('admin/charges', 'dashboard')->name('admin.charges');
-    Route::view('admin/tasks', 'dashboard')->name('admin.tasks');
-    Route::view('admin/activity-timeline', 'dashboard')->name('admin.activity-timeline');
-    Route::view('admin/import-manager', 'dashboard')->name('admin.import-manager');
-    Route::view('admin/vault', 'dashboard')->name('admin.vault');
-    Route::view('admin/agenda', 'dashboard')->name('admin.agenda');
-    Route::view('admin/communications', 'dashboard')->name('admin.communications');
-    Route::view('automobile', 'dashboard')->name('automobile.index');
-    Route::view('automobile/create', 'dashboard')->name('automobile.create');
-    Route::post('logout', function () {})->name('logout');
-    Route::get('/automobile/pdf/{contratId}/{type}', [\App\Http\Controllers\Tenant\PDFController::class, 'generate'])->name('automobile.pdf');
-    Route::get('/admin/employes/{id}/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'generateEmployeePdf'])->name('admin.employes.pdf');
-    Route::get('/admin/employes/{id}/print', [\App\Http\Controllers\Tenant\PDFController::class, 'printEmployeeCard'])->name('admin.employes.print');
-    Route::get('/admin/employes/{id}/welcome-pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'generateEmployeeWelcomePdf'])->name('admin.employes.welcome-pdf');
-    Route::get('/admin/employes/{id}/welcome-print', [\App\Http\Controllers\Tenant\PDFController::class, 'printEmployeeWelcomeCard'])->name('admin.employes.welcome-print');
+    Route::middleware(['auth', \App\Http\Middleware\RequireTwoFactor::class])->group(function () {
+        Route::view('dashboard', 'dashboard')->name('dashboard');
+        Route::view('profile', 'profile')->name('profile');
+        Route::view('settings', 'settings')->name('settings');
+        Route::view('admin/succursales', 'dashboard')->name('admin.succursales');
+        Route::view('admin/employes', 'dashboard')->name('admin.employes');
+        Route::view('admin/commissions', 'dashboard')->name('admin.commissions');
+        Route::view('mes-commissions', 'dashboard')->name('agent.commissions');
+        Route::view('admin/clients', 'dashboard')->name('admin.clients');
+        Route::view('admin/entreprises', 'dashboard')->name('admin.entreprises');
+        Route::view('admin/produits', 'dashboard')->name('admin.products');
+        Route::view('admin/dossiers', 'dashboard')->name('admin.dossiers');
+        Route::view('admin/compagnies', 'dashboard')->name('admin.compagnies');
+        Route::view('admin/payments-center', 'dashboard')->name('admin.payments.center');
+        Route::view('admin/charges', 'dashboard')->name('admin.charges');
+        Route::view('admin/tasks', 'dashboard')->name('admin.tasks');
+        Route::view('admin/activity-timeline', 'dashboard')->name('admin.activity-timeline');
+        Route::view('admin/import-manager', 'dashboard')->name('admin.import-manager');
+        Route::view('admin/vault', 'dashboard')->name('admin.vault');
+        Route::view('admin/agenda', 'dashboard')->name('admin.agenda');
+        Route::view('admin/communications', 'dashboard')->name('admin.communications');
+        Route::view('automobile', 'dashboard')->name('automobile.index');
+        Route::view('automobile/create', 'dashboard')->name('automobile.create');
+        Route::post('logout', function () {})->name('logout');
+        Route::get('/automobile/pdf/{contratId}/{type}', [\App\Http\Controllers\Tenant\PDFController::class, 'generate'])->name('automobile.pdf');
+        Route::get('/admin/employes/{id}/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'generateEmployeePdf'])->name('admin.employes.pdf');
+        Route::get('/admin/employes/{id}/print', [\App\Http\Controllers\Tenant\PDFController::class, 'printEmployeeCard'])->name('admin.employes.print');
+        Route::get('/admin/employes/{id}/welcome-pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'generateEmployeeWelcomePdf'])->name('admin.employes.welcome-pdf');
+        Route::get('/admin/employes/{id}/welcome-print', [\App\Http\Controllers\Tenant\PDFController::class, 'printEmployeeWelcomeCard'])->name('admin.employes.welcome-print');
+    });
 }
 
 Route::get('livewire/update', function () {

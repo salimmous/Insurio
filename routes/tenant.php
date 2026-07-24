@@ -55,6 +55,13 @@ Route::middleware($tenantMiddleware)->group(function () {
         ->middleware('auth')
         ->name('force-password-change');
 
+    Route::get('/activation', \App\Livewire\Auth\FirstLoginWizard::class)
+        ->middleware('auth')
+        ->name('activation.wizard');
+
+    Route::get('/activate/{token}', \App\Livewire\Auth\FirstLoginWizard::class)
+        ->name('activation.token');
+
     // Public Client Portal / Verification link
     Route::get('/c/{token}', [\App\Http\Controllers\Tenant\ClientPortalController::class, 'show'])->name('tenant.client-portal');
 
