@@ -68,12 +68,15 @@ class TwoFactorChallenge extends Component
             if (!$service->verifyTotp($this->setupSecret, $this->code)) {
                 $this->errorMessage = 'Code TOTP invalide. Veuillez vérifier votre application authentificateur (Google/Microsoft Authenticator, Authy, 1Password).';
                 $service->logEvent($user, 'Failed Verification');
+                \App\Services\Audit\SecurityAuditService::log(\App\Services\Audit\SecurityAuditService::EVENT_2FA_VERIFY_FAILED, 'failed', $user, "Échec de vérification TOTP lors de la configuration 2FA");
                 return;
             }
 
             $service->confirmTwoFactor($user, $this->setupSecret, $this->setupRecoveryCodes);
             session(['two_factor_verified' => true]);
             $service->logEvent($user, 'Successful Verification');
+            \App\Services\Audit\SecurityAuditService::log(\App\Services\Audit\SecurityAuditService::EVENT_2FA_VERIFY_SUCCESS, 'success', $user, "Vérification TOTP réussie");
+            \App\Services\Audit\SecurityAuditService::log(\App\Services\Audit\SecurityAuditService::EVENT_2FA_ENABLED, 'success', $user, "2FA configuré et activé");
             redirect()->route('dashboard');
             return;
         }
@@ -85,8 +88,11 @@ class TwoFactorChallenge extends Component
             if (!$service->verifyAndConsumeRecoveryCode($user, $this->recoveryCode)) {
                 $this->errorMessage = 'Code de récupération invalide ou déjà utilisé.';
                 $service->logEvent($user, 'Failed Verification');
+                \App\Services\Audit\SecurityAuditService::log(\App\Services\Audit\SecurityAuditService::EVENT_2FA_VERIFY_FAILED, 'failed', $user, "Échec de vérification du code de récupération 2FA");
                 return;
             }
+
+            \App\Services\Audit\SecurityAuditService::log(\App\Services\Audit\SecurityAuditService::EVENT_RECOVERY_CODE_USED, 'warning', $user, "Code de récupération 2FA utilisé avec succès pour la connexion");
         } else {
             $this->validate(['code' => 'required|string|size:6']);
 
@@ -94,8 +100,11 @@ class TwoFactorChallenge extends Component
             if (!$secret || !$service->verifyTotp($secret, $this->code)) {
                 $this->errorMessage = 'Code TOTP invalide. Veuillez réessayer.';
                 $service->logEvent($user, 'Failed Verification');
+                \App\Services\Audit\SecurityAuditService::log(\App\Services\Audit\SecurityAuditService::EVENT_2FA_VERIFY_FAILED, 'failed', $user, "Code TOTP 2FA invalide saisi lors du challenge");
                 return;
             }
+
+            \App\Services\Audit\SecurityAuditService::log(\App\Services\Audit\SecurityAuditService::EVENT_2FA_VERIFY_SUCCESS, 'success', $user, "Vérification TOTP 2FA réussie au challenge de connexion");
         }
 
         // Success: Grant session access

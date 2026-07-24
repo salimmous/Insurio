@@ -108,7 +108,66 @@ class PDFController extends Controller
         ];
 
         $pdf = Pdf::loadView('pdf.employee-welcome', $data);
-        return $pdf->download('lettre_activation_' . $employe->matricule_employe . '.pdf');
+        return $pdf->stream('lettre_activation_' . $employe->matricule_employe . '.pdf');
+    }
+
+    public function exportSecurityAuditPdf(Request $request)
+    {
+        $query = \App\Models\SecurityAuditLog::query()->latest('created_at');
+
+        if ($request->filled('search')) {
+            $s = $request->input('search');
+            $query->where(function ($q) use ($s) {
+                $q->where('uuid', 'like', "%{$s}%")
+                  ->orWhere('user_name', 'like', "%{$s}%")
+                  ->orWhere('user_email', 'like', "%{$s}%")
+                  ->orWhere('ip_address', 'like', "%{$s}%")
+                  ->orWhere('notes', 'like', "%{$s}%");
+            });
+        }
+
+        if ($request->filled('event_type')) {
+            $query->where('event_type', $request->input('event_type'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $logs = $query->take(500)->get();
+
+        $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Enterprise SaaS');
+        $agencyLogo = tenant('logo_path') ? storage_path('app/public/' . tenant('logo_path')) : Setting::get('agency_logo', '');
+        $agencyAddress = Setting::get('agency_address', 'Casablanca, Maroc');
+        $agencyPhone = Setting::get('agency_phone', '+212 5 22 00 00 00');
+        $agencyEmail = Setting::get('agency_email', 'contact@insurio.com');
+
+        $pdf = Pdf::loadView('pdf.security-audit-report', [
+            'logs' => $logs,
+            'agencyName' => $agencyName,
+            'agencyLogo' => $agencyLogo,
+            'agencyAddress' => $agencyAddress,
+            'agencyPhone' => $agencyPhone,
+            'agencyEmail' => $agencyEmail,
+            'generatedAt' => now()->format('d/m/Y H:i:s'),
+            'generatedBy' => auth()->user()?->name ?? 'Super Admin',
+        ]);
+
+        if ($request->boolean('print')) {
+            return view('pdf.security-audit-report', [
+                'logs' => $logs,
+                'agencyName' => $agencyName,
+                'agencyLogo' => $agencyLogo,
+                'agencyAddress' => $agencyAddress,
+                'agencyPhone' => $agencyPhone,
+                'agencyEmail' => $agencyEmail,
+                'generatedAt' => now()->format('d/m/Y H:i:s'),
+                'generatedBy' => auth()->user()?->name ?? 'Super Admin',
+                'isPrint' => true,
+            ]);
+        }
+
+        return $pdf->download('rapport_audit_securite_' . date('Ymd_His') . '.pdf');
     }
 
     public function printEmployeeWelcomeCard(int $employeId)

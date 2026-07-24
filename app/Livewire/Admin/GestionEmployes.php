@@ -7,6 +7,7 @@ use App\Models\Employe;
 use App\Models\Succursale;
 use App\Models\User;
 use App\Models\ActivityLog;
+use App\Services\Audit\SecurityAuditService;
 use App\Mail\EmployeeInvitationMail;
 use App\Mail\EmployeePasswordResetMail;
 
@@ -216,6 +217,10 @@ class GestionEmployes extends Component
                 'ip' => request()->ip(),
             ]);
 
+            SecurityAuditService::log(SecurityAuditService::EVENT_ACCOUNT_CREATED, 'success', $user, "Création du compte employé pour {$user->name}");
+            SecurityAuditService::log(SecurityAuditService::EVENT_PASSWORD_TEMP_GENERATED, 'success', $user, "Génération d'un mot de passe temporaire à la création");
+            SecurityAuditService::log(SecurityAuditService::EVENT_ACTIVATION_LINK_GENERATED, 'success', $user, "Génération du lien d'activation (24h)");
+
             // Auto-open Activation Package Modal for Super Admin
             $this->openActivationPackage($employe->id);
         }
@@ -247,6 +252,7 @@ class GestionEmployes extends Component
                 'invitation_token' => $token,
                 'invitation_expires_at' => $expiresAt,
             ]);
+            SecurityAuditService::log(SecurityAuditService::EVENT_ACTIVATION_LINK_REGENERATED, 'success', $this->activationUser, "Régénération automatique de token expiré à l'ouverture du pack");
         }
 
         $this->activationTempPassword = session('created_temp_password_' . $employeId) ?: ('Ins#' . substr(md5($token), 0, 4) . 'P!');
@@ -292,6 +298,8 @@ class GestionEmployes extends Component
             'admin' => auth()->user()->name,
             'ip' => request()->ip(),
         ]);
+
+        SecurityAuditService::log(SecurityAuditService::EVENT_ACTIVATION_LINK_REGENERATED, 'success', $employe->user, "Régénération du lien d'activation (24h) par l'administrateur");
 
         $this->loadData();
     }
@@ -339,6 +347,10 @@ class GestionEmployes extends Component
             'ip' => request()->ip(),
         ]);
 
+        SecurityAuditService::log(SecurityAuditService::EVENT_PASSWORD_RESET, 'success', $employe->user, "Réinitialisation du mot de passe initiée par l'administrateur");
+        SecurityAuditService::log(SecurityAuditService::EVENT_PASSWORD_TEMP_GENERATED, 'success', $employe->user, "Nouveau mot de passe temporaire généré");
+        SecurityAuditService::log(SecurityAuditService::EVENT_ACTIVATION_LINK_REGENERATED, 'success', $employe->user, "Lien d'activation (24h) régénéré après réinitialisation");
+
         $this->loadData();
     }
 
@@ -354,6 +366,7 @@ class GestionEmployes extends Component
                 'two_factor_confirmed_at' => null,
                 'two_factor_recovery_codes' => null,
             ]);
+            SecurityAuditService::log(SecurityAuditService::EVENT_2FA_DISABLED, 'warning', $employe->user, "Désactivation & réinitialisation 2FA par l'administrateur");
         }
 
         ActivityLog::writeLog('employee.2fa_reset', $employe, null, [
@@ -374,6 +387,8 @@ class GestionEmployes extends Component
         $employe->update(['statut' => $newStatut]);
         if ($employe->user) {
             $employe->user->update(['status' => $newStatut]);
+            $evt = $newStatut === 'suspended' ? SecurityAuditService::EVENT_ACCOUNT_SUSPENDED : SecurityAuditService::EVENT_ACCOUNT_REACTIVATED;
+            SecurityAuditService::log($evt, 'warning', $employe->user, "Modification du statut du compte: {$newStatut}");
         }
 
         ActivityLog::writeLog("employee.{$newStatut}", $employe, null, [

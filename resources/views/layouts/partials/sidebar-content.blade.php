@@ -430,16 +430,30 @@
 
         <!-- Centre Sécurité -->
         <a href="{{ Route::has('admin.security') ? route('admin.security') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: ShieldCheck (21px) -->
-            <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.security*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.security') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
                 <path d="m9 12 2 2 4-4" />
             </svg>
             <span class="ml-[14px] truncate" x-show="!sidebarCollapsed">Centre Sécurité</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-2xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
                 Centre Sécurité
+            </div>
+        </a>
+
+        <!-- Audit & Conformité (Security Audit Center) -->
+        <a href="{{ Route::has('admin.security-audit') ? route('admin.security-audit') : '#' }}" 
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security-audit*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
+            <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.security-audit*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span class="ml-[14px] truncate" x-show="!sidebarCollapsed">Audit & Conformité</span>
+            <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-2xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
+                Audit & Conformité
             </div>
         </a>
     </div>

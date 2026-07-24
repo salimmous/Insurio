@@ -68,6 +68,13 @@ class LoginSecurityService
         } else {
             session(['two_factor_verified' => true]);
         }
+
+        \App\Services\Audit\SecurityAuditService::log(
+            \App\Services\Audit\SecurityAuditService::EVENT_LOGIN_SUCCESS,
+            'success',
+            $user,
+            "Connexion réussie"
+        );
     }
 
     /**
@@ -88,6 +95,14 @@ class LoginSecurityService
             'failure_reason'    => 'invalid_credentials',
             'created_at'        => now(),
         ]);
+
+        \App\Services\Audit\SecurityAuditService::log(
+            \App\Services\Audit\SecurityAuditService::EVENT_LOGIN_FAILED,
+            'failed',
+            $user,
+            "Échec de connexion (Identifiants invalides)"
+        );
+    }
 
         // Send lockout notification if just locked
         if ($user->isLocked()) {

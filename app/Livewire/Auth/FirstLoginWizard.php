@@ -4,6 +4,7 @@ namespace App\Livewire\Auth;
 
 use App\Models\User;
 use App\Models\Employe;
+use App\Services\Audit\SecurityAuditService;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
@@ -140,6 +141,8 @@ class FirstLoginWizard extends Component
             'password_changed_at' => now(),
         ])->save();
 
+        SecurityAuditService::log(SecurityAuditService::EVENT_PASSWORD_CHANGED, 'success', $this->user, "Mot de passe modifié avec succès lors du wizard d'activation");
+
         $this->currentStep = 3;
     }
 
@@ -163,6 +166,7 @@ class FirstLoginWizard extends Component
         $valid = $google2fa->verifyKey($this->secretKey, $this->totpCode, 2);
 
         if (!$valid) {
+            SecurityAuditService::log(SecurityAuditService::EVENT_2FA_VERIFY_FAILED, 'failed', $this->user, "Échec de vérification du code TOTP 2FA lors de l'activation");
             $this->addError('totpCode', 'Le code d\'authentification 2FA est incorrect. Veuillez vérifier l\'heure de votre téléphone et réessayer.');
             return;
         }
@@ -172,6 +176,9 @@ class FirstLoginWizard extends Component
             'two_factor_secret' => Crypt::encryptString($this->secretKey),
             'two_factor_confirmed_at' => now(),
         ])->save();
+
+        SecurityAuditService::log(SecurityAuditService::EVENT_2FA_VERIFY_SUCCESS, 'success', $this->user, "Vérification TOTP 2FA réussie lors du wizard");
+        SecurityAuditService::log(SecurityAuditService::EVENT_2FA_ENABLED, 'success', $this->user, "Authentification 2FA configurée et activée avec succès");
 
         $this->currentStep = 5;
     }
@@ -187,6 +194,8 @@ class FirstLoginWizard extends Component
         $this->user->forceFill([
             'two_factor_recovery_codes' => Crypt::encryptString(json_encode($this->recoveryCodes)),
         ])->save();
+
+        SecurityAuditService::log(SecurityAuditService::EVENT_RECOVERY_CODES_REGENERATED, 'success', $this->user, "10 codes de récupération générés et confirmés par l'utilisateur");
 
         $this->currentStep = 6;
     }
@@ -205,6 +214,10 @@ class FirstLoginWizard extends Component
         if ($this->employe) {
             $this->employe->update(['statut' => 'actif']);
         }
+
+        SecurityAuditService::log(SecurityAuditService::EVENT_ACCOUNT_ACTIVATED, 'success', $this->user, "Compte utilisateur activé avec succès");
+        SecurityAuditService::log(SecurityAuditService::EVENT_ACTIVATION_LINK_USED, 'success', $this->user, "Lien d'activation utilisé avec succès");
+        SecurityAuditService::log(SecurityAuditService::EVENT_LOGIN_FIRST, 'success', $this->user, "Première connexion et onboarding finalisé");
 
         session(['two_factor_verified' => true]);
 

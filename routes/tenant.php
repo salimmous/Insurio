@@ -112,6 +112,8 @@ Route::middleware($tenantMiddleware)->group(function () {
 
         // Security Center
         Route::get('/admin/security', \App\Livewire\Admin\SecuritySettings::class)->name('admin.security');
+        Route::get('/admin/security-audit', \App\Livewire\Admin\SecurityAuditCenter::class)->name('admin.security-audit');
+        Route::get('/admin/security-audit/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'exportSecurityAuditPdf'])->name('admin.security-audit.pdf');
 
         // Agent routes
         Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions')->middleware('can:commissions.view');
