@@ -31,11 +31,17 @@ class SecurityDashboard extends Component
         $this->authorizeAdmin();
 
         $user = User::findOrFail($userId);
-        $user->forceFill([
+        $updateData = [
             'status' => 'active',
-            'failed_attempts' => 0,
             'locked_until' => null,
-        ])->save();
+        ];
+        if (Schema::hasColumn('users', 'failed_attempts')) {
+            $updateData['failed_attempts'] = 0;
+        }
+        if (Schema::hasColumn('users', 'failed_login_attempts')) {
+            $updateData['failed_login_attempts'] = 0;
+        }
+        $user->forceFill($updateData)->save();
 
         \App\Services\Audit\SecurityAuditService::log(
             \App\Services\Audit\SecurityAuditService::EVENT_ACCOUNT_REACTIVATED,
@@ -104,10 +110,16 @@ class SecurityDashboard extends Component
 
         $failedLogins = SecurityAuditLog::where('event_type', 'login.failed')->count();
 
-        $lockedAccounts = User::where('status', 'locked')
-            ->orWhere(function($q) {
-                $q->whereNotNull('failed_attempts')->where('failed_attempts', '>=', 5);
-            })->count();
+        $lockedAccounts = User::where(function($q) {
+            $q->where('status', 'locked')
+              ->orWhereNotNull('locked_until');
+            if (Schema::hasColumn('users', 'failed_login_attempts')) {
+                $q->orWhere('failed_login_attempts', '>=', 5);
+            }
+            if (Schema::hasColumn('users', 'failed_attempts')) {
+                $q->orWhere('failed_attempts', '>=', 5);
+            }
+        })->count();
 
         $activeSessions = Schema::hasTable('user_active_sessions')
             ? UserActiveSession::where('status', 'active')->count()
@@ -133,9 +145,7 @@ class SecurityDashboard extends Component
         });
 
         $dailyActivations = $dates->mapWithKeys(function($date) {
-            $count = SecurityAuditLog::whereDate('created_at', $date)
-                ->where('event_type', 'account.activated')
-                ->count();
+            $count = User::whereDate('activated_at', $date)->count();
             return [$date => $count];
         });
 
@@ -176,10 +186,16 @@ class SecurityDashboard extends Component
         })->take(10)->get();
 
         // Locked Accounts List
-        $lockedUserList = User::where('status', 'locked')
-            ->orWhere(function($q) {
-                $q->whereNotNull('failed_attempts')->where('failed_attempts', '>=', 5);
-            })->take(10)->get();
+        $lockedUserList = User::where(function($q) {
+            $q->where('status', 'locked')
+              ->orWhereNotNull('locked_until');
+            if (Schema::hasColumn('users', 'failed_login_attempts')) {
+                $q->orWhere('failed_login_attempts', '>=', 5);
+            }
+            if (Schema::hasColumn('users', 'failed_attempts')) {
+                $q->orWhere('failed_attempts', '>=', 5);
+            }
+        })->take(10)->get();
 
         return view('livewire.admin.security-dashboard', [
             'totalUsers' => $totalUsers,
