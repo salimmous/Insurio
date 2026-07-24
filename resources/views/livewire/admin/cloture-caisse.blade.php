@@ -12,8 +12,9 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <button wire:click="openClosingModal" class="inline-flex items-center justify-center px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-black text-xs shadow-md transition">
-                🔒 Clôturer la Caisse Journalière
+            <button wire:click="openClosingModal" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-black text-xs shadow-md transition">
+                <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                <span>Clôturer la Caisse Journalière</span>
             </button>
         </div>
     </div>
@@ -91,7 +92,10 @@
         <!-- Income Summary -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
             <h3 class="font-black text-base text-slate-900 border-b pb-3 flex justify-between items-center">
-                <span>🟢 Recettes totales du Jour</span>
+                <span class="inline-flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span>Recettes totales du Jour</span>
+                </span>
                 <span class="text-emerald-600 font-mono">+{{ number_format($totalIncome, 2) }} DH</span>
             </h3>
             <div class="space-y-2 text-xs text-slate-700">
@@ -121,7 +125,10 @@
         <!-- Expenses Summary -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
             <h3 class="font-black text-base text-slate-900 border-b pb-3 flex justify-between items-center">
-                <span>🔴 Dépenses totales du Jour</span>
+                <span class="inline-flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                    <span>Dépenses totales du Jour</span>
+                </span>
                 <span class="text-rose-600 font-mono">-{{ number_format($totalExpenses, 2) }} DH</span>
             </h3>
             <div class="space-y-2 text-xs text-slate-700">
@@ -151,7 +158,10 @@
 
     <!-- Daily Timeline Stream -->
     <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-xs">
-        <h3 class="font-black text-base text-slate-900 border-b pb-3">Timeline des Opérations Financières du Jour</h3>
+        <h3 class="font-black text-base text-slate-900 border-b pb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 stroke-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Timeline des Opérations Financières du Jour</span>
+        </h3>
         <div class="relative border-l-2 border-slate-200 ml-4 space-y-6">
             @forelse($timeline as $trx)
                 <div class="ml-6 relative">
@@ -183,12 +193,15 @@
             <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
                 <div class="flex justify-between items-center border-b pb-3">
                     <h3 class="text-lg font-black text-slate-900">Procès-Verbal d'Arrêté & Clôture de Caisse</h3>
-                    <button wire:click="$set('showClosingModal', false)" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+                    <button wire:click="$set('showClosingModal', false)" class="text-slate-400 hover:text-slate-600 p-1">
+                        <svg class="w-5 h-5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
 
                 <div class="space-y-3 text-xs">
-                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 font-medium">
-                        ⚠️ La clôture est définitive et fermera la caisse physique de la journée.
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 font-medium flex items-center gap-2">
+                        <svg class="w-4 h-4 text-amber-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <span>La clôture est définitive et fermera la caisse physique de la journée.</span>
                     </div>
 
                     <div>
@@ -213,7 +226,10 @@
 
                     <div class="flex justify-end gap-3 pt-4 border-t">
                         <button type="button" wire:click="$set('showClosingModal', false)" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 font-bold">Annuler</button>
-                        <button type="button" wire:click="executeCashClosing" class="px-6 py-2 bg-rose-600 text-white rounded-xl font-black shadow-md hover:bg-rose-700">Valider & Signer la Clôture 🔒</button>
+                        <button type="button" wire:click="executeCashClosing" class="inline-flex items-center gap-2 px-6 py-2 bg-rose-600 text-white rounded-xl font-black shadow-md hover:bg-rose-700">
+                            <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <span>Valider & Signer la Clôture</span>
+                        </button>
                     </div>
                 </div>
             </div>

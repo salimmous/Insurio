@@ -7,8 +7,8 @@
                 <p class="text-sm text-gray-500">Workspace centralisé pour tous les sinistres, réclamations clients, impayés, modifications de contrat et suivis opérationnels.</p>
             </div>
             <button wire:click="openCreateModal" class="inline-flex items-center justify-center px-4 py-2.5 bg-indigo-600 border border-transparent rounded-xl font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm">
-                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <svg class="h-5 w-5 mr-2 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Créer un Dossier / Incident
             </button>
@@ -17,7 +17,7 @@
         <!-- Session Message -->
         @if (session()->has('success'))
             <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-semibold flex items-center gap-2">
-                <span>🎉</span>
+                <svg class="w-4 h-4 stroke-2 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span>{{ session('success') }}</span>
             </div>
         @endif
@@ -77,8 +77,8 @@
         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 flex flex-col lg:flex-row gap-4 items-center justify-between">
             <div class="relative w-full lg:max-w-md">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <svg class="h-5 w-5 text-gray-400 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </span>
                 <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher par client, dossier DS-..., police..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
@@ -213,7 +213,9 @@
                         @empty
                             <tr>
                                 <td colspan="7" class="px-6 py-12 text-center">
-                                    <div class="text-gray-400 text-3xl">📂</div>
+                                    <svg class="h-10 w-10 text-gray-300 mx-auto stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
                                     <div class="mt-2 text-sm text-gray-500 font-semibold">Aucun dossier trouvé</div>
                                     <p class="text-xs text-gray-400 mt-1">Essayez d'ajuster vos critères de recherche ou de créer un nouveau dossier.</p>
                                 </td>
@@ -239,8 +241,8 @@
                 <div class="px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex items-center justify-between">
                     <h3 class="text-lg font-extrabold text-slate-900">Créer un Nouveau Dossier / Incident</h3>
                     <button wire:click="$set('showCreateModal', false)" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <svg class="h-6 w-6 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
