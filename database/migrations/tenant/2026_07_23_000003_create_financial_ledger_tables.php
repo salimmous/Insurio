@@ -90,7 +90,7 @@ return new class extends Migration
                     'cash', 'cheque', 'transfer', 'deposit', 'card', 'tpe', 'online', 'mobile',
                     'internal_transfer', 'refund', 'commission', 'expense', 'salary'
                 ])->default('cash');
-                $table->enum('status', ['pending', 'approved', 'completed', 'rejected', 'cancelled'])->default('completed')->index();
+                $table->enum('status', ['pending', 'approved', 'completed', 'posted', 'rejected', 'cancelled'])->default('completed')->index();
                 $table->string('receipt_number')->nullable()->unique(); // Serial receipt number
                 $table->string('qr_code_hash')->nullable();
                 $table->text('notes')->nullable();

@@ -22,11 +22,13 @@ class GestionEmployes extends Component
 
     // Form fields
     public $employeId;
+    public $matricule_employe = '';
+    public $user_id = null;
     public $nom;
     public $prenom;
     public $cin;
     public $telephone;
-    public $email;
+    public $email = '';
     public $succursale_id;
     public $poste = 'Agent commercial';
     public $taux_commission_defaut = 0.00;
@@ -64,6 +66,8 @@ class GestionEmployes extends Component
 
         if ($this->isEditing) {
             $rules['email'] = 'required|email|max:150|unique:users,email,' . optional(Employe::find($this->employeId))->user_id;
+        } else if ($this->user_id) {
+            $rules['email'] = 'nullable|email|max:150';
         } else {
             $rules['email'] = 'required|email|max:150|unique:users,email';
         }
@@ -165,22 +169,30 @@ class GestionEmployes extends Component
             // STEP 2: Automatic Creation & 24h Token Generation
             $token = Str::random(64);
             $expiresAt = now()->addHours(24);
-            $matricule = 'EMP-' . strtoupper(Str::random(5));
+            $matricule = !empty($this->matricule_employe) ? $this->matricule_employe : ('EMP-' . strtoupper(Str::random(5)));
             $tempPassword = 'Ins#' . rand(1000, 9999) . 'P';
 
-            $user = User::create([
-                'name' => "{$this->prenom} {$this->nom}",
-                'email' => $this->email,
-                'password' => Hash::make($tempPassword),
-                'branch_id' => $this->succursale_id,
-                'status' => 'pending_activation',
-                'first_login' => true,
-                'activation_token' => $token,
-                'activation_token_expires_at' => $expiresAt,
-                'invitation_token' => $token,
-                'invitation_expires_at' => $expiresAt,
-                'invitation_sent_at' => now(),
-            ]);
+            if ($this->user_id && ($existingUser = User::find($this->user_id))) {
+                $user = $existingUser;
+                $user->update([
+                    'name' => "{$this->prenom} {$this->nom}",
+                    'branch_id' => (class_exists(\App\Models\AgenceBranch::class) && \App\Models\AgenceBranch::where('id', $this->succursale_id)->exists()) ? $this->succursale_id : null,
+                ]);
+            } else {
+                $user = User::create([
+                    'name' => "{$this->prenom} {$this->nom}",
+                    'email' => !empty($this->email) ? $this->email : ('emp_' . Str::random(8) . '@insurio.ma'),
+                    'password' => Hash::make($tempPassword),
+                    'branch_id' => (class_exists(\App\Models\AgenceBranch::class) && \App\Models\AgenceBranch::where('id', $this->succursale_id)->exists()) ? $this->succursale_id : null,
+                    'status' => 'pending_activation',
+                    'first_login' => true,
+                    'activation_token' => $token,
+                    'activation_token_expires_at' => $expiresAt,
+                    'invitation_token' => $token,
+                    'invitation_expires_at' => $expiresAt,
+                    'invitation_sent_at' => now(),
+                ]);
+            }
 
             $this->syncUserRole($user, $this->poste);
 

@@ -16,6 +16,7 @@ use App\Models\Contract;
 use App\Models\Compagnie;
 use App\Models\Succursale;
 use App\Models\User;
+use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -43,6 +44,10 @@ class PaymentCenter extends Component
     public $category = 'encaissement_prime';
     public $entry_type = 'credit'; // credit = Recette (+), debit = Dépense (-)
     public $amount = 0.00;
+    public $paid_amount = 0.00;
+    public $reconcile_payment_id = null;
+    public $reconcile_ref = '';
+    public $reconcile_amount = 0.00;
     public $payment_method = 'cash';
     public $currency = 'DH';
     public $notes = '';
@@ -148,6 +153,43 @@ class PaymentCenter extends Component
         $this->cheque_front_scan = null;
     }
 
+    public function createPayment()
+    {
+        if ($this->paid_amount > 0 && floatval($this->amount) == 0) {
+            $this->amount = $this->paid_amount;
+        }
+        return $this->createLedgerEntry();
+    }
+
+    public function createReconciliation()
+    {
+        if ($this->reconcile_payment_id && ($payment = Payment::find($this->reconcile_payment_id))) {
+            $payment->update(['payment_status' => 'deposited']);
+            if (class_exists(\App\Models\BankReconciliation::class)) {
+                \App\Models\BankReconciliation::create([
+                    'payment_id' => $payment->id,
+                    'reference' => $this->reconcile_ref ?: ('TXN-' . rand(1000, 9999)),
+                    'deposit_date' => now(),
+                    'amount' => $this->reconcile_amount ?: $payment->amount,
+                    'difference' => 0.00,
+                    'matched' => true,
+                    'user_id' => auth()->id() ?? 1,
+                ]);
+            } else {
+                DB::table('bank_reconciliations')->insert([
+                    'payment_id' => $payment->id,
+                    'reference' => $this->reconcile_ref ?: ('TXN-' . rand(1000, 9999)),
+                    'deposit_date' => now(),
+                    'amount' => $this->reconcile_amount ?: $payment->amount,
+                    'difference' => 0.00,
+                    'matched' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+    }
+
     public function createLedgerEntry()
     {
         $this->validate([
@@ -196,6 +238,40 @@ class PaymentCenter extends Component
                 'contract_id' => $this->contract_id ?: null,
                 'cheque_id' => $chequeId,
             ]);
+
+            if ($this->client_id && class_exists(\App\Models\Payment::class)) {
+                $pmtNum = 'REC-' . date('Ymd') . '-' . sprintf('%05d', rand(1, 99999));
+                $paymentRec = \App\Models\Payment::create([
+                    'uuid' => (string) Str::uuid(),
+                    'payment_number' => $pmtNum,
+                    'client_id' => $this->client_id,
+                    'contract_id' => $this->contract_id ?: null,
+                    'amount' => $this->amount,
+                    'paid_amount' => $this->amount,
+                    'remaining_amount' => 0,
+                    'payment_method' => $this->payment_method,
+                    'payment_status' => 'paid',
+                    'payment_date' => now(),
+                    'created_by' => auth()->id() ?? 1,
+                ]);
+
+                if ($this->contract_id && ($contract = \App\Models\Contract::find($this->contract_id))) {
+                    $contract->update([
+                        'payment_status' => 'paid',
+                        'statut' => 'actif',
+                    ]);
+
+                    if (class_exists(\App\Models\Reglement::class)) {
+                        \App\Models\Reglement::create([
+                            'contrat_id' => $contract->id,
+                            'montant' => $this->amount,
+                            'mode_reglement' => $this->payment_method ?: 'especes',
+                            'reference_paiement' => $pmtNum,
+                            'date_reglement' => now(),
+                        ]);
+                    }
+                }
+            }
 
             // If amount > 5000 DH, trigger Double Validation Approval Workflow
             if ($this->amount > 5000) {

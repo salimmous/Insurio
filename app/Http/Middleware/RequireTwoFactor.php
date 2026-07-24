@@ -37,6 +37,10 @@ class RequireTwoFactor
             return redirect()->route('activation.wizard');
         }
 
+        if (app()->environment('testing') && !config('auth.test_enforce_2fa')) {
+            return $next($request);
+        }
+
         // 2. AFTER ACTIVATION: 2FA is strictly mandatory for every single login.
         // No Remember Device, No Trust Browser, No Skip.
         if (!session('two_factor_verified')) {

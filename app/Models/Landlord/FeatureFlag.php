@@ -20,7 +20,7 @@ class FeatureFlag extends Model
         'rules' => 'array',
     ];
 
-    public static function isActive(string $flagName, string $tenantId = null): bool
+    public static function isActive(string $flagName, ?string $tenantId = null): bool
     {
         $flag = self::where('name', $flagName)->first();
         if (!$flag) {

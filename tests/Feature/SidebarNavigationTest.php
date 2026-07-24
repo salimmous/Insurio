@@ -64,6 +64,10 @@ class SidebarNavigationTest extends TestCase
             Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
         }
 
+        if (class_exists(\App\Models\Setting::class)) {
+            \App\Models\Setting::set('enabled_pages', json_encode(['dashboard', 'automobile', 'succursales', 'employes', 'commissions', 'charges', 'settings']));
+        }
+
         // Roles
         $adminRole = Role::firstOrCreate(['name' => 'agency-admin', 'guard_name' => 'web']);
         $adminRole->givePermissionTo($permissions);
@@ -72,10 +76,10 @@ class SidebarNavigationTest extends TestCase
         $agentRole->givePermissionTo(['clients.view', 'contracts.view']);
 
         // Users
-        $this->adminUser = User::factory()->create();
+        $this->adminUser = User::factory()->create(['first_login' => false, 'password_changed_at' => now(), 'status' => 'active']);
         $this->adminUser->assignRole($adminRole);
 
-        $this->agentUser = User::factory()->create();
+        $this->agentUser = User::factory()->create(['first_login' => false, 'password_changed_at' => now(), 'status' => 'active']);
         $this->agentUser->assignRole($agentRole);
 
         // Core data

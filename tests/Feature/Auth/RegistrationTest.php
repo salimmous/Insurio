@@ -14,9 +14,7 @@ class RegistrationTest extends TestCase
     {
         $response = $this->get('/register');
 
-        $response
-            ->assertOk()
-            ->assertSeeVolt('pages.auth.register');
+        $response->assertRedirect(route('login'));
     }
 
     public function test_new_users_can_register(): void

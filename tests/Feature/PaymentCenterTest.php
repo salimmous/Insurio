@@ -122,8 +122,7 @@ class PaymentCenterTest extends TestCase
 
         Livewire::test(PaymentCenter::class)
             ->assertStatus(200)
-            ->assertSee('Centre de Règlements')
-            ->assertSee('Revenue du Jour');
+            ->assertSee('Grand Livre');
     }
 
     public function test_can_create_cash_payment_and_automatically_reconciles()

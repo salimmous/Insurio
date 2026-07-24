@@ -25,7 +25,7 @@
 
 <!-- 2. NAVIGATION AREA (24px Section Gaps, 8px Item Gaps, 48px Height, 15px Text, 18px Padding, 14px Icon Gap) -->
 @php
-    $enabledPages = json_decode(\App\Models\Setting::get('enabled_pages', '[]'), true) ?: ['dashboard', 'automobile', 'succursales', 'employes', 'commissions', 'charges'];
+    $enabledPages = json_decode(\App\Models\Setting::get('enabled_pages', '[]'), true) ?: ['dashboard', 'automobile', 'succursales', 'employes', 'commissions', 'charges', 'settings'];
 @endphp
 <nav class="flex-1 px-4 py-4 space-y-6 overflow-y-auto sidebar-scrollbar box-border">
 
@@ -287,7 +287,7 @@
     </div>
 
     <!-- SECTION: ORGANISATION -->
-    @if(auth()->user()->hasRole('agency-admin'))
+    @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('super-admin') || auth()->user()->can('expenses.view'))
         <div class="space-y-2">
             <div class="px-[18px] text-[12px] font-mono font-bold text-slate-400 uppercase tracking-[2px] mt-6 mb-3" x-show="!sidebarCollapsed">
                 Organisation
@@ -406,13 +406,14 @@
     </div>
 
     <!-- SECTION: CONFIGURATION -->
+    @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('super-admin') || auth()->user()->can('expenses.view'))
     <div class="space-y-2">
         <div class="px-[18px] text-[12px] font-mono font-bold text-slate-400 uppercase tracking-[2px] mt-6 mb-3" x-show="!sidebarCollapsed">
             Configuration
         </div>
 
         <!-- Paramètres Agence -->
-        @if(auth()->user()->hasRole('agency-admin'))
+        @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('super-admin') || auth()->user()->can('expenses.view'))
             <a href="{{ Route::has('settings') ? route('settings') : '#' }}" 
                class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('settings*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
@@ -470,6 +471,7 @@
             </div>
         </a>
     </div>
+    @endif
 
 </nav>
 

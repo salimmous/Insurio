@@ -155,6 +155,12 @@ class GestionAgence extends Component
         $this->activeTab = $tab;
     }
 
+    public function saveGeneral(): void
+    {
+        $this->saveProfile();
+        $this->saveCommissions();
+    }
+
     public function saveProfile(): void
     {
         $this->validate([
@@ -266,6 +272,11 @@ class GestionAgence extends Component
         session()->flash('message', '🎨 Identité visuelle mise à jour.');
     }
 
+    public function saveAccessControl(): void
+    {
+        $this->saveSecuritySettings();
+    }
+
     public function saveSecuritySettings(): void
     {
         Setting::set('enabled_pages', json_encode($this->enabled_pages));
@@ -273,7 +284,7 @@ class GestionAgence extends Component
         Setting::set('require_2fa', (string)$this->require_2fa);
         Setting::set('password_expiry_days', (string)$this->password_expiry_days);
 
-        session()->flash('message', '🔒 Politiques de sécurité et permissions enregistrées.');
+        session()->flash('message', '🔒 Les droits d\'accès (Pages & Rôles) ont été enregistrés avec succès.');
     }
 
     public function triggerBackup(): void

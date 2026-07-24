@@ -13,7 +13,7 @@ class ProfileTest extends TestCase
 
     public function test_profile_page_is_displayed(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['first_login' => false, 'password_changed_at' => now(), 'status' => 'active']);
 
         $response = $this->actingAs($user)->get('/profile');
 
