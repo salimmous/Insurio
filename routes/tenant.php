@@ -75,7 +75,7 @@ Route::middleware($tenantMiddleware)->group(function () {
     ])->group(function () {
         Route::get('dashboard', \App\Livewire\Admin\AdminDashboard::class)->name('dashboard');
         Route::view('profile', 'profile')->name('profile');
-        Route::get('settings', \App\Livewire\Admin\GestionAgence::class)->name('settings');
+        Route::get('settings', \App\Livewire\Admin\GestionAgence::class)->name('settings')->middleware('can:expenses.view');
         
         // Automobile Register routes
         Route::get('/automobile', ListeContrats::class)->name('automobile.index')->middleware('can:contracts.view');
@@ -112,10 +112,10 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/communications', \App\Livewire\Admin\CommunicationCenter::class)->name('admin.communications')->middleware('can:clients.view');
 
         // Security Center & Dashboard
-        Route::get('/admin/security-dashboard', \App\Livewire\Admin\SecurityDashboard::class)->name('admin.security-dashboard');
-        Route::get('/admin/security', \App\Livewire\Admin\SecuritySettings::class)->name('admin.security');
-        Route::get('/admin/security-audit', \App\Livewire\Admin\SecurityAuditCenter::class)->name('admin.security-audit');
-        Route::get('/admin/security-audit/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'exportSecurityAuditPdf'])->name('admin.security-audit.pdf');
+        Route::get('/admin/security-dashboard', \App\Livewire\Admin\SecurityDashboard::class)->name('admin.security-dashboard')->middleware('can:expenses.view');
+        Route::get('/admin/security', \App\Livewire\Admin\SecuritySettings::class)->name('admin.security')->middleware('can:expenses.view');
+        Route::get('/admin/security-audit', \App\Livewire\Admin\SecurityAuditCenter::class)->name('admin.security-audit')->middleware('can:expenses.view');
+        Route::get('/admin/security-audit/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'exportSecurityAuditPdf'])->name('admin.security-audit.pdf')->middleware('can:expenses.view');
 
         // Agent routes
         Route::get('/mes-commissions', \App\Livewire\Agent\MesCommissions::class)->name('agent.commissions')->middleware('can:commissions.view');

@@ -63,62 +63,68 @@ class ClotureCaisse extends Component
 
     public function executeCashClosing()
     {
-        $caisse = CashRegister::first();
-        $openingBalance = $caisse ? $caisse->opening_balance : 0.00;
-        
-        $cashIn = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
-            ->where('payment_method', 'cash')->where('entry_type', 'credit')->sum('amount');
+        DB::transaction(function () {
+            $caisse = CashRegister::lockForUpdate()->first();
+            $openingBalance = $caisse ? $caisse->opening_balance : 0.00;
+            
+            $cashIn = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
+                ->where('payment_method', 'cash')->where('entry_type', 'credit')->sum('amount');
 
-        $cashOut = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
-            ->where('payment_method', 'cash')->where('entry_type', 'debit')->sum('amount');
+            $cashOut = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
+                ->where('payment_method', 'cash')->where('entry_type', 'debit')->sum('amount');
 
-        $transfersIn = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
-            ->where('payment_method', 'transfer')->where('entry_type', 'credit')->sum('amount');
+            $transfersIn = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
+                ->where('payment_method', 'transfer')->where('entry_type', 'credit')->sum('amount');
 
-        $cardIn = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
-            ->whereIn('payment_method', ['card', 'tpe'])->where('entry_type', 'credit')->sum('amount');
+            $cardIn = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
+                ->whereIn('payment_method', ['card', 'tpe'])->where('entry_type', 'credit')->sum('amount');
 
-        $chequesReceived = Cheque::whereBetween('created_at', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])->sum('amount');
-        $chequesDeposited = Cheque::whereBetween('deposit_date', [$this->filterDateStart, $this->filterDateEnd])->sum('amount');
-        
-        $expenses = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
-            ->where('category', 'charge')->sum('amount');
+            $chequesReceived = Cheque::whereBetween('created_at', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])->sum('amount');
+            $chequesDeposited = Cheque::whereBetween('deposit_date', [$this->filterDateStart, $this->filterDateEnd])->sum('amount');
+            
+            $expenses = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
+                ->where('category', 'charge')->sum('amount');
 
-        $commissions = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
-            ->where('category', 'commission')->sum('amount');
+            $commissions = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
+                ->where('category', 'commission')->sum('amount');
 
-        $refunds = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
-            ->where('category', 'reglement_sinistre')->sum('amount');
+            $refunds = FinancialLedger::whereBetween('entry_date', [$this->filterDateStart . ' 00:00:00', $this->filterDateEnd . ' 23:59:59'])
+                ->where('category', 'reglement_sinistre')->sum('amount');
 
-        $expectedClosing = $openingBalance + $cashIn - $cashOut;
-        $variance = $this->physical_count - $expectedClosing;
+            $expectedClosing = $openingBalance + $cashIn - $cashOut;
+            $variance = $this->physical_count - $expectedClosing;
 
-        DailyCashClosing::create([
-            'closing_date' => now()->format('Y-m-d'),
-            'cash_register_id' => $caisse->id ?? null,
-            'opening_balance' => $openingBalance,
-            'total_cash_in' => $cashIn,
-            'total_cash_out' => $cashOut,
-            'total_transfers_in' => $transfersIn,
-            'total_card_in' => $cardIn,
-            'total_cheques_received' => $chequesReceived,
-            'total_cheques_deposited' => $chequesDeposited,
-            'total_expenses' => $expenses,
-            'total_commissions' => $commissions,
-            'total_refunds' => $refunds,
-            'expected_closing_balance' => $expectedClosing,
-            'physical_closing_balance' => $this->physical_count,
-            'variance_amount' => $variance,
-            'net_cash' => $this->physical_count,
-            'net_profit' => ($cashIn + $transfersIn + $cardIn) - ($expenses + $commissions + $refunds),
-            'status' => 'closed',
-            'closed_by' => auth()->id() ?? 1,
-            'approved_by' => auth()->id() ?? 1,
-            'closed_at' => now(),
-            'notes' => $this->closing_notes,
-            'manager_signature' => $this->manager_name,
-            'employee_signature' => $this->employee_name,
-        ]);
+            DailyCashClosing::create([
+                'closing_date' => now()->format('Y-m-d'),
+                'cash_register_id' => $caisse->id ?? null,
+                'opening_balance' => $openingBalance,
+                'total_cash_in' => $cashIn,
+                'total_cash_out' => $cashOut,
+                'total_transfers_in' => $transfersIn,
+                'total_card_in' => $cardIn,
+                'total_cheques_received' => $chequesReceived,
+                'total_cheques_deposited' => $chequesDeposited,
+                'total_expenses' => $expenses,
+                'total_commissions' => $commissions,
+                'total_refunds' => $refunds,
+                'expected_closing_balance' => $expectedClosing,
+                'physical_closing_balance' => $this->physical_count,
+                'variance_amount' => $variance,
+                'net_cash' => $this->physical_count,
+                'net_profit' => ($cashIn + $transfersIn + $cardIn) - ($expenses + $commissions + $refunds),
+                'status' => 'closed',
+                'closed_by' => auth()->id() ?? 1,
+                'approved_by' => auth()->id() ?? 1,
+                'closed_at' => now(),
+                'notes' => $this->closing_notes,
+                'manager_signature' => $this->manager_name,
+                'employee_signature' => $this->employee_name,
+            ]);
+
+            if ($caisse) {
+                $caisse->update(['current_balance' => $this->physical_count, 'last_closed_at' => now()]);
+            }
+        });
 
         if ($caisse) {
             $caisse->update([

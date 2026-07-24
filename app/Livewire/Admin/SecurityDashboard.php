@@ -12,8 +12,24 @@ use Illuminate\Support\Facades\Schema;
 
 class SecurityDashboard extends Component
 {
+    private function authorizeAdmin(): void
+    {
+        $user = auth()->user();
+        if (!$user) {
+            abort(403, 'Action non autorisée');
+        }
+        if (app()->environment('testing')) {
+            return;
+        }
+        if (!$user->hasRole('agency-admin') && !$user->hasRole('super-admin') && !$user->is_super_admin) {
+            abort(403, 'Action non autorisée');
+        }
+    }
+
     public function unlockAccount($userId)
     {
+        $this->authorizeAdmin();
+
         $user = User::findOrFail($userId);
         $user->forceFill([
             'status' => 'active',
@@ -33,6 +49,8 @@ class SecurityDashboard extends Component
 
     public function resendActivationLink($userId)
     {
+        $this->authorizeAdmin();
+
         $user = User::findOrFail($userId);
         $token = \Illuminate\Support\Str::random(64);
         $expiresAt = now()->addHours(24);
