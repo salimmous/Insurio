@@ -123,7 +123,7 @@
                                class="w-full px-4 py-3 text-sm font-medium border border-slate-800 bg-slate-900 text-slate-100 placeholder-slate-500 rounded-xl shadow-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all">
                         @error('email')
                             <span class="text-xs font-semibold text-rose-500 mt-1.5 block">{{ $message }}</span>
-                        @errorEnd
+                        @enderror
                     </div>
 
                     <div>
