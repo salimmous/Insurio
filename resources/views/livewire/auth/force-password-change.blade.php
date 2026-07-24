@@ -2,7 +2,8 @@
     <!-- Header Title -->
     <div class="space-y-2 text-left">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-xs font-mono font-bold text-amber-700">
-            <span>🔑 RENOUVELLEMENT DE SÉCURITÉ</span>
+            <svg class="w-4 h-4 text-amber-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            <span>RENOUVELLEMENT DE SÉCURITÉ</span>
         </div>
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Mise à jour du Mot de Passe
@@ -16,8 +17,8 @@
         <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-1">
             @foreach($policyErrors as $error)
                 <p class="text-xs font-semibold text-rose-700 flex items-start gap-2">
-                    <svg class="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <svg class="w-4 h-4 text-rose-500 shrink-0 mt-0.5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                     {{ $error }}
                 </p>
@@ -57,8 +58,9 @@
         <div class="pt-2">
             <button type="submit" wire:loading.attr="disabled"
                     class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transition-all cursor-pointer">
-                <span wire:loading.remove wire:target="save">Mettre à Jour le Mot de Passe ➔</span>
+                <span wire:loading.remove wire:target="save">Mettre à Jour le Mot de Passe</span>
                 <span wire:loading wire:target="save">Mise à jour en cours...</span>
+                <svg wire:loading.remove wire:target="save" class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
             </button>
         </div>
     </form>

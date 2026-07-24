@@ -37,7 +37,8 @@ new #[Layout('layouts.guest')] class extends Component
     <!-- Form Header -->
     <div class="space-y-2 text-left">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-xs font-mono font-bold text-amber-700">
-            <span>🛡️ CONFIRMATION DE SÉCURITÉ</span>
+            <svg class="w-4 h-4 text-amber-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span>CONFIRMATION DE SÉCURITÉ</span>
         </div>
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Zone Sécurisée
@@ -65,7 +66,8 @@ new #[Layout('layouts.guest')] class extends Component
 
         <div class="pt-2">
             <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transition-all cursor-pointer">
-                <span>Confirmer et Continuer ➔</span>
+                <span>Confirmer et Continuer</span>
+                <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
             </button>
         </div>
     </form>

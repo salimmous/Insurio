@@ -4,7 +4,7 @@
         <!-- Expired / Invalid Token Screen -->
         <div class="text-center space-y-6 py-4">
             <div class="w-16 h-16 rounded-full bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto shadow-xs">
-                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-8 h-8 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
             </div>
@@ -18,7 +18,8 @@
 
             <div class="pt-4">
                 <a href="{{ route('login') }}" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 transition-all">
-                    <span>Retour à la Connexion ➔</span>
+                    <span>Retour à la Connexion</span>
+                    <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </a>
             </div>
         </div>
@@ -64,7 +65,8 @@
             <div class="space-y-6 text-left animate-fadeIn">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-mono font-bold text-indigo-700">
-                        <span>👋 BIENVENUE SUR INSURIO</span>
+                        <svg class="w-4 h-4 text-indigo-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>BIENVENUE SUR INSURIO</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                         Activation de votre Compte
@@ -98,7 +100,8 @@
 
                 <div class="pt-2">
                     <button wire:click="goToStep2" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
-                        <span>Commencer l'Activation ➔</span>
+                        <span>Commencer l'Activation</span>
+                        <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
             </div>
@@ -109,7 +112,8 @@
             <form wire:submit.prevent="saveNewPassword" class="space-y-5 text-left animate-fadeIn">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-xs font-mono font-bold text-amber-700">
-                        <span>🔑 ÉTAPE 2 : CHANGEMENT DE MOT DE PASSE</span>
+                        <svg class="w-4 h-4 text-amber-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                        <span>ÉTAPE 2 : CHANGEMENT DE MOT DE PASSE</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                         Définissez votre Mot de Passe
@@ -127,8 +131,8 @@
                             <input :type="show ? 'text' : 'password'" wire:model.live="new_password" placeholder="••••••••••••"
                                    class="w-full h-12 px-4 pr-11 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400">
                             <button type="button" @click="show = !show" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1">
-                                <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                <svg x-show="show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 013.98-.863c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m-6.177-6.177a3 3 0 004.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                                <svg x-show="!show" class="w-5 h-5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <svg x-show="show" class="w-5 h-5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 013.98-.863c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m-6.177-6.177a3 3 0 004.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
                             </button>
                         </div>
                         @error('new_password') <span class="text-xs font-semibold text-rose-600 mt-1 block">{{ $message }}</span> @enderror
@@ -141,8 +145,8 @@
                             <input :type="show ? 'text' : 'password'" wire:model.live="new_password_confirmation" placeholder="••••••••••••"
                                    class="w-full h-12 px-4 pr-11 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400">
                             <button type="button" @click="show = !show" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1">
-                                <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                <svg x-show="show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 013.98-.863c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m-6.177-6.177a3 3 0 004.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                                <svg x-show="!show" class="w-5 h-5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <svg x-show="show" class="w-5 h-5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 013.98-.863c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m-6.177-6.177a3 3 0 004.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
                             </button>
                         </div>
                     </div>
@@ -177,7 +181,8 @@
 
                 <div class="pt-2">
                     <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
-                        <span>Enregistrer le Mot de Passe & Continuer ➔</span>
+                        <span>Enregistrer le Mot de Passe & Continuer</span>
+                        <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
             </form>
@@ -188,7 +193,8 @@
             <div class="space-y-6 text-center animate-fadeIn">
                 <div class="space-y-2 text-left">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-mono font-bold text-emerald-700">
-                        <span>🛡️ ÉTAPE 3 : CONFIGURATION 2FA</span>
+                        <svg class="w-4 h-4 text-emerald-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <span>ÉTAPE 3 : CONFIGURATION 2FA</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                         Scannez le QR Code de Sécurité
@@ -213,7 +219,8 @@
 
                 <div class="pt-2">
                     <button wire:click="goToStep4" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
-                        <span>J'ai scanné le QR Code / Continuer ➔</span>
+                        <span>J'ai scanné le QR Code / Continuer</span>
+                        <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
             </div>
@@ -224,7 +231,8 @@
             <form wire:submit.prevent="verifyTotpCode" class="space-y-6 text-left animate-fadeIn">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-mono font-bold text-indigo-700">
-                        <span>🔢 ÉTAPE 4 : VÉRIFICATION DU CODE 2FA</span>
+                        <svg class="w-4 h-4 text-indigo-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+                        <span>ÉTAPE 4 : VÉRIFICATION DU CODE 2FA</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                         Saisissez le Code à 6 Chiffres
@@ -244,11 +252,13 @@
                 </div>
 
                 <div class="pt-2 flex justify-between gap-3">
-                    <button type="button" wire:click="goToStep(3)" class="px-5 py-3.5 border border-slate-300 rounded-xl text-slate-700 font-bold text-xs hover:bg-slate-50 transition-all">
-                        ↵ Retour
+                    <button type="button" wire:click="goToStep(3)" class="px-5 py-3.5 border border-slate-300 rounded-xl text-slate-700 font-bold text-xs hover:bg-slate-50 transition-all inline-flex items-center gap-1.5">
+                        <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span>Retour</span>
                     </button>
                     <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
-                        <span>Valider le Code 2FA ➔</span>
+                        <span>Valider le Code 2FA</span>
+                        <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
             </form>
@@ -259,7 +269,8 @@
             <div class="space-y-6 text-left animate-fadeIn">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-mono font-bold text-emerald-700">
-                        <span>🔑 ÉTAPE 5 : CODES DE SECOURS</span>
+                        <svg class="w-4 h-4 text-emerald-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                        <span>ÉTAPE 5 : CODES DE SECOURS</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                         Sauvegardez vos Codes de Secours
@@ -288,12 +299,14 @@
                 @error('savedRecoveryCodes') <span class="text-xs font-semibold text-rose-600 block">{{ $message }}</span> @enderror
 
                 <div class="pt-2 flex justify-between gap-3">
-                    <button type="button" onclick="navigator.clipboard.writeText('{{ implode("\n", $recoveryCodes) }}'); alert('Codes copiés dans le presse-papier !');" class="px-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all border border-slate-300">
-                        📋 Copier
+                    <button type="button" onclick="navigator.clipboard.writeText('{{ implode("\n", $recoveryCodes) }}'); alert('Codes copiés dans le presse-papier !');" class="px-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all border border-slate-300 inline-flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-slate-600 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                        <span>Copier</span>
                     </button>
 
                     <button wire:click="completeRecoveryStep" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-600/30 transition-all cursor-pointer">
-                        <span>Confirmer & Finaliser ➔</span>
+                        <span>Confirmer & Finaliser</span>
+                        <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
             </div>
@@ -318,26 +331,27 @@
                 <!-- Summary Checklist Badges -->
                 <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-xs font-semibold text-left max-w-md mx-auto space-y-2.5">
                     <div class="flex items-center justify-between text-emerald-700">
-                        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Compte Utilisateur Activé</span>
+                        <span class="flex items-center gap-2"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Compte Utilisateur Activé</span>
                         <span class="font-mono text-[10px] text-slate-400">{{ now()->format('d/m/Y H:i') }}</span>
                     </div>
                     <div class="flex items-center justify-between text-emerald-700">
-                        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Mot de Passe Sécurisé</span>
+                        <span class="flex items-center gap-2"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Mot de Passe Sécurisé</span>
                         <span class="font-mono text-[10px] text-slate-400">Mot de passe fort</span>
                     </div>
                     <div class="flex items-center justify-between text-emerald-700">
-                        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Double Authentification (2FA)</span>
+                        <span class="flex items-center gap-2"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Double Authentification (2FA)</span>
                         <span class="font-mono text-[10px] text-slate-400">TOTP Hardened</span>
                     </div>
                     <div class="flex items-center justify-between text-emerald-700">
-                        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Codes de Secours Générés</span>
+                        <span class="flex items-center gap-2"><svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Codes de Secours Générés</span>
                         <span class="font-mono text-[10px] text-slate-400">10 Codes</span>
                     </div>
                 </div>
 
                 <div class="pt-4">
                     <button wire:click="finishWizard" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
-                        <span>Accéder au Tableau de Bord ➔</span>
+                        <span>Accéder au Tableau de Bord</span>
+                        <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
             </div>

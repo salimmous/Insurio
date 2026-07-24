@@ -2,7 +2,8 @@
     <!-- Header Title -->
     <div class="space-y-2 text-left">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-mono font-bold text-indigo-700">
-            <span>🛡️ HARDENED TOTP SECURITY</span>
+            <svg class="w-4 h-4 text-indigo-600 shrink-0 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span>SÉCURITÉ HARDENED TOTP</span>
         </div>
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             {{ $needsSetup ? 'Configuration 2FA Obligatoire' : 'Authentification à Deux Facteurs' }}
@@ -15,8 +16,8 @@
     <!-- Error Alert -->
     @if($errorMessage)
         <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-start gap-3">
-            <svg class="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <svg class="w-4 h-4 text-rose-500 shrink-0 mt-0.5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <span>{{ $errorMessage }}</span>
         </div>
@@ -36,7 +37,10 @@
                 </div>
 
                 <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 text-left text-xs space-y-2">
-                    <span class="font-bold text-amber-800 block">⚠️ Sauvegardez vos 10 codes de secours:</span>
+                    <span class="font-bold text-amber-800 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-amber-600 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <span>Sauvegardez vos 10 codes de secours:</span>
+                    </span>
                     <div class="grid grid-cols-2 gap-1.5 font-mono text-[11px] text-amber-900">
                         @foreach($setupRecoveryCodes as $rcode)
                             <div>{{ $rcode }}</div>
@@ -98,15 +102,22 @@
 
         <div class="pt-2">
             <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transition-all cursor-pointer">
-                <span>Vérifier & Accéder au Dashboard ➔</span>
+                <span>Vérifier & Accéder au Dashboard</span>
+                <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
             </button>
         </div>
     </form>
 
     @if(!$needsSetup)
         <div class="text-center pt-3 border-t border-slate-200">
-            <button wire:click="toggleRecoveryMode" type="button" class="text-xs text-indigo-600 hover:text-indigo-800 hover:underline font-bold transition-colors">
-                {{ $useRecoveryCode ? '← Utiliser le code TOTP Authentificateur' : '🔑 Utiliser un code de récupération' }}
+            <button wire:click="toggleRecoveryMode" type="button" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold transition-colors inline-flex items-center gap-1.5">
+                @if($useRecoveryCode)
+                    <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    <span>Utiliser le code TOTP Authentificateur</span>
+                @else
+                    <svg class="w-4 h-4 text-indigo-600 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                    <span>Utiliser un code de récupération</span>
+                @endif
             </button>
         </div>
     @endif
