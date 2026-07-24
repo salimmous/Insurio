@@ -124,15 +124,99 @@ class SecuritySettings extends Component
         $this->dispatch('swal:success', ['message' => 'Politiques d\'obligation 2FA enregistrées.']);
     }
 
+    // SESSION MANAGEMENT ACTIONS
+    public function logoutCurrentDevice()
+    {
+        $sessionManager = app(\App\Services\Auth\SessionManagementService::class);
+        $currentSessionId = session()->getId();
+        $sessionManager->terminateSession($currentSessionId, auth()->user()->name);
+
+        auth()->guard('web')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('login')->with('message', 'Vous avez été déconnecté de cet appareil.');
+    }
+
+    public function logoutOtherDevices()
+    {
+        $sessionManager = app(\App\Services\Auth\SessionManagementService::class);
+        $currentSessionId = session()->getId();
+        $count = $sessionManager->terminateOtherSessions(auth()->user(), $currentSessionId);
+
+        session()->flash('message', "{$count} autre(s) session(s) active(s) révoquée(s) avec succès.");
+    }
+
+    public function logoutEverywhere()
+    {
+        $sessionManager = app(\App\Services\Auth\SessionManagementService::class);
+        $sessionManager->terminateAllUserSessions(auth()->user(), auth()->user()->name);
+
+        auth()->guard('web')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('login')->with('message', 'Toutes vos sessions actives ont été fermées.');
+    }
+
+    public function terminateSingleSession($sessionId)
+    {
+        $sessionManager = app(\App\Services\Auth\SessionManagementService::class);
+        $sessionManager->terminateSession($sessionId, auth()->user()->name);
+
+        session()->flash('message', 'La session sélectionnée a été fermée.');
+    }
+
+    public function forceLogoutUserAdmin($userId)
+    {
+        $targetUser = User::findOrFail($userId);
+        $sessionManager = app(\App\Services\Auth\SessionManagementService::class);
+        $count = $sessionManager->terminateAllUserSessions($targetUser, auth()->user()->name);
+
+        session()->flash('message', "Déconnexion forcée effectuée. {$count} session(s) fermée(s) pour {$targetUser->name}.");
+    }
+
+    public function terminateAllSystemSessionsAdmin()
+    {
+        $sessionManager = app(\App\Services\Auth\SessionManagementService::class);
+        $count = $sessionManager->terminateSystemWideSessions(auth()->user()->name);
+
+        session()->flash('message', "Urgence Système: {$count} sessions actives fermées sur l'ensemble du réseau.");
+    }
+
     public function render()
     {
         $user = auth()->user();
         $service = app(TwoFactorService::class);
+        $sessionManager = app(\App\Services\Auth\SessionManagementService::class);
 
         $is2faEnabled = (bool) $user->two_factor_confirmed_at;
         $decryptedCodes = $service->getDecryptedRecoveryCodes($user);
-        $trustedDevices = $user->trustedDevices()->where('expires_at', '>', now())->get();
-        $auditLogs = TwoFactorAuditLog::where('user_id', $user->id)->latest()->take(15)->get();
+        $trustedDevices = \Illuminate\Support\Facades\Schema::hasTable('trusted_devices')
+            ? $user->trustedDevices()->where('expires_at', '>', now())->get()
+            : collect();
+        $auditLogs = \Illuminate\Support\Facades\Schema::hasTable('two_factor_audit_logs')
+            ? TwoFactorAuditLog::where('user_id', $user->id)->latest()->take(15)->get()
+            : collect();
+
+        // Active Sessions & History
+        $userSessions = $sessionManager->getActiveSessionsForUser($user);
+        $currentSessionId = session()->getId();
+        $lastSuccessfulLogin = \Illuminate\Support\Facades\Schema::hasTable('login_histories')
+            ? $sessionManager->getLastSuccessfulLogin($user)
+            : null;
+        $lastFailedLogin = \Illuminate\Support\Facades\Schema::hasTable('login_histories')
+            ? $sessionManager->getLastFailedLogin($user)
+            : null;
+
+        // Super Admin Global View
+        $allSystemSessions = $sessionManager->getAllActiveSessions();
+        $recentLoginHistory = \Illuminate\Support\Facades\Schema::hasTable('login_histories')
+            ? \App\Models\LoginHistory::with('user')->latest('created_at')->take(40)->get()
+            : collect();
+        $recentFailedLogins = \Illuminate\Support\Facades\Schema::hasTable('login_histories')
+            ? \App\Models\LoginHistory::with('user')->where('status', 'failed')->latest('created_at')->take(40)->get()
+            : collect();
 
         // Calculate Security Score
         $score = 40;
@@ -140,8 +224,10 @@ class SecuritySettings extends Component
         if ($user->password_changed_at && $user->password_changed_at->diffInDays(now()) < 90) $score += 10;
         if ($trustedDevices->count() > 0) $score += 10;
 
-        // All Users for Super Admin view (no secret keys displayed!)
-        $allUsersSecurity = User::withCount('trustedDevices')->get();
+        // All Users for Super Admin view
+        $allUsersSecurity = \Illuminate\Support\Facades\Schema::hasTable('trusted_devices')
+            ? User::withCount('trustedDevices')->get()
+            : User::all();
 
         return view('livewire.admin.security-settings', [
             'user' => $user,
@@ -151,6 +237,13 @@ class SecuritySettings extends Component
             'trustedDevices' => $trustedDevices,
             'auditLogs' => $auditLogs,
             'allUsersSecurity' => $allUsersSecurity,
+            'userSessions' => $userSessions,
+            'currentSessionId' => $currentSessionId,
+            'lastSuccessfulLogin' => $lastSuccessfulLogin,
+            'lastFailedLogin' => $lastFailedLogin,
+            'allSystemSessions' => $allSystemSessions,
+            'recentLoginHistory' => $recentLoginHistory,
+            'recentFailedLogins' => $recentFailedLogins,
         ])->layout('layouts.app');
     }
 }

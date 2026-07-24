@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'SecurityHeaders' => \App\Http\Middleware\SecurityHeaders::class,
             'AccountLockout' => \App\Http\Middleware\AccountLockout::class,
             'SessionTimeout' => \App\Http\Middleware\SessionTimeout::class,
+            'TrackActiveSession' => \App\Http\Middleware\TrackActiveSession::class,
             'RequireTwoFactor' => \App\Http\Middleware\RequireTwoFactor::class,
             'RequirePasswordChange' => \App\Http\Middleware\RequirePasswordChange::class,
         ]);

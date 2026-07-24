@@ -69,6 +69,7 @@ Route::middleware($tenantMiddleware)->group(function () {
         'auth',
         AccountLockout::class,
         SessionTimeout::class,
+        \App\Http\Middleware\TrackActiveSession::class,
         RequireTwoFactor::class,
         RequirePasswordChange::class
     ])->group(function () {
