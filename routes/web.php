@@ -11,6 +11,9 @@ foreach (config('tenancy.central_domains', []) as $domain) {
     });
 }
 
+// Enterprise Health Check Endpoint
+Route::get('/api/v1/health', \App\Http\Controllers\Api\HealthCheckController::class)->name('api.health');
+
 // Independent Theme Preview Route for iFrames
 Route::get('/super-admin/theme-preview/{slug}', function ($slug) {
     $theme = WebsiteTheme::where('slug', $slug)->first();

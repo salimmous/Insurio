@@ -146,6 +146,7 @@ Route::middleware($tenantMiddleware)->group(function () {
 
     // API v1 routes (Tenant-isolated, token authenticated, rate-limited)
     Route::prefix('api/v1')->middleware(['tenant.api', 'throttle:60,1'])->group(function () {
+        Route::get('/health', \App\Http\Controllers\Api\HealthCheckController::class);
         Route::get('/clients', [\App\Http\Controllers\Api\v1\ApiClientController::class, 'index']);
         Route::post('/clients', [\App\Http\Controllers\Api\v1\ApiClientController::class, 'store']);
 
