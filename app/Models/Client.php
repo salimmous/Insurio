@@ -19,6 +19,8 @@ class Client extends Model
         'first_name',
         'last_name',
         'company_name',
+        'gerant',
+        'num_permis',
         'client_type',
         'cin',
         'passport',

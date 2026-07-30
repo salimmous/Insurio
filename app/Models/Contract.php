@@ -451,15 +451,31 @@ class Contract extends Model
         return (float)($this->tps_auto ?? 0.00) + (float)($this->tps_pta ?? 0.00);
     }
 
+    public function getReglementsSumAttribute(): float
+    {
+        if ($this->relationLoaded('reglements')) {
+            return (float)$this->reglements->sum('montant');
+        }
+        return (float)$this->reglements()->sum('montant');
+    }
+
     public function getSoldeAttribute(): float
     {
-        // Use in-memory collection when reglements are already eager-loaded (avoids N+1)
-        if ($this->relationLoaded('reglements')) {
-            $reglementsSum = $this->reglements->sum('montant');
-        } else {
-            $reglementsSum = $this->reglements()->sum('montant');
+        return (float)$this->prime_totale - $this->reglements_sum;
+    }
+
+    public function getStatutReglementAttribute(): string
+    {
+        $paid = $this->reglements_sum;
+        $total = (float)$this->prime_totale;
+        
+        if ($paid <= 0) {
+            return 'non_paye';
         }
-        return (float)$this->prime_totale - (float)$reglementsSum;
+        if ($paid >= $total && $total > 0) {
+            return 'solde';
+        }
+        return 'partiel';
     }
 
     // Product Margin % (Pre-Tax HT)

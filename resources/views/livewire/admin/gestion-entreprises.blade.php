@@ -232,19 +232,32 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">ICE / RC</label>
-                                    <input type="text" wire:model="cin" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
+                                    <input type="text" wire:model="cin" placeholder="Ex: 001524389000045" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
                                     @error('cin') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-span-1">
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Gérant / Représentant</label>
+                                    <input type="text" wire:model="gerant" placeholder="Ex: Mohamed Alami" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    @error('gerant') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Téléphone</label>
-                                    <input type="text" wire:model="phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    <input type="text" wire:model="phone" placeholder="Ex: 0661234567" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
                                     @error('phone') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">N° Permis</label>
+                                    <input type="text" wire:model="num_permis" placeholder="Ex: 12/345678" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
+                                    @error('num_permis') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">E-mail</label>
-                                <input type="email" wire:model="email" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="email" wire:model="email" placeholder="contact@entreprise.ma" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                                 @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
 
@@ -252,21 +265,6 @@
                                 <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Adresse complète</label>
                                 <textarea wire:model="address" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                                 @error('address') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-1">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Solvabilité</label>
-                                    <select wire:model="solvabilite" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                        <option value="solvable">Solvable</option>
-                                        <option value="non-solvable">Non solvable / Litige</option>
-                                    </select>
-                                    @error('solvabilite') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="col-span-1 flex items-center pl-4 mt-6">
-                                    <input type="checkbox" id="incident" wire:model="incident" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                    <label for="incident" class="ml-2 block text-sm font-semibold text-rose-600">Incident signalé</label>
-                                </div>
                             </div>
 
                             <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 -mx-6 -mb-6 border-t border-gray-150">

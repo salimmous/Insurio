@@ -20,6 +20,8 @@ class GestionEntreprises extends Component
     public $email = '';
     public $phone = '';
     public $cin = ''; // ICE / RC
+    public $gerant = ''; // Gérant
+    public $num_permis = ''; // N° Permis
     public $address = '';
     public $solvabilite = 'solvable';
     public $incident = false;
@@ -33,12 +35,14 @@ class GestionEntreprises extends Component
     protected $rules = [
         'reference' => 'nullable|string|max:50',
         'nom' => 'required|string|max:255', // Raison Sociale
+        'gerant' => 'nullable|string|max:255',
         'email' => 'nullable|email|max:255',
         'phone' => 'nullable|string|max:50',
         'cin' => 'nullable|string|max:50', // ICE / RC
+        'num_permis' => 'nullable|string|max:100',
         'address' => 'nullable|string|max:500',
-        'solvabilite' => 'required|in:solvable,non-solvable',
-        'incident' => 'required|boolean',
+        'solvabilite' => 'nullable|string',
+        'incident' => 'nullable|boolean',
     ];
 
     public function updatingSearch()
@@ -55,11 +59,13 @@ class GestionEntreprises extends Component
             $client = Client::findOrFail($id);
             $this->reference = $client->reference;
             $this->nom = $client->last_name;
+            $this->gerant = $client->gerant;
             $this->email = $client->email;
             $this->phone = $client->phone;
             $this->cin = $client->cin;
+            $this->num_permis = $client->num_permis;
             $this->address = $client->address;
-            $this->solvabilite = $client->solvabilite;
+            $this->solvabilite = $client->solvabilite ?? 'solvable';
             $this->incident = (bool)$client->incident;
             
             $this->telephone = $this->phone;
@@ -82,9 +88,11 @@ class GestionEntreprises extends Component
         $this->clientId = null;
         $this->reference = '';
         $this->nom = '';
+        $this->gerant = '';
         $this->email = '';
         $this->phone = '';
         $this->cin = '';
+        $this->num_permis = '';
         $this->address = '';
         $this->solvabilite = 'solvable';
         $this->incident = false;
@@ -112,12 +120,14 @@ class GestionEntreprises extends Component
                 'last_name' => $this->nom,
                 'first_name' => '', // Companies have no first_name
                 'company_name' => $this->nom,
+                'gerant' => $this->gerant,
                 'email' => $this->email,
                 'phone' => $this->phone,
                 'cin' => $this->cin,
+                'num_permis' => $this->num_permis,
                 'address' => $this->address,
-                'solvabilite' => $this->solvabilite,
-                'incident' => $this->incident,
+                'solvabilite' => $this->solvabilite ?? 'solvable',
+                'incident' => $this->incident ?? false,
                 'client_type' => 'company',
             ]
         );

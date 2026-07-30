@@ -66,8 +66,10 @@
                                 <th class="px-3 py-3">Date d'effet</th>
                                 <th class="px-3 py-3">Expiration</th>
                                 <th class="px-3 py-3 text-right">Prime Total</th>
+                                <th class="px-3 py-3 text-center">Statut Règlement</th>
                                 <th class="px-3 py-3">Compagnie</th>
                                 <th class="px-3 py-3 text-center">Type</th>
+                                <th class="px-3 py-3 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-medium font-mono text-[11px]">
@@ -96,16 +98,30 @@
                                     @endif
                                 </td>
                                 <td class="px-3 py-2.5 text-right text-slate-900 font-bold font-mono">{{ number_format($contrat->prime_totale, 2) }} DH</td>
+                                <td class="px-3 py-2.5 text-center font-sans">
+                                    @if($contrat->statut_reglement === 'solde')
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Soldé</span>
+                                    @elseif($contrat->statut_reglement === 'partiel')
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Partiel</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">Non payé</span>
+                                    @endif
+                                </td>
                                 <td class="px-3 py-2.5 font-sans text-slate-800">{{ $contrat->compagnie->nom }}</td>
                                 <td class="px-3 py-2.5 text-center">
                                     <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-blue-50 text-blue-700 border border-blue-200/60' }}">
                                         {{ $contrat->type_affaire }}
                                     </span>
                                 </td>
+                                <td class="px-3 py-2.5 text-center font-sans">
+                                    <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-[10px] font-bold shadow-sm transition-colors">
+                                        + Règlement
+                                    </button>
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="13" class="px-4 py-8 text-center text-slate-500 font-sans">
+                                <td colspan="15" class="px-4 py-8 text-center text-slate-500 font-sans">
                                     Aucun contrat trouvé dans le registre.
                                 </td>
                             </tr>

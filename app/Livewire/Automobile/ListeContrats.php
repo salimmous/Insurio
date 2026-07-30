@@ -106,11 +106,14 @@ class ListeContrats extends Component
         }
     }
 
-    public function openReglementsModal()
+    public function openReglementsModal($contratId = null)
     {
+        if ($contratId) {
+            $this->selectedContratId = $contratId;
+        }
         if ($this->selectedContratId) {
             $contrat = ContratAuto::findOrFail($this->selectedContratId);
-            $this->reglementMontant = $contrat->solde;
+            $this->reglementMontant = $contrat->solde > 0 ? $contrat->solde : 0;
             $this->reglementDate = now()->toDateString();
             $this->reglementMode = 'especes';
             $this->reglementReference = '';
@@ -157,7 +160,7 @@ class ListeContrats extends Component
 
     public function render()
     {
-        $query = ContratAuto::with(['client', 'vehicule', 'compagnie', 'apporteur']);
+        $query = ContratAuto::with(['client', 'vehicule', 'compagnie', 'apporteur', 'reglements']);
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
