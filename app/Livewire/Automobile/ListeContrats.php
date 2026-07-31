@@ -203,8 +203,10 @@ class ListeContrats extends Component
         $countExpiring1Day = ContratAuto::where('statut', 'actif')
             ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()])->count();
         $countExpiring7Days = ContratAuto::where('statut', 'actif')
-            ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(7)->endOfDay()])->count();
+            ->whereBetween('date_echeance', [now()->addDays(2)->startOfDay(), now()->addDays(7)->endOfDay()])->count();
         $countExpiring10Days = ContratAuto::where('statut', 'actif')
+            ->whereBetween('date_echeance', [now()->addDays(8)->startOfDay(), now()->addDays(10)->endOfDay()])->count();
+        $countExpiringAll = ContratAuto::where('statut', 'actif')
             ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()])->count();
 
         $query = ContratAuto::with(['client', 'vehicule', 'compagnie', 'apporteur', 'reglements']);
@@ -231,8 +233,11 @@ class ListeContrats extends Component
                       ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()]);
             } elseif ($this->filterStatut === 'expiring_7_days') {
                 $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(7)->endOfDay()]);
+                      ->whereBetween('date_echeance', [now()->addDays(2)->startOfDay(), now()->addDays(7)->endOfDay()]);
             } elseif ($this->filterStatut === 'expiring_10_days') {
+                $query->where('statut', 'actif')
+                      ->whereBetween('date_echeance', [now()->addDays(8)->startOfDay(), now()->addDays(10)->endOfDay()]);
+            } elseif ($this->filterStatut === 'expiring_all') {
                 $query->where('statut', 'actif')
                       ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()]);
             } else {
@@ -258,6 +263,7 @@ class ListeContrats extends Component
             'countExpiring1Day' => $countExpiring1Day,
             'countExpiring7Days' => $countExpiring7Days,
             'countExpiring10Days' => $countExpiring10Days,
+            'countExpiringAll' => $countExpiringAll,
         ])->layout('layouts.app');
     }
 }

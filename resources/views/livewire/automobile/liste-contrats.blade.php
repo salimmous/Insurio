@@ -32,24 +32,80 @@
         </div>
     </div>
 
-    <!-- Renewal Quick Filter Pills -->
-    <div class="flex flex-wrap items-center gap-2 bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm">
-        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mr-2">Renouvellements :</span>
-        <button wire:click="$set('filterStatut', 'expiring_1_day')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ $filterStatut === 'expiring_1_day' ? 'bg-rose-600 text-white shadow' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200' }}">
-            <span>🚨 Échéance 1 Jour</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $filterStatut === 'expiring_1_day' ? 'bg-white text-rose-700' : 'bg-rose-200 text-rose-900' }}">{{ $countExpiring1Day }}</span>
-        </button>
-        <button wire:click="$set('filterStatut', 'expiring_7_days')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ $filterStatut === 'expiring_7_days' ? 'bg-amber-600 text-white shadow' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200' }}">
-            <span>⚠️ Échéance 7 Jours</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $filterStatut === 'expiring_7_days' ? 'bg-white text-amber-700' : 'bg-amber-200 text-amber-900' }}">{{ $countExpiring7Days }}</span>
-        </button>
-        <button wire:click="$set('filterStatut', 'expiring_10_days')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ $filterStatut === 'expiring_10_days' ? 'bg-sky-600 text-white shadow' : 'bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200' }}">
-            <span>🔔 Échéance 10 Jours</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $filterStatut === 'expiring_10_days' ? 'bg-white text-sky-700' : 'bg-sky-200 text-sky-900' }}">{{ $countExpiring10Days }}</span>
-        </button>
-        <button wire:click="$set('filterStatut', '')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ empty($filterStatut) ? 'bg-slate-800 text-white shadow' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200' }}">
-            <span>📋 Tous les contrats</span>
-        </button>
+    <!-- Renewal Navigation Tabs ("kola 7aja bohdha") -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse"></span>
+                <h3 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Catégories de Renouvellement d'Assurance</h3>
+            </div>
+            <span class="text-xs font-mono font-bold text-slate-500">Total à renouveler (<= 10j): {{ $countExpiringAll }}</span>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <!-- Tab 1: 1 Jour Urgent -->
+            <button wire:click="$set('filterStatut', 'expiring_1_day')" 
+                    class="p-3 rounded-xl border text-left transition-all relative overflow-hidden group {{ $filterStatut === 'expiring_1_day' ? 'bg-rose-50 border-rose-500 ring-2 ring-rose-500/20 text-rose-900 shadow-md' : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100 text-slate-700' }}">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-rose-600 flex items-center gap-1">
+                        🚨 1 Jour (Urgent)
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-black font-mono {{ $filterStatut === 'expiring_1_day' ? 'bg-rose-600 text-white' : 'bg-rose-100 text-rose-700' }}">
+                        {{ $countExpiring1Day }}
+                    </span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-medium">Expiration <= 24 heures</p>
+            </button>
+
+            <!-- Tab 2: 7 Jours -->
+            <button wire:click="$set('filterStatut', 'expiring_7_days')" 
+                    class="p-3 rounded-xl border text-left transition-all relative overflow-hidden group {{ $filterStatut === 'expiring_7_days' ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-500/20 text-amber-900 shadow-md' : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100 text-slate-700' }}">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600">
+                        ⚠️ 2 à 7 Jours
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-black font-mono {{ $filterStatut === 'expiring_7_days' ? 'bg-amber-600 text-white' : 'bg-amber-100 text-amber-700' }}">
+                        {{ $countExpiring7Days }}
+                    </span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-medium">Expirations cette semaine</p>
+            </button>
+
+            <!-- Tab 3: 10 Jours -->
+            <button wire:click="$set('filterStatut', 'expiring_10_days')" 
+                    class="p-3 rounded-xl border text-left transition-all relative overflow-hidden group {{ $filterStatut === 'expiring_10_days' ? 'bg-sky-50 border-sky-500 ring-2 ring-sky-500/20 text-sky-900 shadow-md' : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100 text-slate-700' }}">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-sky-600">
+                        🔔 8 à 10 Jours
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-black font-mono {{ $filterStatut === 'expiring_10_days' ? 'bg-sky-600 text-white' : 'bg-sky-100 text-sky-700' }}">
+                        {{ $countExpiring10Days }}
+                    </span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-medium">Préparation relances 10j</p>
+            </button>
+
+            <!-- Tab 4: Tous les renouvellements -->
+            <button wire:click="$set('filterStatut', 'expiring_all')" 
+                    class="p-3 rounded-xl border text-left transition-all relative overflow-hidden group {{ $filterStatut === 'expiring_all' ? 'bg-teal-50 border-teal-500 ring-2 ring-teal-500/20 text-teal-900 shadow-md' : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100 text-slate-700' }}">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-teal-700">
+                        📋 Tous <= 10 Jours
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-black font-mono {{ $filterStatut === 'expiring_all' ? 'bg-teal-600 text-white' : 'bg-teal-100 text-teal-800' }}">
+                        {{ $countExpiringAll }}
+                    </span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-medium">Toutes les échéances 10j</p>
+            </button>
+
+            <!-- Tab 5: Tout le Registre -->
+            <button wire:click="$set('filterStatut', '')" 
+                    class="p-3 rounded-xl border text-left transition-all border-slate-200/80 hover:bg-slate-100 flex flex-col justify-between {{ empty($filterStatut) ? 'bg-slate-800 text-white border-slate-800 shadow-md' : 'bg-slate-50 text-slate-700' }}">
+                <span class="text-xs font-bold uppercase tracking-wider block">Tout le Registre</span>
+                <p class="text-[10px] opacity-70 font-medium mt-1">Actifs, expirés, etc.</p>
+            </button>
+        </div>
     </div>
 
     <!-- Alert Message -->
