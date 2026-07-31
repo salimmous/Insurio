@@ -158,8 +158,46 @@ class ListeContrats extends Component
         $this->dispatch('swal:success', ['message' => 'Règlement supprimé avec succès.']);
     }
 
+    public function getWhatsappUrl($contrat)
+    {
+        if (!$contrat) return '#';
+        $client = $contrat->client;
+        $rawPhone = $client->phone ?? ($client->telephone ?? '');
+        $phone = preg_replace('/[^0-9]/', '', $rawPhone);
+        
+        if (empty($phone)) {
+            return '#';
+        }
+
+        if (str_starts_with($phone, '0')) {
+            $phone = '212' . substr($phone, 1);
+        } elseif (!str_starts_with($phone, '212')) {
+            $phone = '212' . $phone;
+        }
+
+        $clientName = trim(($client->prenom ?? '') . ' ' . ($client->nom ?? ''));
+        if (empty($clientName)) {
+            $clientName = $contrat->souscripteur ?? 'Client';
+        }
+
+        $dateEcheance = $contrat->date_echeance ? $contrat->date_echeance->format('d/m/Y') : '';
+        $tenantName = (function_exists('tenant') && tenant()) ? tenant('name') : 'Insurio';
+        $agencyName = \App\Models\Setting::get('agency_name', $tenantName);
+
+        $message = "Bonjour {$clientName},\n\nVotre contrat d'assurance Auto (Police N° {$contrat->police}) arrive à échéance le {$dateEcheance}.\n\nMerci de contacter l'agence {$agencyName} pour effectuer le renouvellement de votre contrat.\n\nCordialement,";
+
+        return 'https://wa.me/' . $phone . '?text=' . urlencode($message);
+    }
+
     public function render()
     {
+        $countExpiring1Day = ContratAuto::where('statut', 'actif')
+            ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()])->count();
+        $countExpiring7Days = ContratAuto::where('statut', 'actif')
+            ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(7)->endOfDay()])->count();
+        $countExpiring10Days = ContratAuto::where('statut', 'actif')
+            ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()])->count();
+
         $query = ContratAuto::with(['client', 'vehicule', 'compagnie', 'apporteur', 'reglements']);
 
         if (!empty($this->search)) {
@@ -179,21 +217,38 @@ class ListeContrats extends Component
         }
 
         if (!empty($this->filterStatut)) {
-            if ($this->filterStatut === 'expiring_7_days') {
+            if ($this->filterStatut === 'expiring_1_day') {
                 $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->toDateString(), now()->addDays(7)->toDateString()]);
+                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()]);
+            } elseif ($this->filterStatut === 'expiring_7_days') {
+                $query->where('statut', 'actif')
+                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(7)->endOfDay()]);
+            } elseif ($this->filterStatut === 'expiring_10_days') {
+                $query->where('statut', 'actif')
+                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()]);
             } else {
                 $query->where('statut', $this->filterStatut);
             }
         }
 
-        $contrats = $query->latest()->paginate(10);
+        // Priority sorting: put contracts expiring soonest right at the top
+        if (empty($this->filterStatut) || str_starts_with($this->filterStatut, 'expiring_')) {
+            $query->orderByRaw("CASE WHEN statut = 'actif' AND date_echeance >= CURRENT_DATE THEN 0 ELSE 1 END ASC")
+                  ->orderBy('date_echeance', 'asc');
+        } else {
+            $query->latest();
+        }
+
+        $contrats = $query->paginate(10);
         $compagnies = Compagnie::all();
 
         return view('livewire.automobile.liste-contrats', [
             'contrats' => $contrats,
             'compagnies' => $compagnies,
             'selectedContrat' => $this->getSelectedContrat(),
+            'countExpiring1Day' => $countExpiring1Day,
+            'countExpiring7Days' => $countExpiring7Days,
+            'countExpiring10Days' => $countExpiring10Days,
         ])->layout('layouts.app');
     }
 }

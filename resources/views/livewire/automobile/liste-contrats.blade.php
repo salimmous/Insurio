@@ -20,14 +20,36 @@
             </select>
 
             <select wire:model.live="filterStatut" class="bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3 py-2 text-sm text-slate-800 outline-none transition-all">
-                <option value="">Statuts (Tous)</option>
-                <option value="actif">Actif</option>
-                <option value="expiring_7_days">Échéance < 7 jours</option>
-                <option value="expire">Expiré</option>
-                <option value="resilie">Résilié</option>
-                <option value="annule">Annulé</option>
+                <option value="">Tous les statuts (Priorité Échéance)</option>
+                <option value="expiring_1_day">🚨 Échéance 1 jour ({{ $countExpiring1Day }})</option>
+                <option value="expiring_7_days">⚠️ Échéance 7 jours ({{ $countExpiring7Days }})</option>
+                <option value="expiring_10_days">🔔 Échéance 10 jours ({{ $countExpiring10Days }})</option>
+                <option value="actif">Actifs</option>
+                <option value="expire">Expirés</option>
+                <option value="resilie">Résiliés</option>
+                <option value="annule">Annulés</option>
             </select>
         </div>
+    </div>
+
+    <!-- Renewal Quick Filter Pills -->
+    <div class="flex flex-wrap items-center gap-2 bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mr-2">Renouvellements :</span>
+        <button wire:click="$set('filterStatut', 'expiring_1_day')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ $filterStatut === 'expiring_1_day' ? 'bg-rose-600 text-white shadow' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200' }}">
+            <span>🚨 Échéance 1 Jour</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $filterStatut === 'expiring_1_day' ? 'bg-white text-rose-700' : 'bg-rose-200 text-rose-900' }}">{{ $countExpiring1Day }}</span>
+        </button>
+        <button wire:click="$set('filterStatut', 'expiring_7_days')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ $filterStatut === 'expiring_7_days' ? 'bg-amber-600 text-white shadow' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200' }}">
+            <span>⚠️ Échéance 7 Jours</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $filterStatut === 'expiring_7_days' ? 'bg-white text-amber-700' : 'bg-amber-200 text-amber-900' }}">{{ $countExpiring7Days }}</span>
+        </button>
+        <button wire:click="$set('filterStatut', 'expiring_10_days')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ $filterStatut === 'expiring_10_days' ? 'bg-sky-600 text-white shadow' : 'bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200' }}">
+            <span>🔔 Échéance 10 Jours</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $filterStatut === 'expiring_10_days' ? 'bg-white text-sky-700' : 'bg-sky-200 text-sky-900' }}">{{ $countExpiring10Days }}</span>
+        </button>
+        <button wire:click="$set('filterStatut', '')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ empty($filterStatut) ? 'bg-slate-800 text-white shadow' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200' }}">
+            <span>📋 Tous les contrats</span>
+        </button>
     </div>
 
     <!-- Alert Message -->
@@ -114,9 +136,20 @@
                                     </span>
                                 </td>
                                 <td class="px-3 py-2.5 text-center font-sans">
-                                    <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-[10px] font-bold shadow-sm transition-colors">
-                                        + Règlement
-                                    </button>
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-[10px] font-bold shadow-sm transition-colors">
+                                            + Règlement
+                                        </button>
+                                        @php
+                                            $waUrl = $this->getWhatsappUrl($contrat);
+                                        @endphp
+                                        @if($waUrl !== '#')
+                                            <a href="{{ $waUrl }}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold shadow-sm transition-colors" title="Relance WhatsApp">
+                                                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-1.151 4.202 4.294-1.125z"/></svg>
+                                                WhatsApp
+                                            </a>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                             @empty
