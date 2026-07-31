@@ -333,6 +333,10 @@
 
                     <div class="p-6 space-y-6">
                         <!-- Situation Financière -->
+                        @php
+                            $montantSaisi = floatval($reglementMontant ?? 0);
+                            $soldeCalcule = max(0, $selectedContrat->solde - $montantSaisi);
+                        @endphp
                         <div class="grid grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/50">
                             <div>
                                 <span class="text-xs font-medium text-slate-400 uppercase">Prime Totale</span>
@@ -344,14 +348,19 @@
                             </div>
                             <div>
                                 <span class="text-xs font-medium text-slate-400 uppercase">Solde Restant</span>
-                                <span class="block text-md font-bold text-amber-600 font-mono mt-0.5">{{ number_format($selectedContrat->solde, 2) }} DH</span>
+                                <span class="block text-md font-bold {{ $soldeCalcule == 0 ? 'text-emerald-600' : 'text-amber-600' }} font-mono mt-0.5">
+                                    {{ number_format($soldeCalcule, 2) }} DH
+                                    @if($montantSaisi > 0 && $montantSaisi < $selectedContrat->solde)
+                                        <span class="text-[10px] text-teal-600 font-sans block">(-{{ number_format($montantSaisi, 2) }} DH)</span>
+                                    @endif
+                                </span>
                             </div>
                             <div>
                                 <span class="text-xs font-medium text-slate-400 uppercase">Statut</span>
                                 <div class="mt-1">
-                                    @if($selectedContrat->solde <= 0)
+                                    @if($soldeCalcule <= 0)
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Soldé</span>
-                                    @elseif($selectedContrat->reglements->sum('montant') > 0)
+                                    @elseif(($selectedContrat->reglements->sum('montant') + $montantSaisi) > 0)
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">Partiel</span>
                                     @else
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-rose-100 text-rose-800">Non payé</span>
@@ -410,7 +419,9 @@
                                 <form wire:submit.prevent="addReglement" class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/50">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Montant (DH)</label>
-                                        <input type="number" step="0.01" wire:model="reglementMontant" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 font-mono font-semibold">
+                                        <input type="number" step="0.01" wire:model.live="reglementMontant" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 font-mono font-semibold">
+                                        @error('reglementMontant') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                    </div>
                                         @error('reglementMontant') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                                     </div>
                                     <div>

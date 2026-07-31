@@ -139,28 +139,42 @@ class Payment extends Model
 
     private static function syncLegacyReglement(Payment $payment)
     {
-        // Legacy system backward compatibility:
-        // If a payment is marked as 'paid', we sync it with the legacy 'reglements' table
-        // so that existing triggers (like commissions and timelines) run successfully.
-        if ($payment->payment_status === 'paid') {
-            $existing = Reglement::where(function ($query) use ($payment) {
-                $query->where('reference_paiement', $payment->payment_number)
-                      ->orWhere('reference_paiement', $payment->reference_number ?: $payment->payment_number);
-            })->first();
-            
+        if ($payment->payment_status === 'paid' && $payment->contract_id) {
+            $modeMap = [
+                'cash' => 'especes',
+                'bank_transfer' => 'virement',
+                'card' => 'carte',
+                'cheque' => 'cheque',
+            ];
+            $mode = $modeMap[$payment->payment_method] ?? ($payment->payment_method ?: 'especes');
+            $montant = $payment->paid_amount > 0 ? $payment->paid_amount : $payment->amount;
+            $date = $payment->payment_date ?: now();
+            $ref = $payment->reference ?: ($payment->reference_number ?: $payment->payment_number);
+
+            $existing = Reglement::where('contrat_id', $payment->contract_id)
+                ->where(function ($query) use ($payment, $montant, $date, $ref) {
+                    $query->where('reference_paiement', $ref)
+                          ->orWhere('reference_paiement', $payment->payment_number)
+                          ->orWhere(function ($q) use ($montant, $date) {
+                              $q->where('montant', $montant)
+                                ->whereDate('date_reglement', $date instanceof \Carbon\Carbon ? $date->toDateString() : substr((string)$date, 0, 10));
+                          });
+                })->first();
+
             if (!$existing) {
                 Reglement::create([
                     'contrat_id' => $payment->contract_id,
-                    'montant' => $payment->paid_amount ?: $payment->amount,
-                    'date_reglement' => $payment->payment_date ?: now(),
-                    'mode_reglement' => $payment->payment_method,
-                    'reference_paiement' => $payment->payment_number,
+                    'montant' => $montant,
+                    'date_reglement' => $date,
+                    'mode_reglement' => $mode,
+                    'reference_paiement' => $ref,
                 ]);
             } else {
                 $existing->update([
-                    'montant' => $payment->paid_amount ?: $payment->amount,
-                    'date_reglement' => $payment->payment_date ?: now(),
-                    'mode_reglement' => $payment->payment_method,
+                    'montant' => $montant,
+                    'date_reglement' => $date,
+                    'mode_reglement' => $mode,
+                    'reference_paiement' => $ref,
                 ]);
             }
         }

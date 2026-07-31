@@ -260,16 +260,6 @@ class PaymentCenter extends Component
                         'payment_status' => 'paid',
                         'statut' => 'actif',
                     ]);
-
-                    if (class_exists(\App\Models\Reglement::class)) {
-                        \App\Models\Reglement::create([
-                            'contrat_id' => $contract->id,
-                            'montant' => $this->amount,
-                            'mode_reglement' => $this->payment_method ?: 'especes',
-                            'reference_paiement' => $pmtNum,
-                            'date_reglement' => now(),
-                        ]);
-                    }
                 }
             }
 

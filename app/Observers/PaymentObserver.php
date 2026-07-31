@@ -18,27 +18,6 @@ class PaymentObserver
 
         self::$syncing = true;
         try {
-            $modeMap = [
-                'cash' => 'especes',
-                'bank_transfer' => 'virement',
-                'card' => 'carte',
-            ];
-
-            try {
-                Reglement::create([
-                    'contrat_id' => $payment->contract_id,
-                    'montant' => $payment->amount,
-                    'date_reglement' => $payment->created_at ?? now(),
-                    'mode_reglement' => $modeMap[$payment->payment_method] ?? 'especes',
-                    'reference_paiement' => $payment->reference,
-                ]);
-            } catch (\Throwable $e) {
-                if (app()->environment('testing')) {
-                    throw $e;
-                }
-                // Ignore if reglements table doesn't exist
-            }
-
             // Dispatch event for Phase 3 components (e.g. cache invalidation)
             $contract = $payment->contract ?? Contract::find($payment->contract_id);
             if ($contract) {
