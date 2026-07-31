@@ -80,8 +80,9 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::view('profile', 'profile')->name('profile');
         Route::get('settings', \App\Livewire\Admin\GestionAgence::class)->name('settings')->middleware('can:expenses.view');
         
-        // Automobile Register routes
+        // Automobile Register & Renouvellements routes
         Route::get('/automobile', ListeContrats::class)->name('automobile.index')->middleware('can:contracts.view');
+        Route::get('/renouvellements', ListeContrats::class)->name('admin.renouvellements')->middleware('can:contracts.view');
         Route::get('/automobile/creer', FormulaireContrat::class)->name('automobile.create')->middleware('can:contracts.create');
         Route::get('/automobile/modifier/{contratId}', FormulaireContrat::class)->name('automobile.edit')->middleware('can:contracts.edit');
 

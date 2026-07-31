@@ -31,6 +31,15 @@ class ListeContrats extends Component
         'filterStatut' => ['except' => ''],
     ];
 
+    public function mount()
+    {
+        if (request()->routeIs('admin.renouvellements') || request()->has('renouvellements')) {
+            if (empty($this->filterStatut)) {
+                $this->filterStatut = 'expiring_10_days';
+            }
+        }
+    }
+
     public function selectContrat($contratId)
     {
         $this->selectedContratId = $contratId;

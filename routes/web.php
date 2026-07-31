@@ -87,6 +87,7 @@ if (app()->environment('testing')) {
         Route::view('admin/agenda', 'dashboard')->name('admin.agenda');
         Route::view('admin/communications', 'dashboard')->name('admin.communications');
         Route::view('automobile', 'dashboard')->name('automobile.index');
+        Route::view('renouvellements', 'dashboard')->name('admin.renouvellements');
         Route::view('automobile/create', 'dashboard')->name('automobile.create');
         Route::post('logout', function () {})->name('logout');
         Route::get('/automobile/pdf/{contratId}/{type}', [\App\Http\Controllers\Tenant\PDFController::class, 'generate'])->name('automobile.pdf');
