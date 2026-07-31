@@ -218,7 +218,8 @@
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-medium font-mono text-[11px]">
                             @forelse($contrats as $contrat)
-                            <tr wire:click="selectContrat({{ $contrat->id }})" 
+                            <tr wire:key="contrat-row-{{ $contrat->id }}"
+                                wire:click="selectContrat({{ $contrat->id }})" 
                                 class="hover:bg-slate-50 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
                                 <td class="px-2.5 py-2 whitespace-nowrap text-slate-400">{{ $contrat->id }}</td>
                                 <td class="px-2.5 py-2 whitespace-nowrap text-teal-600 font-bold">{{ $contrat->numero_contrat }}</td>
@@ -288,7 +289,8 @@
                 <!-- Mobile View -->
                 <div class="block md:hidden divide-y divide-slate-100">
                     @forelse($contrats as $contrat)
-                        <div wire:click="selectContrat({{ $contrat->id }})" class="p-4 flex flex-col gap-2 hover:bg-slate-50 cursor-pointer {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-4 border-teal-600' : '' }}">
+                        <div wire:key="contrat-card-{{ $contrat->id }}"
+                             wire:click="selectContrat({{ $contrat->id }})" class="p-4 flex flex-col gap-2 hover:bg-slate-50 cursor-pointer {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-4 border-teal-600' : '' }}">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <span class="font-bold text-indigo-600 font-mono">#{{ $contrat->numero_contrat }}</span>
