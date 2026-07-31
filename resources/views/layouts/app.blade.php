@@ -68,7 +68,7 @@
 
             <!-- 1. DESKTOP FLOATING SIDEBAR (Fixed height 100%, Gap, Scrollable ONLY when content exceeds viewport) -->
             <aside class="hidden lg:flex lg:flex-col bg-[#0F172A] border border-slate-800/80 rounded-[20px] flex-shrink-0 text-slate-300 transition-all duration-200 ease-in-out relative z-30 shadow-2xl overflow-hidden h-full box-border"
-                   :class="sidebarCollapsed ? 'w-[72px]' : 'w-[245px]'">
+                   :class="sidebarCollapsed ? 'w-[72px]' : 'w-[270px]'">
                 @include('layouts.partials.sidebar-content')
             </aside>
 
