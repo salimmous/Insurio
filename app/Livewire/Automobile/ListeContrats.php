@@ -209,6 +209,12 @@ class ListeContrats extends Component
         $countExpiringAll = ContratAuto::where('statut', 'actif')
             ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()])->count();
 
+        // Payment Counts
+        $countReglementSolde = ContratAuto::whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) >= contracts.prime_totale AND contracts.prime_totale > 0")->count();
+        $countReglementPartiel = ContratAuto::whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) > 0 AND (SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) < contracts.prime_totale")->count();
+        $countReglementNonPaye = ContratAuto::whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) <= 0")->count();
+        $countReglementImpaye = ContratAuto::whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) < contracts.prime_totale")->count();
+
         $query = ContratAuto::with(['client', 'vehicule', 'compagnie', 'apporteur', 'reglements']);
 
         if (!empty($this->search)) {
@@ -240,6 +246,14 @@ class ListeContrats extends Component
             } elseif ($this->filterStatut === 'expiring_all') {
                 $query->where('statut', 'actif')
                       ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()]);
+            } elseif ($this->filterStatut === 'reglement_solde') {
+                $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) >= contracts.prime_totale AND contracts.prime_totale > 0");
+            } elseif ($this->filterStatut === 'reglement_partiel') {
+                $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) > 0 AND (SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) < contracts.prime_totale");
+            } elseif ($this->filterStatut === 'reglement_non_paye') {
+                $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) <= 0");
+            } elseif ($this->filterStatut === 'reglement_impaye') {
+                $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) < contracts.prime_totale");
             } else {
                 $query->where('statut', $this->filterStatut);
             }
@@ -264,6 +278,10 @@ class ListeContrats extends Component
             'countExpiring7Days' => $countExpiring7Days,
             'countExpiring10Days' => $countExpiring10Days,
             'countExpiringAll' => $countExpiringAll,
+            'countReglementSolde' => $countReglementSolde,
+            'countReglementPartiel' => $countReglementPartiel,
+            'countReglementNonPaye' => $countReglementNonPaye,
+            'countReglementImpaye' => $countReglementImpaye,
         ])->layout('layouts.app');
     }
 }

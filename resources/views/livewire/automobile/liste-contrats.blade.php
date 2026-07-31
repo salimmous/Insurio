@@ -25,17 +25,55 @@
             </select>
 
             <select wire:model.live="filterStatut" class="bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3 py-2 text-sm text-slate-800 outline-none transition-all">
-                <option value="">Tous les statuts (Priorité Échéance)</option>
-                <option value="expiring_1_day">🚨 Échéance 1 jour ({{ $countExpiring1Day }})</option>
-                <option value="expiring_7_days">⚠️ Échéance 7 jours ({{ $countExpiring7Days }})</option>
-                <option value="expiring_10_days">🔔 Échéance 10 jours ({{ $countExpiring10Days }})</option>
-                <option value="actif">Actifs</option>
-                <option value="expire">Expirés</option>
-                <option value="resilie">Résiliés</option>
-                <option value="annule">Annulés</option>
+                @if(request()->routeIs('admin.renouvellements'))
+                    <option value="">Tous les statuts (Priorité Échéance)</option>
+                    <option value="expiring_1_day">🚨 Échéance 1 jour ({{ $countExpiring1Day }})</option>
+                    <option value="expiring_7_days">⚠️ Échéance 7 jours ({{ $countExpiring7Days }})</option>
+                    <option value="expiring_10_days">🔔 Échéance 10 jours ({{ $countExpiring10Days }})</option>
+                @else
+                    <option value="">Tous les règlements</option>
+                    <option value="reglement_solde">🟢 Soldé / Totalement Payé ({{ $countReglementSolde }})</option>
+                    <option value="reglement_partiel">🟡 Partiel / Reste Solde ({{ $countReglementPartiel }})</option>
+                    <option value="reglement_non_paye">🔴 Non Payé ({{ $countReglementNonPaye }})</option>
+                    <option value="reglement_impaye">⚠️ Non Soldé / Reste à Payer ({{ $countReglementImpaye }})</option>
+                @endif
+                <option value="actif">Statut: Actifs</option>
+                <option value="expire">Statut: Expirés</option>
+                <option value="resilie">Statut: Résiliés</option>
+                <option value="annule">Statut: Annulés</option>
             </select>
         </div>
     </div>
+
+    @if(!request()->routeIs('admin.renouvellements'))
+    <!-- Production Payment Quick Filters -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex flex-wrap items-center gap-3">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mr-1">Filtrer par Règlement :</span>
+        <button wire:click="$set('filterStatut', 'reglement_solde')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $filterStatut === 'reglement_solde' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' }}">
+            <span>🟢 Soldé (Payé)</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-black {{ $filterStatut === 'reglement_solde' ? 'bg-white text-emerald-800' : 'bg-emerald-200 text-emerald-900' }}">{{ $countReglementSolde }}</span>
+        </button>
+
+        <button wire:click="$set('filterStatut', 'reglement_partiel')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $filterStatut === 'reglement_partiel' ? 'bg-amber-600 text-white shadow-md' : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200' }}">
+            <span>🟡 Paiement Partiel</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-black {{ $filterStatut === 'reglement_partiel' ? 'bg-white text-amber-800' : 'bg-amber-200 text-amber-900' }}">{{ $countReglementPartiel }}</span>
+        </button>
+
+        <button wire:click="$set('filterStatut', 'reglement_non_paye')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $filterStatut === 'reglement_non_paye' ? 'bg-rose-600 text-white shadow-md' : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200' }}">
+            <span>🔴 Non Payé</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-black {{ $filterStatut === 'reglement_non_paye' ? 'bg-white text-rose-800' : 'bg-rose-200 text-rose-900' }}">{{ $countReglementNonPaye }}</span>
+        </button>
+
+        <button wire:click="$set('filterStatut', 'reglement_impaye')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $filterStatut === 'reglement_impaye' ? 'bg-purple-600 text-white shadow-md' : 'bg-purple-50 text-purple-800 hover:bg-purple-100 border border-purple-200' }}">
+            <span>⚠️ Reste à Payer (Non Soldé)</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-black {{ $filterStatut === 'reglement_impaye' ? 'bg-white text-purple-800' : 'bg-purple-200 text-purple-900' }}">{{ $countReglementImpaye }}</span>
+        </button>
+
+        <button wire:click="$set('filterStatut', '')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ empty($filterStatut) ? 'bg-slate-800 text-white shadow-md' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200' }}">
+            <span>📋 Tous les contrats</span>
+        </button>
+    </div>
+    @endif
 
     @if(request()->routeIs('admin.renouvellements'))
     <!-- Renewal Navigation Tabs ("kola 7aja bohdha") -->
