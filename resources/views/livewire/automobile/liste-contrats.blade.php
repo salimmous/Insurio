@@ -1,14 +1,14 @@
-<div class="p-6 bg-slate-50 min-h-screen text-slate-800 flex flex-col gap-6">
+<div class="p-4 md:p-5 bg-slate-50 min-h-screen text-slate-800 flex flex-col gap-4">
 
     <!-- Top header & filters -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white border border-slate-200/80 rounded-2xl px-6 py-4 shadow-sm gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white border border-slate-200/80 rounded-xl px-5 py-3 shadow-sm gap-3">
         <div>
             @if(request()->routeIs('admin.renouvellements'))
-                <span class="text-xs font-semibold uppercase tracking-wider text-rose-600">Échéances & Relances</span>
-                <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Gestion des Renouvellements Assurance</h1>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600">Échéances & Relances</span>
+                <h1 class="text-xl font-bold text-slate-900 mt-0.5">Gestion des Renouvellements Assurance</h1>
             @else
-                <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">Production</span>
-                <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Registre de Production Assurance</h1>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-teal-600">Production</span>
+                <h1 class="text-xl font-bold text-slate-900 mt-0.5">Registre de Production Assurance</h1>
             @endif
         </div>
         
@@ -199,37 +199,37 @@
                     <table class="w-full text-left text-xs text-slate-600">
                         <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200/80">
                             <tr>
-                                <th class="px-3 py-3">ID</th>
-                                <th class="px-3 py-3">Réf</th>
-                                <th class="px-3 py-3">Code client</th>
-                                <th class="px-3 py-3">Nom du client</th>
-                                <th class="px-3 py-3">Police</th>
-                                <th class="px-3 py-3">Avenant</th>
-                                <th class="px-3 py-3">Attest</th>
-                                <th class="px-3 py-3">Matricule</th>
-                                <th class="px-3 py-3">Date d'effet</th>
-                                <th class="px-3 py-3">Expiration</th>
-                                <th class="px-3 py-3 text-right">Prime Total</th>
-                                <th class="px-3 py-3 text-center">Statut Règlement</th>
-                                <th class="px-3 py-3">Compagnie</th>
-                                <th class="px-3 py-3 text-center">Type</th>
-                                <th class="px-3 py-3 text-center">Action</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">ID</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Réf</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Code client</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Nom du client</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Police</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Avenant</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Attest</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Matricule</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Date d'effet</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Expiration</th>
+                                <th class="px-2.5 py-2.5 text-right whitespace-nowrap">Prime Total</th>
+                                <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Statut Règlement</th>
+                                <th class="px-2.5 py-2.5 whitespace-nowrap">Compagnie</th>
+                                <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Type</th>
+                                <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-medium font-mono text-[11px]">
                             @forelse($contrats as $contrat)
                             <tr wire:click="selectContrat({{ $contrat->id }})" 
                                 class="hover:bg-slate-50 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
-                                <td class="px-3 py-2.5 text-slate-400">{{ $contrat->id }}</td>
-                                <td class="px-3 py-2.5 text-teal-600 font-bold">{{ $contrat->numero_contrat }}</td>
-                                <td class="px-3 py-2.5 text-slate-500">CL-{{ str_pad($contrat->client_id, 6, '0', STR_PAD_LEFT) }}</td>
-                                <td class="px-3 py-2.5 text-slate-900 font-sans font-semibold">{{ $contrat->souscripteur }}</td>
-                                <td class="px-3 py-2.5">{{ $contrat->police }}</td>
-                                <td class="px-3 py-2.5">{{ $contrat->avenant ?? '-' }}</td>
-                                <td class="px-3 py-2.5">{{ $contrat->attestation ?? '-' }}</td>
-                                <td class="px-3 py-2.5 text-slate-800">{{ $contrat->matricule }}</td>
-                                <td class="px-3 py-2.5 text-slate-600">{{ $contrat->date_effet->format('d/m/Y') }}</td>
-                                <td class="px-3 py-2.5 text-slate-600">
+                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-400">{{ $contrat->id }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap text-teal-600 font-bold">{{ $contrat->numero_contrat }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-500">CL-{{ str_pad($contrat->client_id, 6, '0', STR_PAD_LEFT) }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-900 font-sans font-semibold">{{ $contrat->souscripteur }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->police }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->avenant ?? '-' }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->attestation ?? '-' }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-800">{{ $contrat->matricule }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-600">{{ $contrat->date_effet->format('d/m/Y') }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-600">
                                     @php
                                         $isExpiringSoon = $contrat->statut === 'actif' && $contrat->date_echeance->between(now()->startOfDay(), now()->addDays(7)->endOfDay());
                                     @endphp
@@ -241,8 +241,8 @@
                                         {{ $contrat->date_echeance->format('d/m/Y') }}
                                     @endif
                                 </td>
-                                <td class="px-3 py-2.5 text-right text-slate-900 font-bold font-mono">{{ number_format($contrat->prime_totale, 2) }} DH</td>
-                                <td class="px-3 py-2.5 text-center font-sans">
+                                <td class="px-2.5 py-2 whitespace-nowrap text-right text-slate-900 font-bold font-mono">{{ number_format($contrat->prime_totale, 2) }} DH</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                     @if($contrat->statut_reglement === 'solde')
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Soldé</span>
                                     @elseif($contrat->statut_reglement === 'partiel')
@@ -251,13 +251,13 @@
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">Non payé</span>
                                     @endif
                                 </td>
-                                <td class="px-3 py-2.5 font-sans text-slate-800">{{ $contrat->compagnie->nom }}</td>
-                                <td class="px-3 py-2.5 text-center">
+                                <td class="px-2.5 py-2 whitespace-nowrap font-sans text-slate-800">{{ $contrat->compagnie->nom }}</td>
+                                <td class="px-2.5 py-2 whitespace-nowrap text-center">
                                     <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-blue-50 text-blue-700 border border-blue-200/60' }}">
                                         {{ $contrat->type_affaire }}
                                     </span>
                                 </td>
-                                <td class="px-3 py-2.5 text-center font-sans">
+                                <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                     <div class="flex items-center justify-center gap-1">
                                         <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-[10px] font-bold shadow-sm transition-colors">
                                             + Règlement
@@ -267,7 +267,7 @@
                                         @endphp
                                         @if($waUrl !== '#')
                                             <a href="{{ $waUrl }}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold shadow-sm transition-colors" title="Relance WhatsApp">
-                                                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-1.151 4.202 4.294-1.125z"/></svg>
+                                                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-1.151 4.202 4.294-1.125z"/></svg>
                                                 WhatsApp
                                             </a>
                                         @endif
