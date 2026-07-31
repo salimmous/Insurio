@@ -66,9 +66,9 @@
         <!-- GLOBAL ENTERPRISE SAAS SHELL (Stripe / Linear / Vercel Inspired - Zero Unnecessary Scrollbars) -->
         <div class="flex h-screen h-[100dvh] w-full max-w-full overflow-hidden p-3 lg:p-4 gap-6 box-border">
 
-            <!-- 1. DESKTOP FLOATING SIDEBAR (Fixed height 100%, Gap, Scrollable ONLY when content exceeds viewport) -->
+            <!-- 1. DESKTOP FLOATING SIDEBAR (Fixed height 100%, 24px Gap, Scrollable ONLY when content exceeds viewport) -->
             <aside class="hidden lg:flex lg:flex-col bg-[#0F172A] border border-slate-800/80 rounded-[20px] flex-shrink-0 text-slate-300 transition-all duration-200 ease-in-out relative z-30 shadow-2xl overflow-hidden h-full box-border"
-                   :class="sidebarCollapsed ? 'w-[72px]' : 'w-[270px]'">
+                   :class="sidebarCollapsed ? 'w-[76px]' : 'w-[295px]'">
                 @include('layouts.partials.sidebar-content')
             </aside>
 
