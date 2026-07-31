@@ -32,7 +32,7 @@
     <!-- Dashboard -->
     @if(in_array('dashboard', $enabledPages) && !auth()->user()->hasRole('agent-commercial'))
         <a href="{{ Route::has('dashboard') ? route('dashboard') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('dashboard') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('dashboard') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: LayoutDashboard (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -54,7 +54,7 @@
 
         <!-- Clients -->
         <a href="{{ Route::has('admin.clients') ? route('admin.clients') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.clients*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.clients*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: Users (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.clients*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -71,7 +71,7 @@
 
         <!-- Entreprises -->
         <a href="{{ Route::has('admin.entreprises') ? route('admin.entreprises') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.entreprises*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.entreprises*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: Building2 (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.entreprises*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -88,7 +88,7 @@
 
         <!-- Communications -->
         <a href="{{ Route::has('admin.communications') ? route('admin.communications') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.communications*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.communications*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: MessagesSquare (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.communications*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -104,7 +104,7 @@
         <!-- Produits -->
         @if(auth()->user()->hasRole('agency-admin'))
             <a href="{{ Route::has('admin.products') ? route('admin.products') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.products*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.products*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: Package (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.products*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -128,7 +128,7 @@
         <!-- Production Assurance -->
         @if(in_array('automobile', $enabledPages))
             <a href="{{ Route::has('automobile.index') ? route('automobile.index') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('automobile.index*') && !request()->routeIs('admin.renouvellements*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('automobile.index*') && !request()->routeIs('admin.renouvellements*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: FileBadge (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('automobile.index*') && !request()->routeIs('admin.renouvellements*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -145,7 +145,7 @@
 
             <!-- Renouvellements -->
             <a href="{{ Route::has('admin.renouvellements') ? route('admin.renouvellements') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.renouvellements*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.renouvellements*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: RefreshCw (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.renouvellements*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -163,7 +163,7 @@
 
         <!-- Dossiers & Sinistres -->
         <a href="{{ Route::has('admin.dossiers') ? route('admin.dossiers') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.dossiers*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.dossiers*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: FolderOpen (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.dossiers*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -177,7 +177,7 @@
 
         <!-- Coffre-fort Documents -->
         <a href="{{ Route::has('admin.vault') ? route('admin.vault') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.vault*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.vault*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: Archive (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.vault*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -194,7 +194,7 @@
         <!-- Assureurs -->
         @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner'))
             <a href="{{ Route::has('admin.compagnies') ? route('admin.compagnies') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.compagnies*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.compagnies*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: Landmark (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.compagnies*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -221,7 +221,7 @@
 
         <!-- Centre de Paiements -->
         <a href="{{ Route::has('admin.payments.center') ? route('admin.payments.center') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.payments.center*') && request('tab') !== 'cheques' && !request()->routeIs('admin.payments.workspace*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.payments.center*') && request('tab') !== 'cheques' && !request()->routeIs('admin.payments.workspace*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: WalletCards (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.payments.center*') && request('tab') !== 'cheques' ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -236,7 +236,7 @@
 
         <!-- Chèques -->
         <a href="{{ Route::has('admin.payments.center') ? route('admin.payments.center') . '?tab=cheques' : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.payments.center*') && request('tab') === 'cheques' ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.payments.center*') && request('tab') === 'cheques' ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: Receipt (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.payments.center*') && request('tab') === 'cheques' ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -253,7 +253,7 @@
         <!-- Dépenses -->
         @if(in_array('charges', $enabledPages) && auth()->user()->hasRole('agency-admin'))
             <a href="{{ Route::has('admin.charges') ? route('admin.charges') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.charges*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.charges*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: Banknote (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.charges*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -271,7 +271,7 @@
         <!-- Commissions Admin -->
         @if(in_array('commissions', $enabledPages) && auth()->user()->hasRole('agency-admin'))
             <a href="{{ Route::has('admin.commissions') ? route('admin.commissions') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.commissions*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.commissions*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: BadgeDollarSign (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.commissions*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -288,7 +288,7 @@
         <!-- Agent Commissions -->
         @if(auth()->user()->hasRole('agent-commercial'))
             <a href="{{ Route::has('agent.commissions') ? route('agent.commissions') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('agent.commissions*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('agent.commissions*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: BadgeDollarSign (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('agent.commissions*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -313,7 +313,7 @@
             <!-- Succursales -->
             @if(in_array('succursales', $enabledPages))
                 <a href="{{ Route::has('admin.succursales') ? route('admin.succursales') : '#' }}" 
-                   class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.succursales*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+                   class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.succursales*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                     <!-- Lucide: Building (21px) -->
                     <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.succursales*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -330,7 +330,7 @@
             <!-- Collaborateurs -->
             @if(in_array('employes', $enabledPages))
                 <a href="{{ Route::has('admin.employes') ? route('admin.employes') : '#' }}" 
-                   class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.employes*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+                   class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.employes*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                     <!-- Lucide: UserRound (21px) -->
                     <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.employes*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -354,7 +354,7 @@
 
         <!-- Tâches Kanban -->
         <a href="{{ Route::has('admin.tasks') ? route('admin.tasks') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.tasks*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.tasks*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: KanbanSquare (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.tasks*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -369,7 +369,7 @@
 
         <!-- Agenda & Calendrier -->
         <a href="{{ Route::has('admin.agenda') ? route('admin.agenda') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.agenda*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.agenda*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: CalendarDays (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.agenda*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -388,7 +388,7 @@
         <!-- Journal d'activité -->
         @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner'))
             <a href="{{ Route::has('admin.activity-timeline') ? route('admin.activity-timeline') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.activity-timeline*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.activity-timeline*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: History (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.activity-timeline*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -406,7 +406,7 @@
         <!-- Importation Excel -->
         @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner'))
             <a href="{{ Route::has('admin.import-manager') ? route('admin.import-manager') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.import-manager*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.import-manager*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: FileSpreadsheet (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.import-manager*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -432,7 +432,7 @@
         <!-- Paramètres Agence -->
         @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('super-admin') || auth()->user()->can('expenses.view'))
             <a href="{{ Route::has('settings') ? route('settings') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('settings*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('settings*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
                 <!-- Lucide: Settings (21px) -->
                 <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('settings*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -448,7 +448,7 @@
 
         <!-- Dashboard Sécurité -->
         <a href="{{ Route::has('admin.security-dashboard') ? route('admin.security-dashboard') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security-dashboard*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security-dashboard*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.security-dashboard*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -461,7 +461,7 @@
 
         <!-- Centre Sécurité -->
         <a href="{{ Route::has('admin.security') ? route('admin.security') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: ShieldCheck (21px) -->
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.security') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -476,7 +476,7 @@
 
         <!-- Audit & Conformité (Security Audit Center) -->
         <a href="{{ Route::has('admin.security-audit') ? route('admin.security-audit') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[13.5px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security-audit*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
+           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.security-audit*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.security-audit*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -523,7 +523,7 @@
     <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}">
         @csrf
         <button type="submit" 
-                class="w-full h-[44px] flex items-center text-sm font-semibold rounded-xl text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all duration-200 px-[18px] relative group"
+                class="w-full h-[44px] flex items-center text-[15px] font-semibold rounded-xl text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all duration-200 px-[18px] relative group"
                 :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
             <!-- Lucide: LogOut (21px) -->
             <svg class="h-[21px] w-[21px] shrink-0 text-rose-400 group-hover:text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
