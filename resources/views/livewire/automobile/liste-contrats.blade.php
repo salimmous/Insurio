@@ -3,8 +3,13 @@
     <!-- Top header & filters -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white border border-slate-200/80 rounded-2xl px-6 py-4 shadow-sm gap-4">
         <div>
-            <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">Production</span>
-            <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Registre de Production Assurance</h1>
+            @if(request()->routeIs('admin.renouvellements'))
+                <span class="text-xs font-semibold uppercase tracking-wider text-rose-600">Échéances & Relances</span>
+                <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Gestion des Renouvellements Assurance</h1>
+            @else
+                <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">Production</span>
+                <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Registre de Production Assurance</h1>
+            @endif
         </div>
         
         <!-- Search & Filter Controls -->
@@ -32,6 +37,7 @@
         </div>
     </div>
 
+    @if(request()->routeIs('admin.renouvellements'))
     <!-- Renewal Navigation Tabs ("kola 7aja bohdha") -->
     <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -107,6 +113,7 @@
             </button>
         </div>
     </div>
+    @endif
 
     <!-- Alert Message -->
     @if (session()->has('message'))
