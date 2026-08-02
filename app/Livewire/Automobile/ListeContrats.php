@@ -24,6 +24,7 @@ class ListeContrats extends Component
     public $reglementDate = '';
     public $reglementMode = 'especes';
     public $reglementReference = '';
+    public $reglementLines = [];
 
     protected $queryString = [
         'search' => ['except' => ''],
