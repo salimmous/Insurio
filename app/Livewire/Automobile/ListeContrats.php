@@ -345,6 +345,7 @@ class ListeContrats extends Component
             'countReglementPartiel' => $countReglementPartiel,
             'countReglementNonPaye' => $countReglementNonPaye,
             'countReglementImpaye' => $countReglementImpaye,
+            'reglementLines' => $this->reglementLines,
         ])->layout('layouts.app');
     }
 }
