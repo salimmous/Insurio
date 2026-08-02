@@ -173,6 +173,22 @@ class ListeContrats extends Component
 
         $contrat = ContratAuto::findOrFail($this->selectedContratId);
 
+        // If single properties were updated (e.g., in unit tests or single input), sync line 0
+        if (!empty($this->reglementLines) && count($this->reglementLines) === 1) {
+            if ($this->reglementMontant != '' && $this->reglementMontant != $this->reglementLines[0]['montant']) {
+                $this->reglementLines[0]['montant'] = $this->reglementMontant;
+            }
+            if ($this->reglementDate != '' && $this->reglementDate != $this->reglementLines[0]['date']) {
+                $this->reglementLines[0]['date'] = $this->reglementDate;
+            }
+            if ($this->reglementMode != '' && $this->reglementMode != $this->reglementLines[0]['mode']) {
+                $this->reglementLines[0]['mode'] = $this->reglementMode;
+            }
+            if ($this->reglementReference !== '' && $this->reglementReference != $this->reglementLines[0]['reference']) {
+                $this->reglementLines[0]['reference'] = $this->reglementReference;
+            }
+        }
+
         if (!empty($this->reglementLines)) {
             $this->validate([
                 'reglementLines' => 'required|array|min:1',
