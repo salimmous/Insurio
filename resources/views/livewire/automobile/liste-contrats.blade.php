@@ -491,7 +491,14 @@
                     <div class="p-6 space-y-6">
                         <!-- Situation Financière -->
                         @php
-                            $montantSaisi = floatval($reglementMontant ?? 0);
+                            $montantSaisi = 0;
+                            if (!empty($reglementLines)) {
+                                foreach ($reglementLines as $line) {
+                                    $montantSaisi += floatval($line['montant'] ?? 0);
+                                }
+                            } else {
+                                $montantSaisi = floatval($reglementMontant ?? 0);
+                            }
                             $soldeCalcule = max(0, $selectedContrat->solde - $montantSaisi);
                         @endphp
                         <div class="grid grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/50">
@@ -568,42 +575,94 @@
 
                         <!-- Ajouter un règlement -->
                         @if($selectedContrat->solde > 0)
-                            <div class="border-t border-slate-150 pt-5">
-                                <h4 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-1.5">
-                                    <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    Enregistrer un nouveau règlement
-                                </h4>
-                                <form wire:submit.prevent="addReglement" class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/50">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Montant (DH)</label>
-                                        <input type="number" step="0.01" wire:model.live="reglementMontant" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 font-mono font-semibold">
-                                        @error('reglementMontant') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-                                    </div>
-                                        @error('reglementMontant') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Date</label>
-                                        <input type="date" wire:model="reglementDate" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 font-mono">
-                                        @error('reglementDate') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mode de règlement</label>
-                                        <select wire:model="reglementMode" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
-                                            <option value="especes">Espèces</option>
-                                            <option value="cheque">Chèque</option>
-                                            <option value="virement">Virement</option>
-                                            <option value="carte">Carte bancaire</option>
-                                        </select>
-                                        @error('reglementMode') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Référence / Numéro</label>
-                                        <input type="text" wire:model="reglementReference" placeholder="ex: N° de chèque, transaction" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500">
-                                        @error('reglementReference') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div class="col-span-2 flex justify-end mt-2">
-                                        <button type="submit" class="inline-flex justify-center px-4 py-2 bg-teal-600 hover:bg-teal-700 border border-transparent rounded-lg font-semibold text-white text-sm transition-colors shadow">
-                                            Enregistrer le règlement
+                            <div class="border-t border-slate-150 pt-5 space-y-4">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <h4 class="text-sm font-semibold text-slate-800 flex items-center gap-1.5">
+                                        <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        Enregistrer un nouveau règlement
+                                    </h4>
+                                    
+                                    <button type="button" 
+                                            wire:click="addReglementLine" 
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-semibold rounded-lg border border-teal-200/80 transition-colors shadow-sm cursor-pointer">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                        + Ajouter un autre mode / règlement
+                                    </button>
+                                </div>
+
+                                <form wire:submit.prevent="addReglement" class="space-y-3">
+                                    @foreach($reglementLines as $index => $line)
+                                        <div wire:key="reglement-line-{{ $index }}" class="bg-slate-50 p-4 rounded-xl border border-slate-200/70 relative transition-all group">
+                                            @if(count($reglementLines) > 1)
+                                                <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-200/50">
+                                                    <span class="text-xs font-bold uppercase tracking-wider text-teal-700">Règlement #{{ $index + 1 }}</span>
+                                                    <button type="button" 
+                                                            wire:click="removeReglementLine({{ $index }})" 
+                                                            class="text-rose-500 hover:text-rose-700 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                        Supprimer
+                                                    </button>
+                                                </div>
+                                            @endif
+
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                                                <div>
+                                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Montant (DH)</label>
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           wire:model.live="reglementLines.{{ $index }}.montant" 
+                                                           class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 font-mono font-semibold">
+                                                    @error('reglementLines.'.$index.'.montant') 
+                                                        <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
+                                                    @enderror
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Date</label>
+                                                    <input type="date" 
+                                                           wire:model="reglementLines.{{ $index }}.date" 
+                                                           class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 font-mono">
+                                                    @error('reglementLines.'.$index.'.date') 
+                                                        <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
+                                                    @enderror
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Mode de règlement</label>
+                                                    <select wire:model="reglementLines.{{ $index }}.mode" 
+                                                            class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                                                        <option value="especes">Espèces</option>
+                                                        <option value="cheque">Chèque</option>
+                                                        <option value="virement">Virement</option>
+                                                        <option value="carte">Carte bancaire</option>
+                                                    </select>
+                                                    @error('reglementLines.'.$index.'.mode') 
+                                                        <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
+                                                    @enderror
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Référence / Numéro</label>
+                                                    <input type="text" 
+                                                           wire:model="reglementLines.{{ $index }}.reference" 
+                                                           placeholder="ex: N° de chèque, transaction" 
+                                                           class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                                                    @error('reglementLines.'.$index.'.reference') 
+                                                        <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                                        <div class="text-xs text-slate-600 font-medium">
+                                            Total à enregistrer : <span class="font-mono font-bold text-teal-700 text-sm">{{ number_format($montantSaisi, 2) }} DH</span>
+                                        </div>
+                                        <button type="submit" 
+                                                class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 border border-transparent rounded-lg font-semibold text-white text-sm transition-colors shadow cursor-pointer">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                            {{ count($reglementLines) > 1 ? 'Enregistrer les règlements' : 'Enregistrer le règlement' }}
                                         </button>
                                     </div>
                                 </form>

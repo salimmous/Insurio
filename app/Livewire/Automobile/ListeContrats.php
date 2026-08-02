@@ -122,17 +122,48 @@ class ListeContrats extends Component
         }
         if ($this->selectedContratId) {
             $contrat = ContratAuto::findOrFail($this->selectedContratId);
-            $this->reglementMontant = $contrat->solde > 0 ? $contrat->solde : 0;
+            $initialMontant = $contrat->solde > 0 ? $contrat->solde : 0;
+
+            $this->reglementMontant = $initialMontant;
             $this->reglementDate = now()->toDateString();
             $this->reglementMode = 'especes';
             $this->reglementReference = '';
+
+            $this->reglementLines = [
+                [
+                    'montant' => $initialMontant > 0 ? $initialMontant : '',
+                    'date' => now()->toDateString(),
+                    'mode' => 'especes',
+                    'reference' => '',
+                ]
+            ];
+
             $this->isReglementsModalOpen = true;
+        }
+    }
+
+    public function addReglementLine()
+    {
+        $this->reglementLines[] = [
+            'montant' => '',
+            'date' => now()->toDateString(),
+            'mode' => 'especes',
+            'reference' => '',
+        ];
+    }
+
+    public function removeReglementLine($index)
+    {
+        if (count($this->reglementLines) > 1) {
+            unset($this->reglementLines[$index]);
+            $this->reglementLines = array_values($this->reglementLines);
         }
     }
 
     public function closeReglementsModal()
     {
         $this->isReglementsModalOpen = false;
+        $this->reglementLines = [];
     }
 
     public function addReglement()
@@ -140,6 +171,38 @@ class ListeContrats extends Component
         if (!$this->selectedContratId) return;
 
         $contrat = ContratAuto::findOrFail($this->selectedContratId);
+
+        if (!empty($this->reglementLines)) {
+            $this->validate([
+                'reglementLines' => 'required|array|min:1',
+                'reglementLines.*.montant' => 'required|numeric|min:0.01',
+                'reglementLines.*.date' => 'required|date',
+                'reglementLines.*.mode' => 'required|in:especes,cheque,virement,carte',
+                'reglementLines.*.reference' => 'nullable|string|max:255',
+            ], [
+                'reglementLines.*.montant.required' => 'Le montant est obligatoire.',
+                'reglementLines.*.montant.min' => 'Le montant doit être supérieur à 0.',
+            ]);
+
+            $createdCount = 0;
+            foreach ($this->reglementLines as $line) {
+                \App\Models\Reglement::create([
+                    'contrat_id' => $contrat->id,
+                    'montant' => $line['montant'],
+                    'date_reglement' => $line['date'],
+                    'mode_reglement' => $line['mode'],
+                    'reference_paiement' => $line['reference'] ?? null,
+                ]);
+                $createdCount++;
+            }
+
+            $this->closeReglementsModal();
+            $message = $createdCount > 1 
+                ? "{$createdCount} règlements enregistrés avec succès." 
+                : "Règlement enregistré avec succès.";
+            $this->dispatch('swal:success', ['message' => $message]);
+            return;
+        }
 
         $this->validate([
             'reglementMontant' => 'required|numeric|min:0.01',
