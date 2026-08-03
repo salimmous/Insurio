@@ -226,9 +226,10 @@ class AutomobileTest extends TestCase
             ->call('openReglementsModal')
             ->assertSet('reglementMontant', 3320.00)
             ->set('reglementMontant', 1320.00)
-            ->set('reglementDate', '2026-07-20')
+            ->set('reglementDate', now()->toDateString())
             ->set('reglementMode', 'cheque')
             ->set('reglementReference', 'CHQ-100200')
+            ->set('reglementLines.0.date_echeance_cheque', now()->toDateString())
             ->call('addReglement')
             ->assertHasNoErrors()
             ->assertDispatched('swal:success');
