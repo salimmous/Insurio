@@ -438,19 +438,16 @@
                             </div>
                             <div>
                                 <span class="text-xs font-medium text-slate-400 uppercase">Solde Restant</span>
-                                <span class="block text-md font-bold {{ $soldeCalcule == 0 ? 'text-emerald-600' : 'text-amber-600' }} font-mono mt-0.5">
-                                    {{ number_format($soldeCalcule, 2) }} DH
-                                    @if($montantSaisi > 0 && $montantSaisi < $selectedContrat->solde)
-                                        <span class="text-[10px] text-teal-600 font-sans block">(-{{ number_format($montantSaisi, 2) }} DH)</span>
-                                    @endif
+                                <span class="block text-md font-bold {{ $selectedContrat->solde <= 0 ? 'text-emerald-600' : 'text-amber-600' }} font-mono mt-0.5">
+                                    {{ number_format($selectedContrat->solde, 2) }} DH
                                 </span>
                             </div>
                             <div>
                                 <span class="text-xs font-medium text-slate-400 uppercase">Statut</span>
                                 <div class="mt-1">
-                                    @if($soldeCalcule <= 0)
+                                    @if($selectedContrat->solde <= 0)
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Soldé</span>
-                                    @elseif(($selectedContrat->reglements->sum('montant') + $montantSaisi) > 0)
+                                    @elseif($selectedContrat->reglements->sum('montant') > 0)
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">Partiel</span>
                                     @else
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-rose-100 text-rose-800">Non payé</span>
@@ -458,6 +455,19 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if($montantSaisi > 0)
+                            <div class="bg-teal-50 border border-teal-200/80 text-teal-900 px-4 py-2.5 rounded-xl text-xs flex items-center justify-between font-medium">
+                                <span class="flex items-center gap-1.5">
+                                    <span>💡</span>
+                                    <span>Nouveau solde après validation de ce règlement :</span>
+                                </span>
+                                <span class="font-mono font-bold text-teal-800 text-sm">
+                                    {{ number_format($soldeCalcule, 2) }} DH 
+                                    <span class="text-xs text-teal-600">(-{{ number_format($montantSaisi, 2) }} DH)</span>
+                                </span>
+                            </div>
+                        @endif
 
                         <!-- Liste des règlements enregistrés -->
                         <div>
