@@ -14,9 +14,18 @@ class GestionCheques extends Component
 {
     use WithPagination;
 
+    // Filters
     public $search = '';
     public $filterStatus = '';
     public $filterBank = '';
+    public $filterDateFrom = '';
+    public $filterDateTo = '';
+    public $filterPaymentReceived = ''; // '' = all, 'yes' = dakhlat, 'no' = not yet
+
+    // Bulk selection
+    public $selectedIds = [];
+    public $selectAll = false;
+    public $bulkAction = '';
 
     // Status Update Modal
     public $showModal = false;
@@ -26,25 +35,67 @@ class GestionCheques extends Component
     public $depositDate = '';
     public $notes = '';
 
+    // Bulk Action Modal
+    public $showBulkModal = false;
+    public $bulkNewStatus = 'deposited';
+    public $bulkDepositDate = '';
+    public $bulkNotes = '';
+
     protected $queryString = [
-        'search' => ['except' => ''],
-        'filterStatus' => ['except' => ''],
+        'search'               => ['except' => ''],
+        'filterStatus'         => ['except' => ''],
+        'filterBank'           => ['except' => ''],
+        'filterPaymentReceived' => ['except' => ''],
+        'filterDateFrom'       => ['except' => ''],
+        'filterDateTo'         => ['except' => ''],
     ];
 
     public function mount()
     {
-        $this->depositDate = now()->format('Y-m-d');
+        $this->depositDate     = now()->format('Y-m-d');
+        $this->bulkDepositDate = now()->format('Y-m-d');
     }
 
-    public function updatingSearch()
+    // ─── Watchers ───────────────────────────────────────────────────────────────
+
+    public function updatingSearch()           { $this->resetPage(); $this->selectedIds = []; }
+    public function updatingFilterStatus()     { $this->resetPage(); $this->selectedIds = []; }
+    public function updatingFilterBank()       { $this->resetPage(); $this->selectedIds = []; }
+    public function updatingFilterPaymentReceived() { $this->resetPage(); $this->selectedIds = []; }
+    public function updatingFilterDateFrom()   { $this->resetPage(); $this->selectedIds = []; }
+    public function updatingFilterDateTo()     { $this->resetPage(); $this->selectedIds = []; }
+
+    public function updatedSelectAll($value)
     {
+        if ($value) {
+            // Select all IDs from current page
+            $this->selectedIds = $this->buildQuery()->pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $this->selectedIds = [];
+        }
+    }
+
+    public function updatedSelectedIds()
+    {
+        $this->selectAll = false;
+    }
+
+    // ─── Clear / Reset ──────────────────────────────────────────────────────────
+
+    public function clearFilters()
+    {
+        $this->search = '';
+        $this->filterStatus = '';
+        $this->filterBank = '';
+        $this->filterPaymentReceived = '';
+        $this->filterDateFrom = '';
+        $this->filterDateTo = '';
+        $this->selectedIds = [];
+        $this->selectAll = false;
         $this->resetPage();
     }
 
-    public function updatingFilterStatus()
-    {
-        $this->resetPage();
-    }
+    // ─── Single Status Update Modal ─────────────────────────────────────────────
 
     public function openStatusModal($chequeId, $targetStatus = 'deposited')
     {
@@ -74,15 +125,16 @@ class GestionCheques extends Component
 
         $updateData = [
             'status' => $this->newStatus,
-            'notes' => $this->notes,
+            'notes'  => $this->notes,
         ];
 
         if ($this->newStatus === 'deposited') {
             $updateData['deposit_date'] = $this->depositDate ?: now()->format('Y-m-d');
         } elseif ($this->newStatus === 'collected') {
             $updateData['collection_date'] = now()->format('Y-m-d');
-            
-            // Increment bank account if available
+            if ($this->depositDate) {
+                $updateData['deposit_date'] = $this->depositDate;
+            }
             $bank = BankAccount::first();
             if ($bank) {
                 $bank->increment('current_balance', $cheque->amount);
@@ -91,31 +143,31 @@ class GestionCheques extends Component
 
         $cheque->update($updateData);
 
-        // Audit Trail Log
         try {
             if (class_exists('\App\Models\FinancialAuditLog')) {
                 FinancialAuditLog::create([
-                    'user_id' => auth()->id() ?? 1,
-                    'action' => 'cheque_status_change',
+                    'user_id'    => auth()->id() ?? 1,
+                    'action'     => 'cheque_status_change',
                     'old_values' => ['status' => $oldStatus],
                     'new_values' => ['status' => $this->newStatus, 'deposit_date' => $this->depositDate],
                     'ip_address' => request()->ip(),
                     'user_agent' => request()->userAgent(),
-                    'reason' => "Mise à jour du chèque #{$cheque->cheque_number} vers {$this->newStatus}",
+                    'reason'     => "Mise à jour du chèque #{$cheque->cheque_number} vers {$this->newStatus}",
                 ]);
             }
         } catch (\Throwable $e) {
-            // Ignore audit log error if any
+            // Ignore
         }
 
         $this->closeModal();
         $this->dispatch('swal:success', ['message' => "Le statut du chèque N° {$cheque->cheque_number} a été mis à jour avec succès!"]);
     }
 
+    // ─── Quick Status (single row) ───────────────────────────────────────────────
+
     public function quickSetStatus($chequeId, $status)
     {
         $cheque = Cheque::findOrFail($chequeId);
-        $oldStatus = $cheque->status;
 
         $updateData = ['status' => $status];
         if ($status === 'deposited' && !$cheque->deposit_date) {
@@ -129,31 +181,77 @@ class GestionCheques extends Component
         }
 
         $cheque->update($updateData);
-
-        $this->dispatch('swal:success', ['message' => "Statut du chèque N° {$cheque->cheque_number} mis à jour (Statut: {$status})."]);
+        $this->dispatch('swal:success', ['message' => "Statut du chèque N° {$cheque->cheque_number} mis à jour ({$status})."]);
     }
 
-    public function render()
+    // ─── Bulk Actions ────────────────────────────────────────────────────────────
+
+    public function openBulkModal()
     {
-        // KPI Metrics
-        $totalCount = Cheque::count();
-        $totalAmount = Cheque::sum('amount');
+        if (empty($this->selectedIds)) {
+            return;
+        }
+        $this->bulkNewStatus   = 'deposited';
+        $this->bulkDepositDate = now()->format('Y-m-d');
+        $this->bulkNotes       = '';
+        $this->showBulkModal   = true;
+    }
 
-        $pendingCount = Cheque::whereIn('status', ['received', 'pending', 'created'])->count();
-        $pendingAmount = Cheque::whereIn('status', ['received', 'pending', 'created'])->sum('amount');
+    public function closeBulkModal()
+    {
+        $this->showBulkModal = false;
+    }
 
-        $depositedCount = Cheque::where('status', 'deposited')->count();
-        $depositedAmount = Cheque::where('status', 'deposited')->sum('amount');
+    public function saveBulkUpdate()
+    {
+        if (empty($this->selectedIds)) {
+            return;
+        }
 
-        $collectedCount = Cheque::whereIn('status', ['collected', 'validated'])->count();
-        $collectedAmount = Cheque::whereIn('status', ['collected', 'validated'])->sum('amount');
+        $cheques = Cheque::whereIn('id', $this->selectedIds)->get();
+        $totalAmount = 0;
 
-        $returnedCount = Cheque::whereIn('status', ['returned', 'rejected'])->count();
-        $returnedAmount = Cheque::whereIn('status', ['returned', 'rejected'])->sum('amount');
+        foreach ($cheques as $cheque) {
+            $updateData = [
+                'status' => $this->bulkNewStatus,
+                'notes'  => $this->bulkNotes ?: $cheque->notes,
+            ];
 
-        // Query
+            if ($this->bulkNewStatus === 'deposited') {
+                $updateData['deposit_date'] = $this->bulkDepositDate ?: now()->format('Y-m-d');
+            } elseif ($this->bulkNewStatus === 'collected') {
+                $updateData['collection_date'] = now()->format('Y-m-d');
+                if ($this->bulkDepositDate) {
+                    $updateData['deposit_date'] = $this->bulkDepositDate;
+                }
+                $totalAmount += $cheque->amount;
+            }
+
+            $cheque->update($updateData);
+        }
+
+        // Update bank balance once for all collected cheques
+        if ($this->bulkNewStatus === 'collected' && $totalAmount > 0) {
+            $bank = BankAccount::first();
+            if ($bank) {
+                $bank->increment('current_balance', $totalAmount);
+            }
+        }
+
+        $count = count($this->selectedIds);
+        $this->selectedIds   = [];
+        $this->selectAll     = false;
+        $this->showBulkModal = false;
+        $this->dispatch('swal:success', ['message' => "{$count} chèque(s) mis à jour avec succès!"]);
+    }
+
+    // ─── Query Builder (shared) ──────────────────────────────────────────────────
+
+    private function buildQuery()
+    {
         $query = Cheque::with(['client', 'contract']);
 
+        // Search
         if (!empty($this->search)) {
             $s = $this->search;
             $query->where(function ($q) use ($s) {
@@ -172,6 +270,7 @@ class GestionCheques extends Component
             });
         }
 
+        // Filter by status
         if (!empty($this->filterStatus)) {
             if ($this->filterStatus === 'pending') {
                 $query->whereIn('status', ['received', 'pending', 'created']);
@@ -184,20 +283,79 @@ class GestionCheques extends Component
             }
         }
 
-        $cheques = $query->orderBy('due_date', 'asc')->paginate(15);
+        // Filter by bank
+        if (!empty($this->filterBank)) {
+            $query->where('bank_name', 'like', "%{$this->filterBank}%");
+        }
+
+        // Filter by payment received (dakhlat)
+        if ($this->filterPaymentReceived === 'yes') {
+            $query->whereIn('status', ['collected', 'validated']);
+        } elseif ($this->filterPaymentReceived === 'no') {
+            $query->whereNotIn('status', ['collected', 'validated']);
+        }
+
+        // Date range filter (on due_date)
+        if (!empty($this->filterDateFrom)) {
+            $query->whereDate('due_date', '>=', $this->filterDateFrom);
+        }
+        if (!empty($this->filterDateTo)) {
+            $query->whereDate('due_date', '<=', $this->filterDateTo);
+        }
+
+        return $query->orderBy('due_date', 'asc');
+    }
+
+    // ─── Render ──────────────────────────────────────────────────────────────────
+
+    public function render()
+    {
+        // KPI Metrics (global, not filtered)
+        $totalCount    = Cheque::count();
+        $totalAmount   = Cheque::sum('amount');
+
+        $pendingCount  = Cheque::whereIn('status', ['received', 'pending', 'created'])->count();
+        $pendingAmount = Cheque::whereIn('status', ['received', 'pending', 'created'])->sum('amount');
+
+        $depositedCount  = Cheque::where('status', 'deposited')->count();
+        $depositedAmount = Cheque::where('status', 'deposited')->sum('amount');
+
+        $collectedCount  = Cheque::whereIn('status', ['collected', 'validated'])->count();
+        $collectedAmount = Cheque::whereIn('status', ['collected', 'validated'])->sum('amount');
+
+        $returnedCount  = Cheque::whereIn('status', ['returned', 'rejected'])->count();
+        $returnedAmount = Cheque::whereIn('status', ['returned', 'rejected'])->sum('amount');
+
+        // Distinct banks for filter
+        $banks = Cheque::whereNotNull('bank_name')
+            ->selectRaw('DISTINCT bank_name')
+            ->orderBy('bank_name')
+            ->pluck('bank_name')
+            ->filter()
+            ->values();
+
+        // Paginated result
+        $cheques = $this->buildQuery()->paginate(20);
+
+        // Stats for selected (filtered) set
+        $filteredTotal  = $this->buildQuery()->count();
+        $filteredAmount = $this->buildQuery()->sum('amount');
 
         return view('livewire.admin.gestion-cheques', [
-            'cheques' => $cheques,
-            'totalCount' => $totalCount,
-            'totalAmount' => $totalAmount,
-            'pendingCount' => $pendingCount,
-            'pendingAmount' => $pendingAmount,
-            'depositedCount' => $depositedCount,
+            'cheques'         => $cheques,
+            'banks'           => $banks,
+            'totalCount'      => $totalCount,
+            'totalAmount'     => $totalAmount,
+            'pendingCount'    => $pendingCount,
+            'pendingAmount'   => $pendingAmount,
+            'depositedCount'  => $depositedCount,
             'depositedAmount' => $depositedAmount,
-            'collectedCount' => $collectedCount,
+            'collectedCount'  => $collectedCount,
             'collectedAmount' => $collectedAmount,
-            'returnedCount' => $returnedCount,
-            'returnedAmount' => $returnedAmount,
+            'returnedCount'   => $returnedCount,
+            'returnedAmount'  => $returnedAmount,
+            'filteredTotal'   => $filteredTotal,
+            'filteredAmount'  => $filteredAmount,
         ])->layout('layouts.app');
     }
 }
