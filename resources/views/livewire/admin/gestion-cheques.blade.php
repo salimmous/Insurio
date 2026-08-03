@@ -135,10 +135,6 @@
                         class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-extrabold transition shadow-xs flex items-center gap-1">
                         🖨️ Imprimer Bordereau
                     </a>
-                    <div class="w-px h-5 bg-indigo-200 mx-1"></div>
-                    <button wire:click="openBulkModal" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-[11px] font-bold transition">
-                        ⚙️ Autre date / Note
-                    </button>
                     <button wire:click="$set('selectedIds', [])" class="px-2 py-1.5 text-indigo-600 hover:text-indigo-900 text-[11px] font-bold transition">
                         ✕ Annuler
                     </button>
