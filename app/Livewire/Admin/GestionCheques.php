@@ -174,6 +174,9 @@ class GestionCheques extends Component
             $updateData['deposit_date'] = now()->format('Y-m-d');
         } elseif ($status === 'collected') {
             $updateData['collection_date'] = now()->format('Y-m-d');
+            if (!$cheque->deposit_date) {
+                $updateData['deposit_date'] = now()->format('Y-m-d');
+            }
             $bank = BankAccount::first();
             if ($bank) {
                 $bank->increment('current_balance', $cheque->amount);
@@ -181,7 +184,63 @@ class GestionCheques extends Component
         }
 
         $cheque->update($updateData);
-        $this->dispatch('swal:success', ['message' => "Statut du chèque N° {$cheque->cheque_number} mis à jour ({$status})."]);
+
+        $labels = [
+            'deposited' => 'Versé',
+            'collected' => 'Encaissé',
+            'returned'  => 'Impayé',
+            'pending'   => 'En Attente',
+        ];
+        $lbl = $labels[$status] ?? $status;
+
+        $this->dispatch('swal:success', ['message' => "Chèque N° {$cheque->cheque_number} marqué comme {$lbl}."]);
+    }
+
+    public function quickBulkSetStatus($status)
+    {
+        if (empty($this->selectedIds)) {
+            return;
+        }
+
+        $cheques = Cheque::whereIn('id', $this->selectedIds)->get();
+        $totalCollectedAmount = 0;
+
+        foreach ($cheques as $cheque) {
+            $updateData = ['status' => $status];
+
+            if ($status === 'deposited' && !$cheque->deposit_date) {
+                $updateData['deposit_date'] = now()->format('Y-m-d');
+            } elseif ($status === 'collected') {
+                $updateData['collection_date'] = now()->format('Y-m-d');
+                if (!$cheque->deposit_date) {
+                    $updateData['deposit_date'] = now()->format('Y-m-d');
+                }
+                $totalCollectedAmount += $cheque->amount;
+            }
+
+            $cheque->update($updateData);
+        }
+
+        if ($status === 'collected' && $totalCollectedAmount > 0) {
+            $bank = BankAccount::first();
+            if ($bank) {
+                $bank->increment('current_balance', $totalCollectedAmount);
+            }
+        }
+
+        $count = count($this->selectedIds);
+        $this->selectedIds = [];
+        $this->selectAll   = false;
+
+        $labels = [
+            'deposited' => 'Versés',
+            'collected' => 'Encaissés',
+            'returned'  => 'Impayés',
+            'pending'   => 'En Attente',
+        ];
+        $lbl = $labels[$status] ?? $status;
+
+        $this->dispatch('swal:success', ['message' => "{$count} chèque(s) marqué(s) comme {$lbl}!"]);
     }
 
     // ─── Bulk Actions ────────────────────────────────────────────────────────────

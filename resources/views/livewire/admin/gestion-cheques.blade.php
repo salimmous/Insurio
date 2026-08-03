@@ -118,18 +118,32 @@
 
         {{-- Active filters summary + bulk selection banner --}}
         @if(count($selectedIds) > 0)
-            <div class="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5">
-                <span class="text-xs font-bold text-indigo-700">
-                    <span class="text-indigo-900 font-black">{{ count($selectedIds) }}</span> chèque(s) sélectionné(s)
-                    &nbsp;·&nbsp;
-                    Total sélection: <span class="font-mono font-black text-indigo-900">{{ number_format(Cheque::whereIn('id', $selectedIds)->sum('amount'), 2) }} DH</span>
-                </span>
-                <div class="flex items-center gap-2">
-                    <button wire:click="openBulkModal" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-black transition">
-                        🗂 Action groupée
+            <div class="flex flex-wrap items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5 gap-2">
+                <div class="flex items-center gap-2 text-xs font-bold text-indigo-900">
+                    <span class="bg-indigo-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md">
+                        {{ count($selectedIds) }} sélectionné(s)
+                    </span>
+                    <span>Total: <span class="font-mono font-black text-indigo-700 text-sm">{{ number_format(\App\Models\Cheque::whereIn('id', $selectedIds)->sum('amount'), 2) }} DH</span></span>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <button wire:click="quickBulkSetStatus('deposited')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
+                        🏛️ Marquer Versé (Déposer)
                     </button>
-                    <button wire:click="$set('selectedIds', [])" class="px-2.5 py-1.5 text-indigo-600 hover:text-indigo-900 text-[11px] font-bold transition">
-                        Désélectionner tout
+                    <button wire:click="quickBulkSetStatus('collected')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
+                        ✅ Marquer Encaissé
+                    </button>
+                    <button wire:click="quickBulkSetStatus('returned')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
+                        ❌ Impayé
+                    </button>
+                    <button wire:click="quickBulkSetStatus('pending')" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
+                        🟡 En Attente
+                    </button>
+                    <div class="w-px h-5 bg-indigo-200 mx-1"></div>
+                    <button wire:click="openBulkModal" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-[11px] font-bold transition">
+                        ⚙️ Autre date / Note
+                    </button>
+                    <button wire:click="$set('selectedIds', [])" class="px-2 py-1.5 text-indigo-600 hover:text-indigo-900 text-[11px] font-bold transition">
+                        ✕ Annuler
                     </button>
                 </div>
             </div>
@@ -151,7 +165,7 @@
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-extrabold text-[10px]">
                         <th class="py-3 px-4 w-10">
-                            <input type="checkbox" wire:model="selectAll"
+                            <input type="checkbox" wire:model.live="selectAll"
                                 class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                         </th>
                         <th class="py-3 px-4">N° Chèque &amp; Banque</th>
@@ -170,7 +184,7 @@
 
                             {{-- Checkbox --}}
                             <td class="py-3 px-4">
-                                <input type="checkbox" value="{{ $chq->id }}" wire:model="selectedIds"
+                                <input type="checkbox" value="{{ $chq->id }}" wire:model.live="selectedIds"
                                     class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                             </td>
 
@@ -266,7 +280,7 @@
                             <td class="py-3 px-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
                                     @if(in_array($chq->status, ['received', 'pending', 'created']))
-                                        <button wire:click="openStatusModal({{ $chq->id }}, 'deposited')"
+                                        <button wire:click="quickSetStatus({{ $chq->id }}, 'deposited')"
                                             class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold shadow-xs transition whitespace-nowrap">
                                             🏛️ Déposer
                                         </button>
