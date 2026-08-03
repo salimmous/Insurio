@@ -323,66 +323,7 @@
                 </div>
             </div>
 
-            <!-- Zone Résumé (Bas de la fiche, sous la grille) -->
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block border-b border-slate-100 pb-2">Zone Résumé (Fiche active)</span>
-                
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-xs">
-                    <div>
-                        <span class="text-slate-400 block">Usage</span>
-                        <span class="font-semibold text-slate-800 block mt-0.5">{{ $selectedContrat ? $selectedContrat->usage : '-' }}</span>
-                    </div>
-                    <div class="col-span-2">
-                        <span class="text-slate-400 block">Branche (code + libellé)</span>
-                        <span class="font-semibold text-slate-800 block mt-0.5">
-                            @if($selectedContrat && $selectedContrat->branche_code)
-                                {{ $selectedContrat->branche_code }} - {{ $selectedContrat->branche_libelle }}
-                            @else
-                                -
-                            @endif
-                        </span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block">Prime nette</span>
-                        <span class="font-mono font-bold text-slate-700 block mt-0.5">{{ $selectedContrat ? number_format($selectedContrat->prime_nette, 2) : '0.00' }} DH</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block">Prime totale</span>
-                        <span class="font-mono font-bold text-teal-600 block mt-0.5">{{ $selectedContrat ? number_format($selectedContrat->prime_totale, 2) : '0.00' }} DH</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block">Reglement Client</span>
-                        <span class="font-mono font-bold text-emerald-600 block mt-0.5">{{ $selectedContrat ? number_format($selectedContrat->reglements->sum('montant'), 2) : '0.00' }} DH</span>
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-xs border-t border-slate-100 pt-3">
-                    <div>
-                        <span class="text-slate-400 block">Chèques à verser</span>
-                        <span class="font-mono font-bold text-amber-600 block mt-0.5">{{ $selectedContrat ? number_format($selectedContrat->reglements->where('mode', 'cheque')->sum('montant'), 2) : '0.00' }} DH</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block">Solde</span>
-                        <span class="font-mono font-bold text-rose-600 block mt-0.5">{{ $selectedContrat ? number_format($selectedContrat->solde, 2) : '0.00' }} DH</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block">Date d'effet</span>
-                        <span class="font-mono text-slate-600 block mt-0.5">{{ $selectedContrat ? $selectedContrat->date_effet->format('d/m/Y') : '-' }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block">Date échéance</span>
-                        <span class="font-mono text-slate-600 block mt-0.5">{{ $selectedContrat ? $selectedContrat->date_echeance->format('d/m/Y') : '-' }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block">Date resiliation</span>
-                        <span class="font-mono text-slate-600 block mt-0.5">{{ ($selectedContrat && $selectedContrat->date_resiliation) ? $selectedContrat->date_resiliation->format('d/m/Y') : '-' }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block">Apporteur</span>
-                        <span class="font-semibold text-slate-800 block mt-0.5">{{ $selectedContrat && $selectedContrat->apporteur ? $selectedContrat->apporteur->nom : '-' }}</span>
-                    </div>
-                </div>
-            </div>
 
             <!-- Boutons de Documents (Bas de fiche) -->
             <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-wrap gap-2 justify-center md:justify-start">
