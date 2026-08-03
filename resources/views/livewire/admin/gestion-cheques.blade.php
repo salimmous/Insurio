@@ -71,31 +71,20 @@
     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
         <div class="flex flex-wrap items-center gap-3">
             {{-- Search --}}
-            <div class="relative flex-1 min-w-52">
+            <div class="relative w-56">
                 <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 <input wire:model.live.debounce.300ms="search" type="text"
-                    placeholder="N° Chèque, Client, Contrat, Banque..."
+                    placeholder="N° Chèque, Client, Banque..."
                     class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all outline-none">
-            </div>
-
-            {{-- Bank Filter --}}
-            <div class="min-w-36">
-                <select wire:model.live="filterBank"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 outline-none">
-                    <option value="">🏦 Toutes les banques</option>
-                    @foreach($banks as $bank)
-                        <option value="{{ $bank }}">{{ $bank }}</option>
-                    @endforeach
-                </select>
             </div>
 
             {{-- Payment Received Filter --}}
             <div class="min-w-44">
                 <select wire:model.live="filterPaymentReceived"
                     class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 outline-none">
-                    <option value="">💰 Tous (Dakhlat + Non)</option>
-                    <option value="yes">✅ Flous Dakhlat (Encaissés)</option>
-                    <option value="no">⏳ Flous Madakhlouch (En attente)</option>
+                    <option value="">Tous les règlements</option>
+                    <option value="yes">Encaissés (reçus)</option>
+                    <option value="no">Non encore encaissés</option>
                 </select>
             </div>
 
@@ -118,10 +107,10 @@
         <div class="flex items-center gap-1 overflow-x-auto pb-0.5">
             <span class="text-[10px] font-extrabold text-slate-400 uppercase mr-1 shrink-0">Statut :</span>
             <button wire:click="$set('filterStatus', '')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ empty($filterStatus) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Tous</button>
-            <button wire:click="$set('filterStatus', 'pending')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ $filterStatus === 'pending' ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200' }}">🟡 En Attente</button>
-            <button wire:click="$set('filterStatus', 'deposited')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ $filterStatus === 'deposited' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200' }}">🏛️ Versés / Déposés</button>
-            <button wire:click="$set('filterStatus', 'collected')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ $filterStatus === 'collected' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' }}">✅ Encaissés</button>
-            <button wire:click="$set('filterStatus', 'returned')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ $filterStatus === 'returned' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200' }}">❌ Impayés</button>
+            <button wire:click="$set('filterStatus', 'pending')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ $filterStatus === 'pending' ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200' }}">En Attente</button>
+            <button wire:click="$set('filterStatus', 'deposited')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ $filterStatus === 'deposited' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200' }}">Versés / Déposés</button>
+            <button wire:click="$set('filterStatus', 'collected')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ $filterStatus === 'collected' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' }}">Encaissés</button>
+            <button wire:click="$set('filterStatus', 'returned')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold transition whitespace-nowrap {{ $filterStatus === 'returned' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200' }}">Impayés</button>
         </div>
 
         {{-- Active filters summary + bulk selection banner --}}
