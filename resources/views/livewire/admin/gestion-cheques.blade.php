@@ -123,7 +123,7 @@
                     <span class="bg-indigo-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md">
                         {{ count($selectedIds) }} sélectionné(s)
                     </span>
-                    <span>Total: <span class="font-mono font-black text-indigo-700 text-sm">{{ number_format(\App\Models\Cheque::whereIn('id', $selectedIds)->sum('amount'), 2) }} DH</span></span>
+                    <span>Total: <span class="font-mono font-black text-indigo-700 text-sm">{{ number_format($selectedAmount, 2) }} DH</span></span>
                 </div>
                 <div class="flex flex-wrap items-center gap-1.5">
                     <button wire:click="quickBulkSetStatus('deposited')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
@@ -381,7 +381,7 @@
                     <div class="text-xs font-bold text-indigo-700">
                         Montant total concerné:
                         <span class="font-mono font-black text-indigo-900 text-sm ml-1">
-                            {{ number_format(Cheque::whereIn('id', $selectedIds)->sum('amount'), 2) }} DH
+                            {{ number_format($selectedAmount, 2) }} DH
                         </span>
                     </div>
                 </div>

@@ -400,6 +400,11 @@ class GestionCheques extends Component
         $filteredTotal  = $this->buildQuery()->count();
         $filteredAmount = $this->buildQuery()->sum('amount');
 
+        // Total amount for checked bulk selection
+        $selectedAmount = !empty($this->selectedIds)
+            ? Cheque::whereIn('id', $this->selectedIds)->sum('amount')
+            : 0;
+
         return view('livewire.admin.gestion-cheques', [
             'cheques'         => $cheques,
             'banks'           => $banks,
@@ -415,6 +420,7 @@ class GestionCheques extends Component
             'returnedAmount'  => $returnedAmount,
             'filteredTotal'   => $filteredTotal,
             'filteredAmount'  => $filteredAmount,
+            'selectedAmount'  => $selectedAmount,
         ])->layout('layouts.app');
     }
 }
