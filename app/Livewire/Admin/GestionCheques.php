@@ -400,10 +400,26 @@ class GestionCheques extends Component
         $filteredTotal  = $this->buildQuery()->count();
         $filteredAmount = $this->buildQuery()->sum('amount');
 
-        // Total amount for checked bulk selection
-        $selectedAmount = !empty($this->selectedIds)
-            ? Cheque::whereIn('id', $this->selectedIds)->sum('amount')
-            : 0;
+        // Total amount and status flags for checked bulk selection
+        $selectedAmount = 0;
+        $hasPending = false;
+        $hasDeposited = false;
+        $hasCollected = false;
+
+        if (!empty($this->selectedIds)) {
+            $selectedCheques = Cheque::whereIn('id', $this->selectedIds)->get();
+            $selectedAmount  = $selectedCheques->sum('amount');
+
+            foreach ($selectedCheques as $chq) {
+                if (in_array($chq->status, ['received', 'pending', 'created'])) {
+                    $hasPending = true;
+                } elseif ($chq->status === 'deposited') {
+                    $hasDeposited = true;
+                } elseif (in_array($chq->status, ['collected', 'validated'])) {
+                    $hasCollected = true;
+                }
+            }
+        }
 
         return view('livewire.admin.gestion-cheques', [
             'cheques'         => $cheques,
@@ -421,6 +437,9 @@ class GestionCheques extends Component
             'filteredTotal'   => $filteredTotal,
             'filteredAmount'  => $filteredAmount,
             'selectedAmount'  => $selectedAmount,
+            'hasPending'      => $hasPending,
+            'hasDeposited'    => $hasDeposited,
+            'hasCollected'    => $hasCollected,
         ])->layout('layouts.app');
     }
 }

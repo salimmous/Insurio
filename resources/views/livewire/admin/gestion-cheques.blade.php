@@ -126,12 +126,16 @@
                     <span>Total: <span class="font-mono font-black text-indigo-700 text-sm">{{ number_format($selectedAmount, 2) }} DH</span></span>
                 </div>
                 <div class="flex flex-wrap items-center gap-1.5">
-                    <button wire:click="quickBulkSetStatus('deposited')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
-                        🏛️ Marquer Versé (Déposer)
-                    </button>
-                    <button wire:click="quickBulkSetStatus('collected')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
-                        ✅ Marquer Encaissé
-                    </button>
+                    @if($hasPending)
+                        <button wire:click="quickBulkSetStatus('deposited')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
+                            🏛️ Marquer Versé (Déposer)
+                        </button>
+                    @endif
+                    @if($hasDeposited || $hasPending)
+                        <button wire:click="quickBulkSetStatus('collected')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
+                            ✅ Marquer Encaissé
+                        </button>
+                    @endif
                     <a href="{{ route('admin.cheques.pdf', ['ids' => implode(',', $selectedIds)]) }}" target="_blank"
                         class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-extrabold transition shadow-xs flex items-center gap-1">
                         🖨️ Imprimer Bordereau
