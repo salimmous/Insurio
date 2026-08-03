@@ -159,7 +159,7 @@
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-extrabold text-[10px]">
                         <th class="py-3 px-4 w-10">
-                            <input type="checkbox" wire:model.live="selectAll"
+                            <input type="checkbox" wire:model="selectAll"
                                 class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                         </th>
                         <th class="py-3 px-4">N° Chèque &amp; Banque</th>
@@ -178,7 +178,7 @@
 
                             {{-- Checkbox --}}
                             <td class="py-3 px-4">
-                                <input type="checkbox" value="{{ $chq->id }}" wire:model.live="selectedIds"
+                                <input type="checkbox" value="{{ $chq->id }}" wire:model="selectedIds"
                                     class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                             </td>
 
