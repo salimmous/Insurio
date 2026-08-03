@@ -179,7 +179,6 @@
                         <th class="py-3 px-4">Échéance / Versement Prévu</th>
                         <th class="py-3 px-4">Date Versement Effectif</th>
                         <th class="py-3 px-4 text-center">Statut</th>
-                        <th class="py-3 px-4 text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
@@ -279,41 +278,10 @@
                                     </span>
                                 @endif
                             </td>
-
-                            {{-- Actions --}}
-                            <td class="py-3 px-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    @if(in_array($chq->status, ['received', 'pending', 'created']))
-                                        <button wire:click="quickSetStatus({{ $chq->id }}, 'deposited')"
-                                            class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold shadow-xs transition whitespace-nowrap">
-                                            🏛️ Déposer
-                                        </button>
-                                    @elseif($chq->status === 'deposited')
-                                        <button wire:click="quickSetStatus({{ $chq->id }}, 'collected')"
-                                            class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold shadow-xs transition whitespace-nowrap">
-                                            ✅ Encaisser
-                                        </button>
-                                        <button wire:click="quickSetStatus({{ $chq->id }}, 'returned')"
-                                            class="px-2 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-[11px] font-bold transition whitespace-nowrap">
-                                            ❌ Rejeté
-                                        </button>
-                                    @elseif(in_array($chq->status, ['collected', 'validated']))
-                                        <button wire:click="openStatusModal({{ $chq->id }}, 'collected')"
-                                            class="px-2 py-1 text-slate-500 hover:text-slate-800 text-[10px] font-bold transition">
-                                            ✏️ Modifier
-                                        </button>
-                                    @else
-                                        <button wire:click="openStatusModal({{ $chq->id }}, 'deposited')"
-                                            class="px-2 py-1 text-slate-500 hover:text-slate-800 text-[10px] font-bold transition">
-                                            🔄 Changer
-                                        </button>
-                                    @endif
-                                </div>
-                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-16 text-center">
+                            <td colspan="8" class="py-16 text-center">
                                 <div class="text-4xl mb-3">📂</div>
                                 <div class="text-slate-500 font-bold text-sm">Aucun chèque trouvé</div>
                                 <div class="text-slate-400 text-xs mt-1">Modifiez vos filtres ou ajoutez un règlement par chèque</div>
