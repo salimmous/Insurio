@@ -15,10 +15,12 @@ class Reglement extends Model
         'date_reglement',
         'mode_reglement',
         'reference_paiement',
+        'date_echeance_cheque',
     ];
 
     protected $casts = [
         'date_reglement' => 'date',
+        'date_echeance_cheque' => 'date',
         'montant' => 'decimal:2',
     ];
 

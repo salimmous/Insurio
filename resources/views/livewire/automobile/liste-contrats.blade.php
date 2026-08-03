@@ -460,17 +460,32 @@
                                             <th class="px-4 py-2.5 text-right">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100 font-mono text-xs text-slate-700">
-                                        @forelse($selectedContrat->reglements as $reg)
+                                              @forelse($selectedContrat->reglements as $reg)
                                             <tr class="hover:bg-slate-50">
                                                 <td class="px-4 py-3">{{ $reg->date_reglement->format('d/m/Y') }}</td>
                                                 <td class="px-4 py-3 font-semibold text-emerald-600">{{ number_format($reg->montant, 2) }} DH</td>
-                                                <td class="px-4 py-3 uppercase font-sans font-semibold text-slate-500">{{ $reg->mode_reglement }}</td>
+                                                <td class="px-4 py-3 uppercase font-sans font-semibold text-slate-500">
+                                                    {{ $reg->mode_reglement }}
+                                                    @if($reg->mode_reglement === 'cheque' && $reg->date_echeance_cheque)
+                                                        <span class="block text-[10px] text-teal-600 font-sans font-medium">Versement: {{ $reg->date_echeance_cheque->format('d/m/Y') }}</span>
+                                                    @endif
+                                                </td>
                                                 <td class="px-4 py-3 text-slate-500">{{ $reg->reference_paiement ?? '-' }}</td>
                                                 <td class="px-4 py-3 text-right font-sans">
-                                                    <button onclick="confirm('Supprimer ce règlement ?') || event.stopImmediatePropagation()" wire:click="deleteReglement({{ $reg->id }})" class="text-rose-500 hover:text-rose-700 font-semibold transition-colors">
-                                                        Supprimer
-                                                    </button>
+                                                    @php
+                                                        $createdTime = $reg->created_at ?? $reg->date_reglement;
+                                                        $isOlderThan24h = $createdTime ? $createdTime->lt(now()->subDay()) : false;
+                                                        $isAdminUser = auth()->check() && (auth()->user()->hasAnyRole(['agency-admin', 'super-admin', 'Super Admin', 'Agency Owner', 'admin']) || !empty(auth()->user()->is_admin));
+                                                    @endphp
+                                                    @if(!$isOlderThan24h || $isAdminUser)
+                                                        <button onclick="confirm('Supprimer ce règlement ?') || event.stopImmediatePropagation()" wire:click="deleteReglement({{ $reg->id }})" class="text-rose-500 hover:text-rose-700 font-semibold transition-colors">
+                                                            Supprimer
+                                                        </button>
+                                                    @else
+                                                        <span class="text-slate-400 text-[11px] font-sans inline-flex items-center gap-1 cursor-not-allowed" title="Seul un Administrateur peut supprimer un règlement datant de plus de 24h">
+                                                            🔒 Admin requis (>24h)
+                                                        </span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @empty
@@ -502,9 +517,9 @@
 
                                 <form wire:submit.prevent="addReglement" class="space-y-3">
                                     @foreach($reglementLines as $index => $line)
-                                        <div wire:key="reglement-line-{{ $index }}" class="bg-slate-50 p-4 rounded-xl border border-slate-200/70 relative transition-all group">
+                                        <div wire:key="reglement-line-{{ $index }}" class="bg-slate-50 p-4 rounded-xl border border-slate-200/70 relative transition-all group space-y-3">
                                             @if(count($reglementLines) > 1)
-                                                <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-200/50">
+                                                <div class="flex justify-between items-center pb-1.5 border-b border-slate-200/50">
                                                     <span class="text-xs font-bold uppercase tracking-wider text-teal-700">Règlement #{{ $index + 1 }}</span>
                                                     <button type="button" 
                                                             wire:click="removeReglementLine({{ $index }})" 
@@ -524,22 +539,23 @@
                                                            class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 font-mono font-semibold">
                                                     @error('reglementLines.'.$index.'.montant') 
                                                         <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
-                                                    @enderror
+                                                     @enderror
                                                 </div>
 
                                                 <div>
                                                     <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Date</label>
                                                     <input type="date" 
+                                                           min="{{ date('Y-m-d') }}"
                                                            wire:model="reglementLines.{{ $index }}.date" 
                                                            class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 font-mono">
                                                     @error('reglementLines.'.$index.'.date') 
                                                         <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
-                                                    @enderror
+                                                     @enderror
                                                 </div>
 
                                                 <div>
                                                     <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Mode de règlement</label>
-                                                    <select wire:model="reglementLines.{{ $index }}.mode" 
+                                                    <select wire:model.live="reglementLines.{{ $index }}.mode" 
                                                             class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
                                                         <option value="especes">Espèces</option>
                                                         <option value="cheque">Chèque</option>
@@ -548,7 +564,7 @@
                                                     </select>
                                                     @error('reglementLines.'.$index.'.mode') 
                                                         <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
-                                                    @enderror
+                                                     @enderror
                                                 </div>
 
                                                 <div>
@@ -559,9 +575,30 @@
                                                            class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
                                                     @error('reglementLines.'.$index.'.reference') 
                                                         <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
-                                                    @enderror
+                                                     @enderror
                                                 </div>
                                             </div>
+
+                                            @if(($line['mode'] ?? '') === 'cheque')
+                                                <div class="bg-teal-50/60 p-3 rounded-lg border border-teal-200/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                                    <div class="flex items-center gap-1.5">
+                                                        <span class="text-base">📅</span>
+                                                        <div>
+                                                            <span class="block text-xs font-bold text-teal-900">Date d'échéance / versement du chèque <span class="text-rose-500">*</span></span>
+                                                            <span class="text-[10px] text-teal-700">Sélectionnez la date prévue d'encaissement bancaire</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-full sm:w-auto">
+                                                        <input type="date" 
+                                                               min="{{ date('Y-m-d') }}"
+                                                               wire:model.live="reglementLines.{{ $index }}.date_echeance_cheque" 
+                                                               class="w-full sm:w-48 bg-white border border-teal-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-mono">
+                                                        @error('reglementLines.'.$index.'.date_echeance_cheque') 
+                                                            <span class="text-xs text-rose-600 mt-0.5 block font-sans">{{ $message }}</span> 
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                     @endforeach
 

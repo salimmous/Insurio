@@ -142,6 +142,7 @@ class ListeContrats extends Component
                     'date' => now()->toDateString(),
                     'mode' => 'especes',
                     'reference' => '',
+                    'date_echeance_cheque' => '',
                 ]
             ];
 
@@ -156,6 +157,7 @@ class ListeContrats extends Component
             'date' => now()->toDateString(),
             'mode' => 'especes',
             'reference' => '',
+            'date_echeance_cheque' => '',
         ];
     }
 
@@ -199,13 +201,23 @@ class ListeContrats extends Component
             $this->validate([
                 'reglementLines' => 'required|array|min:1',
                 'reglementLines.*.montant' => 'required|numeric|min:0.01',
-                'reglementLines.*.date' => 'required|date',
+                'reglementLines.*.date' => 'required|date|after_or_equal:today',
                 'reglementLines.*.mode' => 'required|in:especes,cheque,virement,carte',
                 'reglementLines.*.reference' => 'nullable|string|max:255',
+                'reglementLines.*.date_echeance_cheque' => 'nullable|date|after_or_equal:today',
             ], [
                 'reglementLines.*.montant.required' => 'Le montant est obligatoire.',
                 'reglementLines.*.montant.min' => 'Le montant doit être supérieur à 0.',
+                'reglementLines.*.date.after_or_equal' => 'La date de règlement ne peut pas être dans le passé.',
+                'reglementLines.*.date_echeance_cheque.after_or_equal' => 'La date de versement du chèque ne peut pas être dans le passé.',
             ]);
+
+            foreach ($this->reglementLines as $idx => $line) {
+                if ($line['mode'] === 'cheque' && empty($line['date_echeance_cheque'])) {
+                    $this->addError("reglementLines.{$idx}.date_echeance_cheque", "La date de versement/échéance du chèque est obligatoire.");
+                    return;
+                }
+            }
 
             $createdCount = 0;
             foreach ($this->reglementLines as $line) {
@@ -215,6 +227,7 @@ class ListeContrats extends Component
                     'date_reglement' => $line['date'],
                     'mode_reglement' => $line['mode'],
                     'reference_paiement' => $line['reference'] ?? null,
+                    'date_echeance_cheque' => $line['mode'] === 'cheque' ? ($line['date_echeance_cheque'] ?? null) : null,
                 ]);
                 $createdCount++;
             }
@@ -229,7 +242,7 @@ class ListeContrats extends Component
 
         $this->validate([
             'reglementMontant' => 'required|numeric|min:0.01',
-            'reglementDate' => 'required|date',
+            'reglementDate' => 'required|date|after_or_equal:today',
             'reglementMode' => 'required|in:especes,cheque,virement,carte',
             'reglementReference' => 'nullable|string|max:255',
         ]);
@@ -249,6 +262,17 @@ class ListeContrats extends Component
     public function deleteReglement($id)
     {
         $reglement = \App\Models\Reglement::findOrFail($id);
+        $user = auth()->user();
+        $isAdmin = $user && ($user->hasAnyRole(['agency-admin', 'super-admin', 'Super Admin', 'Agency Owner', 'admin']) || !empty($user->is_admin));
+        
+        $createdTime = $reglement->created_at ?? $reglement->date_reglement;
+        $isOlderThan24h = $createdTime ? $createdTime->lt(now()->subDay()) : false;
+
+        if ($isOlderThan24h && !$isAdmin) {
+            $this->dispatch('swal:error', ['message' => 'Seul un Administrateur peut supprimer un règlement de plus de 24h.']);
+            return;
+        }
+
         $reglement->delete();
         $this->dispatch('swal:success', ['message' => 'Règlement supprimé avec succès.']);
     }
