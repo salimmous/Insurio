@@ -55,19 +55,23 @@ class ListeContrats extends Component
     }
 
     // Quick Actions
-    public function resilierContrat()
+    public function resilierContrat($id = null)
     {
-        if ($this->selectedContratId) {
-            $contrat = ContratAuto::findOrFail($this->selectedContratId);
+        $targetId = $id ?? $this->selectedContratId;
+        if ($targetId) {
+            $this->selectedContratId = $targetId;
+            $contrat = ContratAuto::findOrFail($targetId);
             app(\App\Services\ContractWorkflowService::class)->resilier($contrat, now()->toDateString());
-            session()->flash('message', 'Le contrat a été résilié avec calcul du prorata temporis.');
+            session()->flash('message', 'Le contrat N° ' . $contrat->numero_contrat . ' a été résilié avec calcul du prorata temporis.');
         }
     }
 
-    public function renouvelerContrat()
+    public function renouvelerContrat($id = null)
     {
-        if ($this->selectedContratId) {
-            $contrat = ContratAuto::findOrFail($this->selectedContratId);
+        $targetId = $id ?? $this->selectedContratId;
+        if ($targetId) {
+            $this->selectedContratId = $targetId;
+            $contrat = ContratAuto::findOrFail($targetId);
             $newContrat = app(\App\Services\ContractWorkflowService::class)->renouveler($contrat);
             
             session()->flash('message', 'Contrat renouvelé avec succès (Nouveau Contrat: ' . $newContrat->numero_contrat . ')');
@@ -75,12 +79,14 @@ class ListeContrats extends Component
         }
     }
 
-    public function annulerContrat()
+    public function annulerContrat($id = null)
     {
-        if ($this->selectedContratId) {
-            $contrat = ContratAuto::findOrFail($this->selectedContratId);
+        $targetId = $id ?? $this->selectedContratId;
+        if ($targetId) {
+            $this->selectedContratId = $targetId;
+            $contrat = ContratAuto::findOrFail($targetId);
             app(\App\Services\ContractWorkflowService::class)->annuler($contrat);
-            session()->flash('message', 'Le contrat a été annulé rétroactivement avec remise à zéro des primes.');
+            session()->flash('message', 'Le contrat N° ' . $contrat->numero_contrat . ' a été annulé rétroactivement avec remise à zéro des primes.');
         }
     }
 

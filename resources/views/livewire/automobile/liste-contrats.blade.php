@@ -42,6 +42,13 @@
                 <option value="resilie">Statut: Résiliés</option>
                 <option value="annule">Statut: Annulés</option>
             </select>
+
+            <a href="{{ route('automobile.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span>Nouveau</span>
+            </a>
         </div>
     </div>
 
@@ -186,213 +193,217 @@
     </div>
     @endif
 
-    <!-- Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+    <!-- Content Area (Full width) -->
+    <div class="flex flex-col gap-6">
         
-        <!-- Main content area (Left - 4/5 cols) -->
-        <div class="lg:col-span-4 flex flex-col gap-6">
-            
-            <!-- Table / Grid -->
-            <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
-                <!-- Desktop Table View -->
-                <div class="hidden md:block overflow-x-auto">
-                    <table class="w-full text-left text-xs text-slate-600">
-                        <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200/80">
-                            <tr>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">ID</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Réf</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Code client</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Nom du client</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Police</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Avenant</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Attest</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Matricule</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Date d'effet</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Expiration</th>
-                                <th class="px-2.5 py-2.5 text-right whitespace-nowrap">Prime Total</th>
-                                <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Statut Règlement</th>
-                                <th class="px-2.5 py-2.5 whitespace-nowrap">Compagnie</th>
-                                <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Type</th>
-                                <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 font-medium font-mono text-[11px]">
-                            @forelse($contrats as $contrat)
-                            <tr wire:key="contrat-row-{{ $contrat->id }}"
-                                wire:click="selectContrat({{ $contrat->id }})" 
-                                class="hover:bg-slate-50 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
-                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-400">{{ $contrat->id }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-teal-600 font-bold">{{ $contrat->numero_contrat }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-500">CL-{{ str_pad($contrat->client_id, 6, '0', STR_PAD_LEFT) }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-900 font-sans font-semibold">{{ $contrat->souscripteur }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->police }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->avenant ?? '-' }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->attestation ?? '-' }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-800">{{ $contrat->matricule }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-600">{{ $contrat->date_effet->format('d/m/Y') }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-slate-600">
-                                    @php
-                                        $isExpiringSoon = $contrat->statut === 'actif' && $contrat->date_echeance->between(now()->startOfDay(), now()->addDays(7)->endOfDay());
-                                    @endphp
-                                    @if($isExpiringSoon)
-                                        <span class="text-rose-600 font-bold bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200" title="Expire bientôt">
-                                            {{ $contrat->date_echeance->format('d/m/Y') }} ⚠️
-                                        </span>
-                                    @else
-                                        {{ $contrat->date_echeance->format('d/m/Y') }}
-                                    @endif
-                                </td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-right text-slate-900 font-bold font-mono">{{ number_format($contrat->prime_totale, 2) }} DH</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
-                                    @if($contrat->statut_reglement === 'solde')
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Soldé</span>
-                                    @elseif($contrat->statut_reglement === 'partiel')
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Partiel</span>
-                                    @else
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">Non payé</span>
-                                    @endif
-                                </td>
-                                <td class="px-2.5 py-2 whitespace-nowrap font-sans text-slate-800">{{ $contrat->compagnie->nom }}</td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-center">
-                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-blue-50 text-blue-700 border border-blue-200/60' }}">
-                                        {{ $contrat->type_affaire }}
+        <!-- Table / Grid -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-600">
+                    <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200/80">
+                        <tr>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">ID</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Réf</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Code client</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Nom du client</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Police</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Avenant</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Attest</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Matricule</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Date d'effet</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Expiration</th>
+                            <th class="px-2.5 py-2.5 text-right whitespace-nowrap">Prime Total</th>
+                            <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Statut Règlement</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Compagnie</th>
+                            <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Type</th>
+                            <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-medium font-mono text-[11px]">
+                        @forelse($contrats as $contrat)
+                        <tr wire:key="contrat-row-{{ $contrat->id }}"
+                            wire:click="selectContrat({{ $contrat->id }})" 
+                            class="hover:bg-slate-50 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
+                            <td class="px-2.5 py-2 whitespace-nowrap text-slate-400">{{ $contrat->id }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-teal-600 font-bold">{{ $contrat->numero_contrat }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-slate-500">CL-{{ str_pad($contrat->client_id, 6, '0', STR_PAD_LEFT) }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-slate-900 font-sans font-semibold">{{ $contrat->souscripteur }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->police }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->avenant ?? '-' }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->attestation ?? '-' }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-slate-800">{{ $contrat->matricule }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-slate-600">{{ $contrat->date_effet->format('d/m/Y') }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-slate-600">
+                                @php
+                                    $isExpiringSoon = $contrat->statut === 'actif' && $contrat->date_echeance->between(now()->startOfDay(), now()->addDays(7)->endOfDay());
+                                @endphp
+                                @if($isExpiringSoon)
+                                    <span class="text-rose-600 font-bold bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200" title="Expire bientôt">
+                                        {{ $contrat->date_echeance->format('d/m/Y') }} ⚠️
                                     </span>
-                                </td>
-                                <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
-                                    <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-[10px] font-bold shadow-sm transition-colors">
-                                        + Règlement
-                                    </button>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="15" class="px-4 py-8 text-center text-slate-500 font-sans">
-                                    Aucun contrat trouvé dans le registre.
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Mobile View -->
-                <div class="block md:hidden divide-y divide-slate-100">
-                    @forelse($contrats as $contrat)
-                        <div wire:key="contrat-card-{{ $contrat->id }}"
-                             wire:click="selectContrat({{ $contrat->id }})" class="p-4 flex flex-col gap-2 hover:bg-slate-50 cursor-pointer {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-4 border-teal-600' : '' }}">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="font-bold text-indigo-600 font-mono">#{{ $contrat->numero_contrat }}</span>
-                                    <span class="text-xs text-slate-500 block font-sans">Client: {{ $contrat->souscripteur }}</span>
-                                </div>
-                                <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800' }}">
+                                @else
+                                    {{ $contrat->date_echeance->format('d/m/Y') }}
+                                @endif
+                            </td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-right text-slate-900 font-bold font-mono">{{ number_format($contrat->prime_totale, 2) }} DH</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
+                                @if($contrat->statut_reglement === 'solde')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Soldé</span>
+                                @elseif($contrat->statut_reglement === 'partiel')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Partiel</span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">Non payé</span>
+                                @endif
+                            </td>
+                            <td class="px-2.5 py-2 whitespace-nowrap font-sans text-slate-800">{{ $contrat->compagnie->nom }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-center">
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-blue-50 text-blue-700 border border-blue-200/60' }}">
                                     {{ $contrat->type_affaire }}
                                 </span>
-                            </div>
-                            <div class="flex justify-between text-xs text-slate-600">
-                                <div>Matricule: <span class="font-mono font-bold">{{ $contrat->matricule }}</span></div>
-                                <div class="font-mono font-bold text-slate-900">{{ number_format($contrat->prime_totale, 2) }} DH</div>
-                            </div>
-                            <div class="flex justify-between text-[10px] text-slate-400 font-mono">
-                                <div>Effet: {{ $contrat->date_effet->format('d/m/Y') }}</div>
-                                <div>
-                                    Expire: 
-                                    @php
-                                        $isExpiringSoon = $contrat->statut === 'actif' && $contrat->date_echeance->between(now()->startOfDay(), now()->addDays(7)->endOfDay());
-                                    @endphp
-                                    @if($isExpiringSoon)
-                                        <span class="text-rose-600 font-bold bg-rose-50 px-1 py-0.5 rounded border border-rose-200">
-                                            {{ $contrat->date_echeance->format('d/m/Y') }} ⚠️
-                                        </span>
-                                    @else
-                                        {{ $contrat->date_echeance->format('d/m/Y') }}
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="p-8 text-center text-slate-400 text-sm">
-                            Aucun contrat trouvé dans le registre.
-                        </div>
-                    @endforelse
-                </div>
+                            </td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <!-- 1. Règlement -->
+                                    <button wire:click.stop="openReglementsModal({{ $contrat->id }})" 
+                                            title="Règlements & Paiements"
+                                            class="p-1.5 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 transition-all shadow-2xs">
+                                        <svg class="w-3.5 h-3.5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                        </svg>
+                                    </button>
 
-                <!-- Pagination -->
-                <div class="px-4 py-2 bg-slate-50 border-t border-slate-200/80">
-                    {{ $contrats->links() }}
-                </div>
+                                    <!-- 2. Modifier -->
+                                    <a href="{{ route('automobile.edit', $contrat->id) }}" 
+                                       title="Modifier"
+                                       wire:click.stop
+                                       class="p-1.5 rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 transition-all shadow-2xs">
+                                        <svg class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                        </svg>
+                                    </a>
+
+                                    <!-- 3. Renouvellement -->
+                                    <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" 
+                                            wire:confirm="Voulez-vous vraiment renouveler ce contrat ?"
+                                            title="Renouvellement"
+                                            class="p-1.5 rounded-lg text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/80 transition-all shadow-2xs">
+                                        <svg class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                        </svg>
+                                    </button>
+
+                                    <!-- 4. Résiliation -->
+                                    <button wire:click.stop="resilierContrat({{ $contrat->id }})" 
+                                            wire:confirm="Voulez-vous vraiment résilier le contrat #{{ $contrat->numero_contrat }} (Prorata temporis) ?"
+                                            title="Résiliation"
+                                            class="p-1.5 rounded-lg text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 transition-all shadow-2xs">
+                                        <svg class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                        </svg>
+                                    </button>
+
+                                    <!-- 5. Annulation -->
+                                    <button wire:click.stop="annulerContrat({{ $contrat->id }})" 
+                                            wire:confirm="Voulez-vous vraiment annuler le contrat #{{ $contrat->numero_contrat }} rétroactivement ?"
+                                            title="Annulation"
+                                            class="p-1.5 rounded-lg text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 transition-all shadow-2xs">
+                                        <svg class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="15" class="px-4 py-8 text-center text-slate-500 font-sans">
+                                Aucun contrat trouvé dans le registre.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
+            <!-- Mobile View -->
+            <div class="block md:hidden divide-y divide-slate-100">
+                @forelse($contrats as $contrat)
+                    <div wire:key="contrat-card-{{ $contrat->id }}"
+                         wire:click="selectContrat({{ $contrat->id }})" class="p-4 flex flex-col gap-2 hover:bg-slate-50 cursor-pointer {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-4 border-teal-600' : '' }}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-bold text-indigo-600 font-mono">#{{ $contrat->numero_contrat }}</span>
+                                <span class="text-xs text-slate-500 block font-sans">Client: {{ $contrat->souscripteur }}</span>
+                            </div>
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800' }}">
+                                {{ $contrat->type_affaire }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-600">
+                            <div>Matricule: <span class="font-mono font-bold">{{ $contrat->matricule }}</span></div>
+                            <div class="font-mono font-bold text-slate-900">{{ number_format($contrat->prime_totale, 2) }} DH</div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                            <div>Effet: {{ $contrat->date_effet->format('d/m/Y') }}</div>
+                            <div>
+                                Expire: 
+                                @php
+                                    $isExpiringSoon = $contrat->statut === 'actif' && $contrat->date_echeance->between(now()->startOfDay(), now()->addDays(7)->endOfDay());
+                                @endphp
+                                @if($isExpiringSoon)
+                                    <span class="text-rose-600 font-bold bg-rose-50 px-1 py-0.5 rounded border border-rose-200">
+                                        {{ $contrat->date_echeance->format('d/m/Y') }} ⚠️
+                                    </span>
+                                @else
+                                    {{ $contrat->date_echeance->format('d/m/Y') }}
+                                @endif
+                            </div>
+                        </div>
 
+                        <!-- Mobile Action Buttons Row -->
+                        <div class="flex items-center justify-end gap-2 pt-2 mt-1 border-t border-slate-100">
+                            <button wire:click.stop="openReglementsModal({{ $contrat->id }})" title="Règlement" class="p-1.5 rounded-lg text-emerald-700 bg-emerald-50 border border-emerald-200">
+                                <svg class="w-4 h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            </button>
+                            <a href="{{ route('automobile.edit', $contrat->id) }}" wire:click.stop title="Modifier" class="p-1.5 rounded-lg text-blue-700 bg-blue-50 border border-blue-200">
+                                <svg class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                            </a>
+                            <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" wire:confirm="Voulez-vous vraiment renouveler ce contrat ?" title="Renouvellement" class="p-1.5 rounded-lg text-teal-700 bg-teal-50 border border-teal-200">
+                                <svg class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                            </button>
+                            <button wire:click.stop="resilierContrat({{ $contrat->id }})" wire:confirm="Résiliation ?" title="Résiliation" class="p-1.5 rounded-lg text-amber-700 bg-amber-50 border border-amber-200">
+                                <svg class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                            </button>
+                            <button wire:click.stop="annulerContrat({{ $contrat->id }})" wire:confirm="Annulation ?" title="Annulation" class="p-1.5 rounded-lg text-rose-700 bg-rose-50 border border-rose-200">
+                                <svg class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </button>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-8 text-center text-slate-400 text-sm">
+                        Aucun contrat trouvé dans le registre.
+                    </div>
+                @endforelse
+            </div>
 
-            <!-- Boutons de Documents (Bas de fiche) -->
-            <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-wrap gap-2 justify-center md:justify-start">
-                @if($selectedContratId)
-                    <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'carte-verte']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Carte Verte</a>
-                    <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'attestation']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Attestation Assurance</a>
-                    <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'police']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Contrat / Police</a>
-                    <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'quittance']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Quittance</a>
-                    <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'recu']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Reçu</a>
-                    <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'rappel']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Rappel Échéance</a>
-                @else
-                    <span class="text-xs text-slate-400 italic">Sélectionnez un contrat pour générer les documents PDF.</span>
-                @endif
+            <!-- Pagination -->
+            <div class="px-4 py-2 bg-slate-50 border-t border-slate-200/80">
+                {{ $contrats->links() }}
             </div>
         </div>
 
-        <!-- Sidebar Actions (Right - 1/5 cols) -->
-        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col gap-2">
-            <span class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2 border-b border-slate-100 pb-2 block">Actions</span>
-            
-            <a href="{{ route('automobile.create') }}" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all shadow-sm">
-                Nouveau
-            </a>
-
+        <!-- Boutons de Documents (Bas de fiche) -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-wrap gap-2 justify-center md:justify-start">
             @if($selectedContratId)
-                <a href="{{ route('automobile.edit', $selectedContratId) }}" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all border border-slate-200">
-                    Modifier
-                </a>
-                <button wire:click="renouvelerContrat" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all border border-slate-200">
-                    Renouvellement
-                </button>
-                <button wire:click="openReglementsModal" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-slate-200">
-                    Reglements
-                </button>
-                <button wire:click="resilierContrat" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-amber-200/60">
-                    Resiliation
-                </button>
-                <button wire:click="annulerContrat" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold py-2 px-3 rounded-xl text-xs transition-all border border-rose-200/60">
-                    Annulation
-                </button>
+                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'carte-verte']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Carte Verte</a>
+                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'attestation']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Attestation Assurance</a>
+                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'police']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Contrat / Police</a>
+                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'quittance']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Quittance</a>
+                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'recu']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Reçu</a>
+                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'rappel']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Rappel Échéance</a>
             @else
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Modifier</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Renouvellement</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Reglements</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Resiliation</button>
-                <button disabled class="w-full bg-slate-50 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-100">Annulation</button>
-            @endif
-
-            @if($selectedContratId && $selectedContrat)
-                <span class="text-xs font-bold uppercase text-slate-400 tracking-wider mt-4 mb-2 border-b border-slate-100 pb-2 block">📢 Relances Échéance</span>
-                
-                <!-- WhatsApp reminder -->
-                @php
-                    $clientPhone = $selectedContrat->client->telephone ?? '';
-                    $cleanPhone = preg_replace('/[^0-9]/', '', $clientPhone);
-                    if (str_starts_with($cleanPhone, '0')) {
-                        $cleanPhone = '212' . substr($cleanPhone, 1);
-                    }
-                    $waText = "Bonjour " . $selectedContrat->client->nom . " " . $selectedContrat->client->prenom . ", votre contrat d'assurance automobile Insurio N° " . $selectedContrat->numero_contrat . " chez la compagnie " . $selectedContrat->compagnie->nom . " arrive à échéance le " . $selectedContrat->date_echeance->format('d/m/Y') . ". Pour continuer à rouler en toute sécurité, veuillez nous contacter pour le renouveler. Cordialement.";
-                    $waLink = "https://wa.me/" . $cleanPhone . "?text=" . urlencode($waText);
-                @endphp
-                <a href="{{ $waLink }}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all shadow-sm flex items-center justify-center gap-1">
-                    💬 Relancer WhatsApp
-                </a>
-
-                <!-- Email reminder -->
-                <button wire:click="relancerParEmail" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-3 rounded-xl text-xs text-center transition-all shadow-sm flex items-center justify-center gap-1">
-                    ✉️ Relancer Email
-                </button>
+                <span class="text-xs text-slate-400 italic">Sélectionnez un contrat pour générer les documents PDF.</span>
             @endif
         </div>
     </div>
