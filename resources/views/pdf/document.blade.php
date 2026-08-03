@@ -241,6 +241,77 @@
         </tbody>
     </table>
 
+    <!-- Situation Financière & Historique des Règlements -->
+    <div class="section-title">Situation Financière & Historique des Règlements</div>
+    
+    <table class="grid-table" style="margin-bottom: 10px;">
+        <thead>
+            <tr>
+                <th style="width: 25%; text-align: center;">Prime Totale (TTC)</th>
+                <th style="width: 25%; text-align: center;">Déjà Payé</th>
+                <th style="width: 25%; text-align: center;">Solde Restant</th>
+                <th style="width: 25%; text-align: center;">Statut du Règlement</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="text-align: center; font-weight: bold;">
+                <td style="font-family: monospace;">{{ number_format($contrat->prime_totale, 2) }} DH</td>
+                <td style="font-family: monospace; color: #059669;">{{ number_format($contrat->reglements->sum('montant'), 2) }} DH</td>
+                <td style="font-family: monospace; color: {{ $contrat->solde <= 0 ? '#059669' : '#d97706' }};">
+                    {{ number_format($contrat->solde, 2) }} DH
+                </td>
+                <td>
+                    @if($contrat->solde <= 0)
+                        <span style="color: #059669; font-weight: bold;">SOLDÉ</span>
+                    @elseif($contrat->reglements->sum('montant') > 0)
+                        <span style="color: #d97706; font-weight: bold;">PARTIEL</span>
+                    @else
+                        <span style="color: #dc2626; font-weight: bold;">NON PAYÉ</span>
+                    @endif
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="grid-table">
+        <thead>
+            <tr>
+                <th style="width: 15%;">Date</th>
+                <th style="width: 20%; text-align: right;">Montant (DH)</th>
+                <th style="width: 20%;">Mode</th>
+                <th style="width: 25%;">Référence / N°</th>
+                <th style="width: 20%;">Versement / Échéance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($contrat->reglements as $reglement)
+                <tr>
+                    <td style="font-family: monospace;">{{ $reglement->date_reglement ? $reglement->date_reglement->format('d/m/Y') : '-' }}</td>
+                    <td style="text-align: right; font-family: monospace; font-weight: bold; color: #059669;">
+                        {{ number_format($reglement->montant, 2) }} DH
+                    </td>
+                    <td style="text-transform: uppercase; font-weight: bold; color: #4b5563;">
+                        {{ $reglement->mode_reglement }}
+                    </td>
+                    <td>{{ $reglement->reference_paiement ?? '-' }}</td>
+                    <td style="font-family: monospace;">
+                        @if($reglement->mode_reglement === 'cheque' && $reglement->date_echeance_cheque)
+                            {{ $reglement->date_echeance_cheque->format('d/m/Y') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #9ca3af; font-style: italic;">
+                        Aucun règlement enregistré pour ce contrat.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
     <!-- Footer -->
     <div class="footer">
         Document généré automatiquement par la plateforme Insurio le {{ now()->format('d/m/Y H:i') }}<br>

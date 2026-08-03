@@ -12,7 +12,7 @@ class PDFController extends Controller
 {
     public function generate(int $contratId, string $type)
     {
-        $contrat = ContratAuto::with(['client', 'vehicule', 'compagnie', 'succursale'])->findOrFail($contratId);
+        $contrat = ContratAuto::with(['client', 'vehicule', 'compagnie', 'succursale', 'reglements'])->findOrFail($contratId);
 
         // Get tenant settings for header
         $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Assurance');
