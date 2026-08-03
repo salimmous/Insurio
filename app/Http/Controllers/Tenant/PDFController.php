@@ -237,6 +237,38 @@ class PDFController extends Controller
         ]);
     }
 
+    public function generateChequesPdf(Request $request)
+    {
+        $idsParam = $request->query('ids', '');
+        $ids = array_filter(explode(',', $idsParam));
+
+        $query = \App\Models\Cheque::with(['client', 'contract']);
+        if (!empty($ids)) {
+            $query->whereIn('id', $ids);
+        }
+        $cheques = $query->orderBy('due_date', 'asc')->get();
+
+        $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Agency');
+        $agencyAddress = Setting::get('agency_address', 'Casablanca, Maroc');
+        $agencyPhone = Setting::get('agency_phone', '+212 5 22 00 00 00');
+        $agencyEmail = Setting::get('agency_email', 'contact@insurio.com');
+
+        $data = [
+            'cheques'       => $cheques,
+            'agencyName'    => $agencyName,
+            'agencyAddress' => $agencyAddress,
+            'agencyPhone'   => $agencyPhone,
+            'agencyEmail'   => $agencyEmail,
+            'totalAmount'   => $cheques->sum('amount'),
+            'totalCount'    => $cheques->count(),
+            'generatedAt'   => now()->format('d/m/Y H:i'),
+        ];
+
+        $pdf = Pdf::loadView('pdf.cheques-bordereau', $data);
+
+        return $pdf->stream('bordereau_remise_cheques_' . date('Y-m-d') . '.pdf');
+    }
+
     private function getTitle(string $type): string
     {
         return match ($type) {
