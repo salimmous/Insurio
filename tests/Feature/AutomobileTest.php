@@ -224,7 +224,7 @@ class AutomobileTest extends TestCase
         Livewire::test(ListeContrats::class)
             ->set('selectedContratId', $contrat->id)
             ->call('openReglementsModal')
-            ->assertSet('reglementMontant', '')
+            ->assertSet('reglementMontant', 3320.00)
             ->set('reglementMontant', 1320.00)
             ->set('reglementDate', '2026-07-20')
             ->set('reglementMode', 'cheque')
