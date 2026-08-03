@@ -260,14 +260,24 @@
                             <td class="px-2.5 py-2 whitespace-nowrap text-center">
                                 <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-blue-50 text-blue-700 border border-blue-200/60' }}">
                                     {{ $contrat->type_affaire }}
-                                </span>
-                            </td>
-                            <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
+                              <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                 <div class="inline-flex items-center gap-1.5">
                                     <!-- Teal + Règlement Button -->
                                     <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[11px] font-bold shadow-sm transition-colors mr-0.5">
                                         + Règlement
                                     </button>
+
+                                    <!-- Quittance PDF Button -->
+                                    <a href="{{ route('automobile.pdf', ['contratId' => $contrat->id, 'type' => 'quittance']) }}" 
+                                       target="_blank"
+                                       title="Télécharger Quittance PDF"
+                                       wire:click.stop
+                                       class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 rounded-lg text-[11px] font-bold shadow-2xs transition-all">
+                                        <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                        </svg>
+                                        Quittance
+                                    </a>
 
                                     <!-- Modifier -->
                                     <a href="{{ route('automobile.edit', $contrat->id) }}" 
@@ -333,6 +343,12 @@
                                 + Règlement
                             </button>
                             <div class="flex items-center gap-1.5">
+                                <a href="{{ route('automobile.pdf', ['contratId' => $contrat->id, 'type' => 'quittance']) }}" target="_blank" wire:click.stop title="Quittance PDF" class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold shadow-2xs">
+                                    <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                    </svg>
+                                    Quittance
+                                </a>
                                 <a href="{{ route('automobile.edit', $contrat->id) }}" wire:click.stop title="Modifier" class="p-1.5 rounded-lg text-blue-700 bg-blue-50 border border-blue-200">
                                     <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                                 </a>
@@ -350,20 +366,6 @@
             <div class="px-4 py-2 bg-slate-50 border-t border-slate-200/80">
                 {{ $contrats->links() }}
             </div>
-        </div>
-
-        <!-- Boutons de Documents (Bas de fiche) -->
-        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-wrap gap-2 justify-center md:justify-start">
-            @if($selectedContratId)
-                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'carte-verte']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Carte Verte</a>
-                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'attestation']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Attestation Assurance</a>
-                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'police']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Contrat / Police</a>
-                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'quittance']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Quittance</a>
-                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'recu']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Reçu</a>
-                <a href="{{ route('automobile.pdf', ['contratId' => $selectedContratId, 'type' => 'rappel']) }}" target="_blank" class="bg-slate-105 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-200/40">Rappel Échéance</a>
-            @else
-                <span class="text-xs text-slate-400 italic">Sélectionnez un contrat pour générer les documents PDF.</span>
-            @endif
         </div>
     </div>
 
