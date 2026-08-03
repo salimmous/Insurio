@@ -475,15 +475,14 @@
                                                     @php
                                                         $createdTime = $reg->created_at ?? $reg->date_reglement;
                                                         $isOlderThan24h = $createdTime ? $createdTime->lt(now()->subDay()) : false;
-                                                        $isAdminUser = auth()->check() && (auth()->user()->hasAnyRole(['agency-admin', 'super-admin', 'Super Admin', 'Agency Owner', 'admin']) || !empty(auth()->user()->is_admin));
                                                     @endphp
-                                                    @if(!$isOlderThan24h || $isAdminUser)
+                                                    @if(!$isOlderThan24h)
                                                         <button onclick="confirm('Supprimer ce règlement ?') || event.stopImmediatePropagation()" wire:click="deleteReglement({{ $reg->id }})" class="text-rose-500 hover:text-rose-700 font-semibold transition-colors">
                                                             Supprimer
                                                         </button>
                                                     @else
-                                                        <span class="text-slate-400 text-[11px] font-sans inline-flex items-center gap-1 cursor-not-allowed" title="Seul un Administrateur peut supprimer un règlement datant de plus de 24h">
-                                                            🔒 Admin requis (>24h)
+                                                        <span class="text-slate-400 text-xs font-sans" title="Verrouillé: règlement datant de plus de 24h">
+                                                            🔒 Non modifiable (>24h)
                                                         </span>
                                                     @endif
                                                 </td>

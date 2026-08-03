@@ -261,14 +261,11 @@ class ListeContrats extends Component
     public function deleteReglement($id)
     {
         $reglement = \App\Models\Reglement::findOrFail($id);
-        $user = auth()->user();
-        $isAdmin = $user && ($user->hasAnyRole(['agency-admin', 'super-admin', 'Super Admin', 'Agency Owner', 'admin']) || !empty($user->is_admin));
-        
         $createdTime = $reglement->created_at ?? $reglement->date_reglement;
         $isOlderThan24h = $createdTime ? $createdTime->lt(now()->subDay()) : false;
 
-        if ($isOlderThan24h && !$isAdmin) {
-            $this->dispatch('swal:error', ['message' => 'Seul un Administrateur peut supprimer un règlement de plus de 24h.']);
+        if ($isOlderThan24h) {
+            $this->dispatch('swal:error', ['message' => 'Impossible de supprimer un règlement datant de plus de 24 heures.']);
             return;
         }
 
