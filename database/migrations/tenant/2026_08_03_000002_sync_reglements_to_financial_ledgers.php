@@ -45,7 +45,7 @@ return new class extends Migration
             $method = match(strtolower($reg->mode_reglement ?? 'especes')) {
                 'especes' => 'cash',
                 'cheque' => 'cheque',
-                'virement' => 'bank_transfer',
+                'virement' => 'transfer',
                 'carte' => 'card',
                 default => 'cash',
             };
@@ -94,7 +94,7 @@ return new class extends Migration
                 'amount' => $reg->montant,
                 'currency' => 'DH',
                 'payment_method' => $method,
-                'status' => 'validated',
+                'status' => 'completed',
                 'receipt_number' => $recId,
                 'qr_code_hash' => md5($trxId . '|' . $reg->montant),
                 'notes' => 'Règlement contrat #' . $numContrat . ($reg->reference_paiement ? ' (Réf: ' . $reg->reference_paiement . ')' : ''),

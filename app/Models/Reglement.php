@@ -43,7 +43,7 @@ class Reglement extends Model
                 $paymentMethod = match(strtolower($reglement->mode_reglement ?? 'especes')) {
                     'especes' => 'cash',
                     'cheque' => 'cheque',
-                    'virement' => 'bank_transfer',
+                    'virement' => 'transfer',
                     'carte' => 'card',
                     default => 'cash',
                 };
@@ -89,7 +89,7 @@ class Reglement extends Model
                         'amount' => $reglement->montant,
                         'currency' => 'DH',
                         'payment_method' => $paymentMethod,
-                        'status' => 'validated',
+                        'status' => 'completed',
                         'notes' => 'Règlement contrat #' . ($contrat?->numero_contrat ?? '') . ($reglement->reference_paiement ? ' (Réf: '.$reglement->reference_paiement.')' : ''),
                         'user_id' => auth()->id() ?? 1,
                         'client_id' => $contrat?->client_id,
