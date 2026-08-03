@@ -264,16 +264,12 @@
                             </td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                 <div class="inline-flex items-center gap-1.5">
-                                    <!-- 1. Règlement -->
-                                    <button wire:click.stop="openReglementsModal({{ $contrat->id }})" 
-                                            title="Règlements & Paiements"
-                                            class="p-1.5 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 transition-all shadow-2xs">
-                                        <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                        </svg>
+                                    <!-- Teal + Règlement Button -->
+                                    <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[11px] font-bold shadow-sm transition-colors mr-0.5">
+                                        + Règlement
                                     </button>
 
-                                    <!-- 2. Modifier -->
+                                    <!-- 1. Modifier -->
                                     <a href="{{ route('automobile.edit', $contrat->id) }}" 
                                        title="Modifier"
                                        wire:click.stop
@@ -283,7 +279,7 @@
                                         </svg>
                                     </a>
 
-                                    <!-- 3. Renouvellement -->
+                                    <!-- 2. Renouvellement -->
                                     <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" 
                                             wire:confirm="Voulez-vous vraiment renouveler ce contrat ?"
                                             title="Renouvellement"
@@ -293,7 +289,7 @@
                                         </svg>
                                     </button>
 
-                                    <!-- 4. Résiliation -->
+                                    <!-- 3. Résiliation -->
                                     <button wire:click.stop="resilierContrat({{ $contrat->id }})" 
                                             wire:confirm="Voulez-vous vraiment résilier le contrat #{{ $contrat->numero_contrat }} (Prorata temporis) ?"
                                             title="Résiliation"
@@ -303,7 +299,7 @@
                                         </svg>
                                     </button>
 
-                                    <!-- 5. Annulation -->
+                                    <!-- 4. Annulation -->
                                     <button wire:click.stop="annulerContrat({{ $contrat->id }})" 
                                             wire:confirm="Voulez-vous vraiment annuler le contrat #{{ $contrat->numero_contrat }} rétroactivement ?"
                                             title="Annulation"
@@ -362,22 +358,24 @@
                         </div>
 
                         <!-- Mobile Action Buttons Row -->
-                        <div class="flex items-center justify-end gap-2 pt-2 mt-1 border-t border-slate-100">
-                            <button wire:click.stop="openReglementsModal({{ $contrat->id }})" title="Règlement" class="p-1.5 rounded-lg text-emerald-700 bg-emerald-50 border border-emerald-200">
-                                <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        <div class="flex items-center justify-between pt-2 mt-1 border-t border-slate-100">
+                            <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1 bg-teal-600 text-white rounded-lg text-xs font-bold shadow-sm">
+                                + Règlement
                             </button>
-                            <a href="{{ route('automobile.edit', $contrat->id) }}" wire:click.stop title="Modifier" class="p-1.5 rounded-lg text-blue-700 bg-blue-50 border border-blue-200">
-                                <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-                            </a>
-                            <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" wire:confirm="Voulez-vous vraiment renouveler ce contrat ?" title="Renouvellement" class="p-1.5 rounded-lg text-teal-700 bg-teal-50 border border-teal-200">
-                                <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
-                            </button>
-                            <button wire:click.stop="resilierContrat({{ $contrat->id }})" wire:confirm="Résiliation ?" title="Résiliation" class="p-1.5 rounded-lg text-amber-700 bg-amber-50 border border-amber-200">
-                                <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-                            </button>
-                            <button wire:click.stop="annulerContrat({{ $contrat->id }})" wire:confirm="Annulation ?" title="Annulation" class="p-1.5 rounded-lg text-rose-700 bg-rose-50 border border-rose-200">
-                                <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            </button>
+                            <div class="flex items-center gap-1.5">
+                                <a href="{{ route('automobile.edit', $contrat->id) }}" wire:click.stop title="Modifier" class="p-1.5 rounded-lg text-blue-700 bg-blue-50 border border-blue-200">
+                                    <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                                </a>
+                                <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" wire:confirm="Voulez-vous vraiment renouveler ce contrat ?" title="Renouvellement" class="p-1.5 rounded-lg text-teal-700 bg-teal-50 border border-teal-200">
+                                    <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                                </button>
+                                <button wire:click.stop="resilierContrat({{ $contrat->id }})" wire:confirm="Résiliation ?" title="Résiliation" class="p-1.5 rounded-lg text-amber-700 bg-amber-50 border border-amber-200">
+                                    <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                                </button>
+                                <button wire:click.stop="annulerContrat({{ $contrat->id }})" wire:confirm="Annulation ?" title="Annulation" class="p-1.5 rounded-lg text-rose-700 bg-rose-50 border border-rose-200">
+                                    <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 @empty
