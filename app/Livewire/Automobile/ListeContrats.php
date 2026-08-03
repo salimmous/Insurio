@@ -129,16 +129,15 @@ class ListeContrats extends Component
         }
         if ($this->selectedContratId) {
             $contrat = ContratAuto::findOrFail($this->selectedContratId);
-            $initialMontant = $contrat->solde > 0 ? floatval($contrat->solde) : '';
 
-            $this->reglementMontant = $initialMontant;
+            $this->reglementMontant = '';
             $this->reglementDate = now()->toDateString();
             $this->reglementMode = 'especes';
             $this->reglementReference = '';
 
             $this->reglementLines = [
                 [
-                    'montant' => $initialMontant,
+                    'montant' => '',
                     'date' => now()->toDateString(),
                     'mode' => 'especes',
                     'reference' => '',
