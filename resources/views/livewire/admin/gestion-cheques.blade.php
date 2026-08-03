@@ -132,12 +132,6 @@
                     <button wire:click="quickBulkSetStatus('collected')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
                         ✅ Marquer Encaissé
                     </button>
-                    <button wire:click="quickBulkSetStatus('returned')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
-                        ❌ Impayé
-                    </button>
-                    <button wire:click="quickBulkSetStatus('pending')" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[11px] font-bold transition shadow-xs">
-                        🟡 En Attente
-                    </button>
                     <a href="{{ route('admin.cheques.pdf', ['ids' => implode(',', $selectedIds)]) }}" target="_blank"
                         class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-extrabold transition shadow-xs flex items-center gap-1">
                         🖨️ Imprimer Bordereau
