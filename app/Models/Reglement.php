@@ -51,9 +51,10 @@ class Reglement extends Model
                 $chequeId = null;
                 if (strtolower($reglement->mode_reglement ?? '') === 'cheque' && class_exists('\App\Models\Cheque')) {
                     $cheque = \App\Models\Cheque::create([
+                        'uuid' => (string) \Illuminate\Support\Str::uuid(),
                         'cheque_number' => $reglement->reference_paiement ?: 'CHQ-' . str_pad($reglement->id, 5, '0', STR_PAD_LEFT),
                         'bank_name' => 'Banque Marocaine',
-                        'issuer_name' => $contrat?->souscripteur ?: 'Client',
+                        'issuer' => $contrat?->souscripteur ?: 'Client',
                         'amount' => $reglement->montant,
                         'due_date' => $reglement->date_echeance_cheque ?: ($reglement->date_reglement ?: now()),
                         'status' => 'received',

@@ -64,9 +64,10 @@ return new class extends Migration
             $chequeId = null;
             if (strtolower($reg->mode_reglement ?? '') === 'cheque' && Schema::hasTable('cheques')) {
                 $chequeId = DB::table('cheques')->insertGetId([
+                    'uuid' => (string) Str::uuid(),
                     'cheque_number' => $reg->reference_paiement ?: 'CHQ-' . str_pad($reg->id, 5, '0', STR_PAD_LEFT),
                     'bank_name' => 'Banque Marocaine',
-                    'issuer_name' => $contrat?->souscripteur ?? 'Client',
+                    'issuer' => $contrat?->souscripteur ?? 'Client',
                     'amount' => $reg->montant,
                     'due_date' => $reg->date_echeance_cheque ?: $reg->date_reglement,
                     'status' => 'received',
