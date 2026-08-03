@@ -32,13 +32,15 @@ return new class extends Migration
             }
         }
 
+        $tableContrats = Schema::hasTable('contracts') ? 'contracts' : (Schema::hasTable('contrats_auto') ? 'contrats_auto' : null);
+
         $reglements = DB::table('reglements')->get();
         $totalCash = 0;
 
         foreach ($reglements as $reg) {
-            $contrat = DB::table('contrats_auto')->where('id', $reg->contrat_id)->first();
-            $numContrat = $contrat ? $contrat->numero_contrat : '';
-            $clientId = $contrat ? $contrat->client_id : null;
+            $contrat = $tableContrats ? DB::table($tableContrats)->where('id', $reg->contrat_id)->first() : null;
+            $numContrat = $contrat ? ($contrat->numero_contrat ?? $contrat->contract_number ?? '') : '';
+            $clientId = $contrat ? ($contrat->client_id ?? null) : null;
 
             $method = match(strtolower($reg->mode_reglement ?? 'especes')) {
                 'especes' => 'cash',
