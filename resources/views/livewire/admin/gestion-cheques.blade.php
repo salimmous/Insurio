@@ -53,9 +53,9 @@
             <div class="text-xl font-black text-blue-700 font-mono">{{ number_format($depositedAmount, 0) }} <span class="text-xs text-blue-400">DH</span></div>
             <div class="text-xs font-bold text-blue-600 mt-1">{{ $depositedCount }} en banque</div>
         </div>
-        {{-- Encaissés (Dakhlat) --}}
+        {{-- Encaissés --}}
         <div wire:click="$set('filterPaymentReceived', $filterPaymentReceived === 'yes' ? '' : 'yes')" class="cursor-pointer bg-white p-4 rounded-2xl border border-emerald-200 shadow-xs hover:border-emerald-400 transition-all {{ $filterPaymentReceived === 'yes' ? 'ring-2 ring-emerald-500 bg-emerald-50' : '' }}">
-            <div class="text-[10px] font-extrabold text-emerald-600 uppercase tracking-wider mb-2">✅ Encaissés (Dakhlat)</div>
+            <div class="text-[10px] font-extrabold text-emerald-600 uppercase tracking-wider mb-2">✅ Encaissés</div>
             <div class="text-xl font-black text-emerald-700 font-mono">{{ number_format($collectedAmount, 0) }} <span class="text-xs text-emerald-400">DH</span></div>
             <div class="text-xs font-bold text-emerald-600 mt-1">{{ $collectedCount }} crédités</div>
         </div>
@@ -260,7 +260,7 @@
                                     </span>
                                 @elseif(in_array($chq->status, ['collected', 'validated']))
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap">
-                                        ✅ Encaissé (Dakhlat)
+                                        ✅ Encaissé
                                     </span>
                                 @elseif(in_array($chq->status, ['returned', 'rejected']))
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200 whitespace-nowrap">
@@ -307,7 +307,7 @@
                         <select wire:model.live="newStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 outline-none">
                             <option value="received">🟡 En Attente de Versement (Portefeuille)</option>
                             <option value="deposited">🏛️ Versé / Déposé en Banque</option>
-                            <option value="collected">✅ Encaissé / Crédité (Dakhlat)</option>
+                            <option value="collected">✅ Encaissé / Crédité</option>
                             <option value="returned">❌ Impayé / Rejeté</option>
                         </select>
                     </div>
@@ -358,7 +358,7 @@
                         <select wire:model.live="bulkNewStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 outline-none">
                             <option value="received">🟡 En Attente de Versement (Portefeuille)</option>
                             <option value="deposited">🏛️ Versé / Déposé en Banque</option>
-                            <option value="collected">✅ Encaissé / Crédité (Dakhlat)</option>
+                            <option value="collected">✅ Encaissé / Crédité</option>
                             <option value="returned">❌ Impayé / Rejeté</option>
                         </select>
                     </div>

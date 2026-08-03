@@ -273,7 +273,7 @@
                 <tr>
                     <th style="width: 4%; text-align: center;">#</th>
                     <th style="width: 17%;">N° Chèque &amp; Banque</th>
-                    <th style="width: 28%;">Client / Émetteur (Molah)</th>
+                    <th style="width: 28%;">Client / Émetteur</th>
                     <th style="width: 15%;">Réf. Contrat</th>
                     <th style="width: 12%;">Échéance</th>
                     <th style="width: 12%;">Dépôt / Versement</th>
