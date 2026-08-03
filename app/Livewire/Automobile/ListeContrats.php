@@ -174,24 +174,33 @@ class ListeContrats extends Component
         $this->reglementLines = [];
     }
 
+    public function updatedReglementMode($value)
+    {
+        if (!empty($this->reglementLines)) {
+            $this->reglementLines[0]['mode'] = $value;
+        }
+    }
+
     public function addReglement()
     {
         if (!$this->selectedContratId) return;
 
         $contrat = ContratAuto::findOrFail($this->selectedContratId);
 
-        // If single properties were updated (e.g., in unit tests or single input), sync line 0
+        // If single properties were updated (e.g., in unit tests), sync between single props and line 0
         if (!empty($this->reglementLines) && count($this->reglementLines) === 1) {
-            if ($this->reglementMontant != '' && $this->reglementMontant != $this->reglementLines[0]['montant']) {
+            if ($this->reglementMontant !== '') {
                 $this->reglementLines[0]['montant'] = $this->reglementMontant;
             }
-            if ($this->reglementDate != '' && $this->reglementDate != $this->reglementLines[0]['date']) {
+            if (!empty($this->reglementDate)) {
                 $this->reglementLines[0]['date'] = $this->reglementDate;
             }
-            if ($this->reglementMode != '' && $this->reglementMode != $this->reglementLines[0]['mode']) {
+            if (!empty($this->reglementMode) && $this->reglementMode !== 'especes') {
                 $this->reglementLines[0]['mode'] = $this->reglementMode;
+            } else {
+                $this->reglementMode = $this->reglementLines[0]['mode'] ?? 'especes';
             }
-            if ($this->reglementReference !== '' && $this->reglementReference != $this->reglementLines[0]['reference']) {
+            if (!empty($this->reglementReference)) {
                 $this->reglementLines[0]['reference'] = $this->reglementReference;
             }
         }
