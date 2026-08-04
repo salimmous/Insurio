@@ -2,24 +2,33 @@
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-            <div class="flex items-center gap-2">
-                <div class="p-2 bg-teal-50 rounded-xl text-teal-600">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-teal-50 rounded-xl text-teal-600 flex items-center justify-center border border-teal-100">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2.1 11 2 11.5 2 12v4c0 .6.4 1 1 1h2"/>
+                        <circle cx="7" cy="17" r="2"/>
+                        <path d="M9 17h6"/>
+                        <circle cx="17" cy="17" r="2"/>
                     </svg>
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-800">Catalogue Véhicules & Marques</h1>
-                    <p class="text-xs text-slate-500">Gestion centralisée des marques, modèles, motos et autocars</p>
+                    <p class="text-xs text-slate-500">Gestion des marques, logos, modèles et années de production</p>
                 </div>
             </div>
         </div>
 
         <div class="flex items-center gap-3">
             <div class="hidden sm:flex items-center gap-4 px-4 py-2 bg-slate-50 rounded-xl border border-slate-200/60 text-xs font-medium text-slate-600">
-                <span>🏷️ <strong class="text-slate-900 font-mono">{{ $totalMarques }}</strong> Marques</span>
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    <strong class="text-slate-900 font-mono">{{ $totalMarques }}</strong> Marques
+                </span>
                 <span class="text-slate-300">|</span>
-                <span>🚗 <strong class="text-slate-900 font-mono">{{ $totalModeles }}</strong> Modèles</span>
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    <strong class="text-slate-900 font-mono">{{ $totalModeles }}</strong> Modèles
+                </span>
             </div>
 
             <button wire:click="openBrandModal()" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-2">
@@ -33,7 +42,7 @@
     @if (session()->has('success'))
         <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <span>✅</span>
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 <span>{{ session('success') }}</span>
             </div>
         </div>
@@ -55,16 +64,19 @@
                 Tous ({{ $totalMarques }})
             </button>
             <button wire:click="$set('filterType', 'voiture')" 
-                    class="px-3 py-1.5 text-xs font-bold rounded-lg transition {{ $filterType === 'voiture' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-500 hover:text-slate-700' }}">
-                🚗 Voitures
+                    class="px-3 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 {{ $filterType === 'voiture' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-500 hover:text-slate-700' }}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2.1 11 2 11.5 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                Voitures
             </button>
             <button wire:click="$set('filterType', 'moto')" 
-                    class="px-3 py-1.5 text-xs font-bold rounded-lg transition {{ $filterType === 'moto' ? 'bg-white text-amber-700 shadow-xs' : 'text-slate-500 hover:text-slate-700' }}">
-                🏍️ Motos
+                    class="px-3 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 {{ $filterType === 'moto' ? 'bg-white text-amber-700 shadow-xs' : 'text-slate-500 hover:text-slate-700' }}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Motos
             </button>
             <button wire:click="$set('filterType', 'autocar')" 
-                    class="px-3 py-1.5 text-xs font-bold rounded-lg transition {{ $filterType === 'autocar' ? 'bg-white text-indigo-700 shadow-xs' : 'text-slate-500 hover:text-slate-700' }}">
-                🚌 Autocars / Minibus
+                    class="px-3 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 {{ $filterType === 'autocar' ? 'bg-white text-indigo-700 shadow-xs' : 'text-slate-500 hover:text-slate-700' }}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-5 4h5M4 6h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1z"/></svg>
+                Autocars / Minibus
             </button>
         </div>
     </div>
@@ -73,13 +85,20 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($marques as $marque)
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex flex-col justify-between overflow-hidden">
-                <!-- Card Header -->
+                <!-- Card Header with Real Brand Logo -->
                 <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shadow-xs
-                                    {{ $marque->type === 'voiture' ? 'bg-teal-100 text-teal-800' : ($marque->type === 'moto' ? 'bg-amber-100 text-amber-800' : 'bg-indigo-100 text-indigo-800') }}">
-                            @if($marque->type === 'voiture') 🚗 @elseif($marque->type === 'moto') 🏍️ @else 🚌 @endif
+                    <div class="flex items-center gap-3">
+                        <!-- Brand Logo Container -->
+                        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/80 shadow-2xs p-1.5 flex items-center justify-center shrink-0 relative overflow-hidden">
+                            <img src="{{ $marque->logo_url }}" 
+                                 alt="{{ $marque->nom }}" 
+                                 class="max-w-full max-h-full object-contain"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            <div class="w-full h-full bg-slate-100 text-slate-700 font-black text-xs items-center justify-center rounded-lg uppercase hidden">
+                                {{ substr($marque->nom, 0, 2) }}
+                            </div>
                         </div>
+
                         <div>
                             <h3 class="text-sm font-bold text-slate-800">{{ $marque->nom }}</h3>
                             <span class="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md 
@@ -90,7 +109,7 @@
                     </div>
 
                     <div class="flex items-center gap-1">
-                        <button wire:click="openBrandModal({{ $marque->id }})" title="Modifier Marque" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition">
+                        <button wire:click="openBrandModal({{ $marque->id }})" title="Modifier Marque / Logo" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         </button>
                         <button wire:confirm="Voulez-vous supprimer cette marque et tous ses modèles ?" wire:click="deleteBrand({{ $marque->id }})" title="Supprimer Marque" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition">
@@ -99,7 +118,7 @@
                     </div>
                 </div>
 
-                <!-- Modèles Pill Cloud -->
+                <!-- Modèles Pill Cloud with Years -->
                 <div class="p-4 flex-1">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Modèles ({{ $marque->modeles->count() }})</span>
@@ -111,7 +130,10 @@
                     <div class="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
                         @forelse($marque->modeles as $modele)
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition group">
-                                {{ $modele->nom }}
+                                <span>{{ $modele->nom }}</span>
+                                @if($modele->libelle_annee)
+                                    <span class="text-[10px] font-mono text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded-md font-semibold border border-teal-100/80">{{ $modele->libelle_annee }}</span>
+                                @endif
                                 <button wire:click="openModelModal({{ $marque->id }}, {{ $modele->id }})" class="text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition">✎</button>
                                 <button wire:confirm="Supprimer le modèle {{ $modele->nom }} ?" wire:click="deleteModel({{ $modele->id }})" class="text-slate-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition">✕</button>
                             </span>
@@ -123,7 +145,9 @@
             </div>
         @empty
             <div class="col-span-full bg-white p-12 rounded-2xl border border-slate-200/80 text-center">
-                <div class="text-4xl mb-3">🚗</div>
+                <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl mx-auto flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
                 <h3 class="text-base font-bold text-slate-700">Aucune marque trouvée</h3>
                 <p class="text-xs text-slate-500 mt-1">Essayez un autre mot-clé ou ajoutez une nouvelle marque.</p>
             </div>
@@ -156,6 +180,14 @@
                         </select>
                         @error('brandType') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                     </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">URL du Logo (Optionnel)</label>
+                        <input wire:model="brandLogo" type="url" placeholder="https://cdn.simpleicons.org/tesla/CC0000 (Laissez vide pour auto)" 
+                               class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 outline-none font-mono">
+                        <p class="text-[11px] text-slate-400 mt-1">Par défaut, le logo officiel est chargé automatiquement.</p>
+                        @error('brandLogo') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
@@ -178,9 +210,24 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1.5">Nom du Modèle</label>
-                        <input wire:model="modelNom" type="text" placeholder="Ex: Golf 8, Clio V, TMAX 560..." 
+                        <input wire:model="modelNom" type="text" placeholder="Ex: Golf 8, Clio V, Logan, TMAX..." 
                                class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 outline-none">
                         @error('modelNom') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Année Début (Optionnel)</label>
+                            <input wire:model="modelAnneeDebut" type="number" placeholder="Ex: 2018" 
+                                   class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 outline-none font-mono">
+                            @error('modelAnneeDebut') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Année Fin (Optionnel)</label>
+                            <input wire:model="modelAnneeFin" type="number" placeholder="Ex: 2026" 
+                                   class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 outline-none font-mono">
+                            @error('modelAnneeFin') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                        </div>
                     </div>
                 </div>
 

@@ -17,12 +17,15 @@ class GestionVehicules extends Component
     public $brandId = null;
     public $brandNom = '';
     public $brandType = 'voiture';
+    public $brandLogo = '';
 
     // Model Form
     public $showModelModal = false;
     public $selectedBrandId = null;
     public $modelId = null;
     public $modelNom = '';
+    public $modelAnneeDebut = null;
+    public $modelAnneeFin = null;
 
     public function mount()
     {
@@ -38,9 +41,11 @@ class GestionVehicules extends Component
             $brand = VehiculeMarque::findOrFail($id);
             $this->brandNom = $brand->nom;
             $this->brandType = $brand->type;
+            $this->brandLogo = $brand->logo ?? '';
         } else {
             $this->brandNom = '';
             $this->brandType = 'voiture';
+            $this->brandLogo = '';
         }
 
         $this->showBrandModal = true;
@@ -51,6 +56,7 @@ class GestionVehicules extends Component
         $this->validate([
             'brandNom' => 'required|string|max:100',
             'brandType' => 'required|in:voiture,moto,autocar',
+            'brandLogo' => 'nullable|url|max:500',
         ]);
 
         VehiculeMarque::updateOrCreate(
@@ -58,6 +64,7 @@ class GestionVehicules extends Component
             [
                 'nom' => trim($this->brandNom),
                 'type' => $this->brandType,
+                'logo' => trim($this->brandLogo) ?: null,
                 'is_active' => true,
             ]
         );
@@ -82,8 +89,12 @@ class GestionVehicules extends Component
         if ($modelId) {
             $model = VehiculeModele::findOrFail($modelId);
             $this->modelNom = $model->nom;
+            $this->modelAnneeDebut = $model->annee_debut;
+            $this->modelAnneeFin = $model->annee_fin;
         } else {
             $this->modelNom = '';
+            $this->modelAnneeDebut = null;
+            $this->modelAnneeFin = null;
         }
 
         $this->showModelModal = true;
@@ -94,6 +105,8 @@ class GestionVehicules extends Component
         $this->validate([
             'modelNom' => 'required|string|max:100',
             'selectedBrandId' => 'required|exists:vehicule_marques,id',
+            'modelAnneeDebut' => 'nullable|integer|min:1970|max:2030',
+            'modelAnneeFin' => 'nullable|integer|min:1970|max:2030|gte:modelAnneeDebut',
         ]);
 
         VehiculeModele::updateOrCreate(
@@ -101,6 +114,8 @@ class GestionVehicules extends Component
             [
                 'marque_id' => $this->selectedBrandId,
                 'nom' => trim($this->modelNom),
+                'annee_debut' => $this->modelAnneeDebut ?: null,
+                'annee_fin' => $this->modelAnneeFin ?: null,
                 'is_active' => true,
             ]
         );
