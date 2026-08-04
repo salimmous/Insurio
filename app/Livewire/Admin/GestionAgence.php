@@ -287,10 +287,142 @@ class GestionAgence extends Component
         session()->flash('message', '🔒 Les droits d\'accès (Pages & Rôles) ont été enregistrés avec succès.');
     }
 
-    public function triggerBackup(): void
+    public $uploadedBackupFile;
+
+    public function getBackupsListProperty(): array
     {
-        ActivityLog::writeLog('system.backup_created');
-        session()->flash('message', '📦 Sauvegarde automatique des bases de données et fichiers déclenchée.');
+        $dir = storage_path('app/backups');
+        if (!file_exists($dir)) {
+            return [];
+        }
+
+        $files = glob($dir . '/*.json');
+        $list = [];
+
+        foreach ($files as $file) {
+            $filename = basename($file);
+            $size = filesize($file);
+            $mtime = filemtime($file);
+
+            $list[] = [
+                'filename' => $filename,
+                'size_formatted' => round($size / 1024, 2) . ' KB',
+                'date' => date('d/m/Y H:i:s', $mtime),
+                'timestamp' => $mtime,
+                'path' => $file,
+            ];
+        }
+
+        usort($list, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+
+        return $list;
+    }
+
+    public function triggerExpressBackup()
+    {
+        $backupData = [
+            'tenant' => tenant('id') ?? 'default',
+            'timestamp' => now()->toIso8601String(),
+            'version' => '1.0',
+            'settings' => Setting::all()->pluck('value', 'key')->toArray(),
+            'clients' => class_exists(\App\Models\Client::class) ? \App\Models\Client::all()->toArray() : [],
+            'contracts' => class_exists(\App\Models\Contract::class) ? \App\Models\Contract::all()->toArray() : [],
+            'payments' => class_exists(\App\Models\Payment::class) ? \App\Models\Payment::all()->toArray() : [],
+            'marques' => class_exists(\App\Models\VehiculeMarque::class) ? \App\Models\VehiculeMarque::with('modeles')->get()->toArray() : [],
+            'users' => \App\Models\User::all()->makeHidden(['password', 'remember_token'])->toArray(),
+            'activity_logs' => ActivityLog::latest()->take(200)->get()->toArray(),
+        ];
+
+        $jsonContent = json_encode($backupData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        $dir = storage_path('app/backups');
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $filename = 'sauvegarde_' . (tenant('id') ?? 'agence') . '_' . date('Y-m-d_H-i-s') . '.json';
+        $fullPath = $dir . '/' . $filename;
+
+        file_put_contents($fullPath, $jsonContent);
+
+        ActivityLog::writeLog('system.backup_created', ['file' => $filename]);
+
+        session()->flash('message', '📦 Sauvegarde automatique créée et téléchargée avec succès.');
+
+        return response()->download($fullPath, $filename, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    public function downloadBackup(string $filename)
+    {
+        $path = storage_path('app/backups/' . basename($filename));
+        if (!file_exists($path)) {
+            session()->flash('error', 'Fichier de sauvegarde introuvable.');
+            return;
+        }
+
+        return response()->download($path, basename($filename));
+    }
+
+    public function restoreBackupFile(string $filename): void
+    {
+        $path = storage_path('app/backups/' . basename($filename));
+        if (!file_exists($path)) {
+            session()->flash('error', 'Fichier de sauvegarde introuvable.');
+            return;
+        }
+
+        $content = file_get_contents($path);
+        $data = json_decode($content, true);
+
+        if (!$data || !is_array($data)) {
+            session()->flash('error', 'Fichier de sauvegarde invalide ou corrompu.');
+            return;
+        }
+
+        $this->restoreBackupData($data);
+        session()->flash('message', '🔄 Restauration de la sauvegarde "' . basename($filename) . '" effectuée avec succès.');
+    }
+
+    public function restoreUploadedBackup(): void
+    {
+        $this->validate([
+            'uploadedBackupFile' => 'required|file|max:10240',
+        ]);
+
+        $content = file_get_contents($this->uploadedBackupFile->getRealPath());
+        $data = json_decode($content, true);
+
+        if (!$data || !is_array($data)) {
+            session()->flash('error', 'Fichier téléchargé invalide. Assurez-vous d\'importer un fichier .json de sauvegarde Insurio.');
+            return;
+        }
+
+        $this->restoreBackupData($data);
+        $this->uploadedBackupFile = null;
+
+        session()->flash('message', '✅ Restauration du fichier importé appliquée avec succès.');
+    }
+
+    public function deleteBackup(string $filename): void
+    {
+        $path = storage_path('app/backups/' . basename($filename));
+        if (file_exists($path)) {
+            unlink($path);
+            session()->flash('message', '🗑️ Fichier de sauvegarde supprimé.');
+        }
+    }
+
+    private function restoreBackupData(array $data): void
+    {
+        if (isset($data['settings']) && is_array($data['settings'])) {
+            foreach ($data['settings'] as $k => $v) {
+                Setting::set($k, is_array($v) ? json_encode($v) : (string)$v);
+            }
+        }
+
+        ActivityLog::writeLog('system.backup_restored', ['timestamp' => now()->toIso8601String()]);
     }
 
     public function render()

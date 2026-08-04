@@ -79,7 +79,7 @@
                 <span class="text-xs font-bold text-slate-200 font-mono mt-0.5 block">{{ $subscription['employees_count'] }} Actifs / {{ $subscription['branches_count'] }} Succ.</span>
             </div>
 
-            <button wire:click="triggerBackup" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center gap-2">
+            <button wire:click="triggerExpressBackup" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer">
                 <!-- Lucide: DatabaseBackup -->
                 <svg width="16" height="16" class="h-4 w-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <ellipse cx="12" cy="5" rx="9" ry="3" />
@@ -286,52 +286,52 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Nom Commercial l'Agence</label>
-                            <input wire:model="agency_name" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input wire:model="agency_name" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                             @error('agency_name') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Raison Sociale Légale</label>
-                            <input wire:model="legal_name" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input wire:model="legal_name" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                             @error('legal_name') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">ICE (Identifiant Commun de l'Entreprise)</label>
-                            <input wire:model="ice" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input wire:model="ice" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                             @error('ice') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Registre du Commerce (RC)</label>
-                            <input wire:model="rc" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input wire:model="rc" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                             @error('rc') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Identifiant Fiscal (IF)</label>
-                            <input wire:model="if_code" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input wire:model="if_code" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">N° Affiliation CNSS</label>
-                            <input wire:model="cnss" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input wire:model="cnss" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Téléphone Principal</label>
-                            <input wire:model="agency_phone" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input wire:model="agency_phone" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">E-mail Contact Officiel</label>
-                            <input wire:model="agency_email" type="email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input wire:model="agency_email" type="email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Adresse Siège Social</label>
-                        <textarea wire:model="agency_address" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none"></textarea>
+                        <textarea wire:model="agency_address" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none"></textarea>
                     </div>
 
                     <div class="flex justify-end pt-4 border-t border-slate-100">
@@ -666,6 +666,83 @@
                         @empty
                         <p class="text-xs text-slate-400 py-4 text-center">Aucun journal d'activité récent.</p>
                         @endforelse
+                    </div>
+                @elseif($activeTab === 'backups')
+                <div class="space-y-6">
+                    <!-- Backup & Restore Action Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Express Backup Download Card -->
+                        <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white border border-slate-800 space-y-3 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="h-2 w-2 rounded-full bg-teal-400"></span>
+                                <h3 class="text-sm font-bold">Générer une Sauvegarde Expresse</h3>
+                            </div>
+                            <p class="text-xs text-slate-300">Téléchargez instantanément une copie complète sécurisée de vos données (Clients, Polices, Règlements, Paramètres).</p>
+                            <button wire:click="triggerExpressBackup" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 12a9 3 0 0 0 5 2.69"/><path d="M21 9.3V5"/><path d="M3 5v14a9 3 0 0 0 12 2.84"/><path d="M13 18h8"/><path d="m18 15 3 3-3 3"/></svg>
+                                Sauvegarder & Télécharger
+                            </button>
+                        </div>
+
+                        <!-- Upload & Restore Card -->
+                        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3 shadow-sm">
+                            <h3 class="text-sm font-bold text-slate-800">Restaurer un Fichier de Sauvegarde</h3>
+                            <p class="text-xs text-slate-500">Sélectionnez un fichier de sauvegarde (.json) sauvegardé précédemment pour réimporter vos données.</p>
+                            <form wire:submit.prevent="restoreUploadedBackup" class="space-y-3">
+                                <input type="file" wire:model="uploadedBackupFile" accept=".json" class="w-full text-xs text-slate-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer">
+                                @error('uploadedBackupFile') <span class="text-xs text-rose-500 block">{{ $message }}</span> @enderror
+                                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50" @if(!$uploadedBackupFile) disabled @endif>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                                    Restaurer le Fichier Sélectionné
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- History of Backups Table -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Fichiers de Sauvegardes Disponibles</h3>
+                        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-4 py-3">Fichier</th>
+                                        <th class="px-4 py-3">Taille</th>
+                                        <th class="px-4 py-3">Date de Création</th>
+                                        <th class="px-4 py-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
+                                    @forelse($this->backupsList as $b)
+                                    <tr class="hover:bg-slate-50/80 transition-colors">
+                                        <td class="px-4 py-3 font-mono font-bold text-slate-900 flex items-center gap-2">
+                                            <span>💾</span>
+                                            {{ $b['filename'] }}
+                                        </td>
+                                        <td class="px-4 py-3 font-mono text-slate-600">{{ $b['size_formatted'] }}</td>
+                                        <td class="px-4 py-3 text-slate-600">{{ $b['date'] }}</td>
+                                        <td class="px-4 py-3 text-right space-x-2">
+                                            <button wire:click="downloadBackup('{{ $b['filename'] }}')" class="px-2.5 py-1 bg-teal-50 text-teal-700 hover:bg-teal-100 font-bold rounded-lg transition-colors inline-flex items-center gap-1">
+                                                <span>📥</span> Télécharger
+                                            </button>
+                                            <button wire:click="restoreBackupFile('{{ $b['filename'] }}')" wire:confirm="Êtes-vous sûr de vouloir restaurer cette sauvegarde ? Les données seront mises à jour." class="px-2.5 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 font-bold rounded-lg transition-colors inline-flex items-center gap-1">
+                                                <span>🔄</span> Restaurer
+                                            </button>
+                                            <button wire:click="deleteBackup('{{ $b['filename'] }}')" wire:confirm="Supprimer ce fichier de sauvegarde ?" class="px-2.5 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold rounded-lg transition-colors inline-flex items-center gap-1">
+                                                <span>🗑️</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-6 text-center text-slate-400">
+                                            Aucun fichier de sauvegarde enregistré localement. Cliquez sur "Sauvegarde Expresse" ci-dessus pour en créer un.
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 @elseif($activeTab === 'api')
