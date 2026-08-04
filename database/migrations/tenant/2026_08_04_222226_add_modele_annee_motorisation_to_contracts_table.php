@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('contracts', function (Blueprint $table) {
-            if (!Schema::hasColumn('contracts', 'modele')) {
+        Schema::table('auto_contract_details', function (Blueprint $table) {
+            if (!Schema::hasColumn('auto_contract_details', 'modele')) {
                 $table->string('modele')->nullable()->after('marque');
             }
-            if (!Schema::hasColumn('contracts', 'annee')) {
+            if (!Schema::hasColumn('auto_contract_details', 'annee')) {
                 $table->smallInteger('annee')->nullable()->after('modele');
             }
-            if (!Schema::hasColumn('contracts', 'motorisation')) {
+            if (!Schema::hasColumn('auto_contract_details', 'motorisation')) {
                 $table->string('motorisation')->nullable()->after('annee');
             }
         });
@@ -23,7 +23,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('contracts', function (Blueprint $table) {
+        Schema::table('auto_contract_details', function (Blueprint $table) {
             $table->dropColumn(['modele', 'annee', 'motorisation']);
         });
     }
