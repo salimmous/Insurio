@@ -495,9 +495,11 @@
 </nav>
 
 <!-- 3. PINNED BOTTOM USER PROFILE FOOTER (Generous Whitespace & Padding) -->
-<div class="shrink-0 border-t border-[#1E293B] p-4 space-y-3 box-border bg-[#0B1120]/60">
+<div class="shrink-0 border-t border-[#1E293B] box-border bg-[#0B1120]/60 transition-all duration-200"
+     :class="sidebarCollapsed ? 'p-2 space-y-2' : 'p-4 space-y-3'">
     <!-- User Profile Card -->
-    <div class="p-3.5 rounded-2xl bg-[#1E293B]/70 border border-[#334155]/60 flex items-center gap-3.5 relative group shadow-sm">
+    <div class="rounded-2xl relative group flex items-center transition-all duration-200"
+         :class="sidebarCollapsed ? 'p-1.5 justify-center bg-transparent border-0 shadow-none' : 'p-3.5 bg-[#1E293B]/70 border border-[#334155]/60 gap-3.5 shadow-sm'">
         <div class="h-9 w-9 rounded-2xl bg-teal-600 flex items-center justify-center font-black text-white text-xs shrink-0 shadow-md">
             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
         </div>
