@@ -345,7 +345,7 @@ class GestionAgence extends Component
 
         file_put_contents($fullPath, $jsonContent);
 
-        ActivityLog::writeLog('system.backup_created', ['file' => $filename]);
+        ActivityLog::writeLog('system.backup_created', null, null, ['file' => $filename]);
 
         session()->flash('message', '📦 Sauvegarde automatique créée et téléchargée avec succès.');
 
@@ -422,7 +422,7 @@ class GestionAgence extends Component
             }
         }
 
-        ActivityLog::writeLog('system.backup_restored', ['timestamp' => now()->toIso8601String()]);
+        ActivityLog::writeLog('system.backup_restored', null, null, ['timestamp' => now()->toIso8601String()]);
     }
 
     public function render()
