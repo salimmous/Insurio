@@ -144,7 +144,6 @@
                     ['security', 'Sécurité & Droits', 'ShieldCheck', 'Rôles, Permissions, 2FA'],
                     ['documents', 'Modèles Documents', 'FileText', 'Entêtes, Pieds de page PDF'],
                     ['subscription', 'Licence & Plan', 'CreditCard', 'Quotas, Renouvellement'],
-                    ['backups', 'Sauvegardes & Audit', 'DatabaseBackup', 'Restaurations & Historique'],
                     ['api', 'API & Webhooks', 'PlugZap', 'Clés API, Endpoints'],
                 ] as [$key, $label, $iconName, $desc])
                 <button wire:click="setTab('{{ $key }}')" 
@@ -654,71 +653,7 @@
                         <p class="text-xs text-slate-400 py-4 text-center">Aucun journal d'activité récent.</p>
                         @endforelse
                     </div>
-                @elseif($activeTab === 'backups')
-                <div class="space-y-6">
-                    <!-- Backup & Restore Action Grid -->
-                    <div class="grid grid-cols-1 gap-4">
-                        <!-- Upload & Restore Card -->
-                        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3 shadow-sm">
-                            <h3 class="text-sm font-bold text-slate-800">Restaurer un Fichier de Sauvegarde</h3>
-                            <p class="text-xs text-slate-500">Sélectionnez un fichier de sauvegarde (.json) sauvegardé précédemment pour réimporter vos données.</p>
-                            <form wire:submit.prevent="restoreUploadedBackup" class="space-y-3">
-                                <input type="file" wire:model="uploadedBackupFile" accept=".json" class="w-full text-xs text-slate-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer">
-                                @error('uploadedBackupFile') <span class="text-xs text-rose-500 block">{{ $message }}</span> @enderror
-                                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50" @if(empty($this->uploadedBackupFile)) disabled @endif>
-                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                                    Restaurer le Fichier Sélectionné
-                                </button>
-                            </form>
-                        </div>
-                    </div>
 
-                    <!-- History of Backups Table -->
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Fichiers de Sauvegardes Disponibles</h3>
-                        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
-                            <table class="w-full text-left text-xs">
-                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                                    <tr>
-                                        <th class="px-4 py-3">Fichier</th>
-                                        <th class="px-4 py-3">Taille</th>
-                                        <th class="px-4 py-3">Date de Création</th>
-                                        <th class="px-4 py-3 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
-                                    @forelse($this->backupsList as $b)
-                                    <tr class="hover:bg-slate-50/80 transition-colors">
-                                        <td class="px-4 py-3 font-mono font-bold text-slate-900 flex items-center gap-2">
-                                            <span>💾</span>
-                                            {{ $b['filename'] }}
-                                        </td>
-                                        <td class="px-4 py-3 font-mono text-slate-600">{{ $b['size_formatted'] }}</td>
-                                        <td class="px-4 py-3 text-slate-600">{{ $b['date'] }}</td>
-                                        <td class="px-4 py-3 text-right space-x-2">
-                                            <button wire:click="downloadBackup('{{ $b['filename'] }}')" class="px-2.5 py-1 bg-teal-50 text-teal-700 hover:bg-teal-100 font-bold rounded-lg transition-colors inline-flex items-center gap-1">
-                                                <span>📥</span> Télécharger
-                                            </button>
-                                            <button wire:click="restoreBackupFile('{{ $b['filename'] }}')" wire:confirm="Êtes-vous sûr de vouloir restaurer cette sauvegarde ? Les données seront mises à jour." class="px-2.5 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 font-bold rounded-lg transition-colors inline-flex items-center gap-1">
-                                                <span>🔄</span> Restaurer
-                                            </button>
-                                            <button wire:click="deleteBackup('{{ $b['filename'] }}')" wire:confirm="Supprimer ce fichier de sauvegarde ?" class="px-2.5 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold rounded-lg transition-colors inline-flex items-center gap-1">
-                                                <span>🗑️</span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="4" class="px-4 py-6 text-center text-slate-400">
-                                            Aucun fichier de sauvegarde enregistré localement. Cliquez sur "Sauvegarde Expresse" ci-dessus pour en créer un.
-                                        </td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
                 @elseif($activeTab === 'api')
                 <div class="space-y-4">
                     <div>
