@@ -223,7 +223,48 @@
 
                         <div>
                             <label class="block text-sm font-medium text-slate-500 mb-2">Marque véhicule</label>
-                            <input wire:model="marque" type="text" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
+                            <select wire:model.live="marque" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
+                                <option value="">— Sélectionner marque —</option>
+                                @foreach($this->getMarquesDisponibles() as $m)
+                                    <option value="{{ $m }}">{{ $m }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Modèle</label>
+                            <select wire:model="modele" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all {{ !$marque ? 'opacity-50 cursor-not-allowed' : '' }}" {{ !$marque ? 'disabled' : '' }}>
+                                <option value="">— Sélectionner modèle —</option>
+                                @foreach($this->getModelesDisponibles() as $mod)
+                                    <option value="{{ $mod }}">{{ $mod }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Année</label>
+                            <select wire:model="annee" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
+                                <option value="">— Année —</option>
+                                @for($y = date('Y'); $y >= 1985; $y--)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Motorisation</label>
+                            <select wire:model="motorisation" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
+                                <option value="">— Motorisation —</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Essence">Essence</option>
+                                <option value="Hybride">Hybride</option>
+                                <option value="Hybride Rechargeable">Hybride Rechargeable (PHEV)</option>
+                                <option value="Electrique">Électrique</option>
+                                <option value="GPL">GPL</option>
+                                <option value="GNV">GNV (Gaz Naturel)</option>
+                                <option value="Bi-carburant">Bi-carburant (Essence/GPL)</option>
+                                <option value="Micro-hybride">Micro-hybride (MHEV)</option>
+                            </select>
                         </div>
 
                         <div>

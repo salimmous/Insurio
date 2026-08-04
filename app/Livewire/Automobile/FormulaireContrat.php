@@ -39,6 +39,9 @@ class FormulaireContrat extends Component
     public $code_classe;
     public $sous_classe = 'Definitive'; // Definitive, Provisoire
     public $marque;
+    public $modele;
+    public $annee;
+    public $motorisation;
     public $matricule;
     public $puissance_fiscale;
     public $nb_places;
@@ -78,6 +81,23 @@ class FormulaireContrat extends Component
     public $accessoires = 0; // other accessories
 
     protected $listeners = ['clientSelected' => 'handleClientSelected'];
+
+    public function updatedMarque(): void
+    {
+        $this->modele = null; // Reset modèle when marque changes
+    }
+
+    public function getMarquesDisponibles(): array
+    {
+        return array_keys(config('vehicules_maroc', []));
+    }
+
+    public function getModelesDisponibles(): array
+    {
+        if (!$this->marque) return [];
+        $vehicules = config('vehicules_maroc', []);
+        return $vehicules[$this->marque]['modeles'] ?? [];
+    }
 
     public function mount($contratId = null)
     {
@@ -274,6 +294,9 @@ class FormulaireContrat extends Component
             'code_classe' => $this->code_classe,
             'sous_classe' => $this->sous_classe,
             'marque' => $this->marque,
+            'modele' => $this->modele,
+            'annee' => $this->annee,
+            'motorisation' => $this->motorisation,
             'matricule' => $this->matricule,
             'puissance_fiscale' => $this->puissance_fiscale,
             'nb_places' => $this->nb_places,

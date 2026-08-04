@@ -82,6 +82,10 @@ class Contract extends Model
         'commission_pta',
         'tps_pta',
         'accessoires',
+        // New vehicle detail fields
+        'modele',
+        'annee',
+        'motorisation',
     ];
 
     protected $casts = [
@@ -123,9 +127,9 @@ class Contract extends Model
         static::saving(function ($contract) {
             // Extract vehicle fields to AutoContractDetail for backward compatibility
             $autoFields = [
-                'vehicule_id', 'usage', 'code_classe', 'sous_classe', 'marque', 'matricule',
-                'puissance_fiscale', 'nb_places', 'carburant', 'nbr_mois', 'valeur_vehicule',
-                'date_mise_circulation'
+                'vehicule_id', 'usage', 'code_classe', 'sous_classe', 'marque', 'modele',
+                'annee', 'motorisation', 'matricule', 'puissance_fiscale', 'nb_places',
+                'carburant', 'nbr_mois', 'valeur_vehicule', 'date_mise_circulation'
             ];
 
             $hasAutoData = false;
