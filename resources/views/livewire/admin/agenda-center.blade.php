@@ -5,15 +5,15 @@
         <div>
             <div class="flex items-center gap-2">
                 <h1 class="text-xl font-bold text-slate-800">Agenda & Échéancier de Renouvellements</h1>
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-teal-500/10 text-teal-700 border border-teal-500/30 uppercase tracking-widest">
+                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-slate-900 text-white uppercase tracking-widest">
                     Production & Échéances
                 </span>
             </div>
-            <p class="text-xs text-slate-450 mt-1">Supervision globale des échéances de contrats, relances clients et rendez-vous d'agence.</p>
+            <p class="text-xs text-slate-500 mt-1">Supervision globale des échéances de contrats, relances clients et rendez-vous d'agence.</p>
         </div>
         
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.renouvellements') }}" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-sm flex items-center gap-2">
+            <a href="{{ route('admin.renouvellements') }}" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center gap-2">
                 <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>
                 Voir tous les Renouvellements
             </a>
@@ -29,25 +29,25 @@
                 <h2 class="text-lg font-bold text-slate-800 capitalize">
                     {{ $startOfMonth->locale('fr')->isoFormat('MMMM YYYY') }}
                 </h2>
-                <button wire:click="goToToday" class="px-2.5 py-1 text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg transition-colors">
+                <button wire:click="goToToday" class="px-3 py-1 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition-colors">
                     Aujourd'hui
                 </button>
             </div>
 
             <div class="flex items-center gap-2">
-                <button wire:click="previousMonth" class="p-2 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all font-bold text-xs flex items-center gap-1">
+                <button wire:click="previousMonth" class="px-3 py-2 text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all font-bold text-xs flex items-center gap-1">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
                     Mois Précédent
                 </button>
-                <button wire:click="nextMonth" class="p-2 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all font-bold text-xs flex items-center gap-1">
+                <button wire:click="nextMonth" class="px-3 py-2 text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all font-bold text-xs flex items-center gap-1">
                     Mois Suivant
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
             </div>
         </div>
 
-        <!-- Days of Week Header -->
-        <div class="grid grid-cols-7 gap-2 text-center text-[11px] font-extrabold text-slate-500 uppercase tracking-widest py-2 border-b border-slate-100">
+        <!-- Days of Week Header (Explicit 7-Column CSS Grid) -->
+        <div class="w-full text-center text-[11px] font-extrabold text-slate-500 uppercase tracking-widest py-2 border-b border-slate-100" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.5rem;">
             <div>Lun</div>
             <div>Mar</div>
             <div>Mer</div>
@@ -63,8 +63,8 @@
             $todayStr = now()->toDateString();
         @endphp
 
-        <!-- Calendar Days Grid -->
-        <div class="grid grid-cols-7 gap-2">
+        <!-- Calendar Days Grid (Explicit 7-Column CSS Grid) -->
+        <div class="w-full" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.5rem;">
             <!-- Empty Padding Cells before 1st day of month -->
             @for($i = 1; $i < $startDayOfWeek; $i++)
                 <div class="bg-slate-50/40 min-h-[110px] rounded-xl border border-slate-200/30 p-2 opacity-30"></div>
@@ -81,10 +81,10 @@
                 @endphp
 
                 <div wire:click="selectDate('{{ $currentDate }}')" 
-                     class="min-h-[110px] rounded-xl border p-2 flex flex-col justify-between transition-all cursor-pointer group relative {{ $isToday ? 'bg-teal-50/40 border-teal-400 ring-2 ring-teal-400/20' : 'bg-slate-50 border-slate-200/80 hover:bg-white hover:border-teal-400 hover:shadow-md' }}">
+                     class="min-h-[110px] rounded-xl border p-2 flex flex-col justify-between transition-all cursor-pointer group relative {{ $isToday ? 'bg-indigo-50/50 border-indigo-400 ring-2 ring-indigo-400/20' : 'bg-slate-50 border-slate-200/80 hover:bg-white hover:border-slate-400 hover:shadow-md' }}">
                     
                     <div class="flex justify-between items-center">
-                        <span class="font-extrabold text-xs {{ $isToday ? 'text-teal-700 bg-teal-600 text-white rounded-full h-5 w-5 flex items-center justify-center' : 'text-slate-700 group-hover:text-teal-700' }}">
+                        <span class="font-extrabold text-xs {{ $isToday ? 'text-white bg-indigo-600 rounded-full h-5 w-5 flex items-center justify-center shadow-sm' : 'text-slate-700 group-hover:text-slate-900' }}">
                             {{ $d }}
                         </span>
                         @if($dayContracts->isNotEmpty())
@@ -110,15 +110,15 @@
                         @endif
 
                         @foreach($dayTasks->take(1) as $task)
-                            <div class="bg-blue-50 text-blue-800 border border-blue-200 rounded-lg p-1 text-[10px] font-bold truncate flex items-center gap-1">
-                                <span class="h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0"></span>
+                            <div class="bg-slate-200/80 text-slate-800 border border-slate-300 rounded-lg p-1 text-[10px] font-bold truncate flex items-center gap-1">
+                                <span class="h-1.5 w-1.5 rounded-full bg-slate-600 shrink-0"></span>
                                 <span class="truncate">{{ $task->title }}</span>
                             </div>
                         @endforeach
                     </div>
 
                     <div class="text-[9px] font-bold text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity text-right">
-                        Voir détails →
+                        Détails →
                     </div>
                 </div>
             @endfor
@@ -135,7 +135,7 @@
                     <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
                         <span>📅</span> Échéances & Renouvellements du {{ Carbon\Carbon::parse($selectedDate)->locale('fr')->isoFormat('D MMMM YYYY') }}
                     </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Contrats arrivant à échéance et actions d'agence prévues.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Contrats arrivant à échéance et relances d'agence prévues.</p>
                 </div>
                 <button wire:click="closeModal" class="text-slate-400 hover:text-slate-700 font-black text-base p-1">✕</button>
             </div>
@@ -195,24 +195,24 @@
             @if($selectedDateTasks->isNotEmpty())
             <div class="space-y-3 pt-3 border-t border-slate-100">
                 <h4 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                    <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                    <span class="h-2 w-2 rounded-full bg-slate-600"></span>
                     Tâches & Relances ({{ $selectedDateTasks->count() }})
                 </h4>
 
                 @foreach($selectedDateTasks as $t)
-                    <div class="p-3 rounded-xl bg-blue-50/50 border border-blue-200 text-xs flex justify-between items-center">
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex justify-between items-center">
                         <div>
                             <span class="font-bold text-slate-800 block">{{ $t->title }}</span>
                             <span class="text-[10px] text-slate-500">{{ $t->client ? ($t->client->nom . ' ' . $t->client->prenom) : 'Général' }}</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 uppercase">{{ $t->status }}</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-800 uppercase">{{ $t->status }}</span>
                     </div>
                 @endforeach
             </div>
             @endif
 
             <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                <a href="{{ route('admin.renouvellements') }}" class="text-xs font-bold text-teal-600 hover:underline">
+                <a href="{{ route('admin.renouvellements') }}" class="text-xs font-bold text-slate-900 hover:underline">
                     Accéder à la liste complète des renouvellements →
                 </a>
                 <button wire:click="closeModal" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs">
