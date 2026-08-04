@@ -78,19 +78,6 @@
                 <span class="block text-[8px] font-extrabold text-slate-400 uppercase tracking-widest">Collaborateurs</span>
                 <span class="text-xs font-bold text-slate-200 font-mono mt-0.5 block">{{ $subscription['employees_count'] }} Actifs / {{ $subscription['branches_count'] }} Succ.</span>
             </div>
-
-            <button wire:click="triggerExpressBackup" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer">
-                <!-- Lucide: DatabaseBackup -->
-                <svg width="16" height="16" class="h-4 w-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <ellipse cx="12" cy="5" rx="9" ry="3" />
-                    <path d="M3 12a9 3 0 0 0 5 2.69" />
-                    <path d="M21 9.3V5" />
-                    <path d="M3 5v14a9 3 0 0 0 12 2.84" />
-                    <path d="M13 18h8" />
-                    <path d="m18 15 3 3-3 3" />
-                </svg>
-                Sauvegarde Expresse
-            </button>
         </div>
     </div>
 
@@ -670,20 +657,7 @@
                 @elseif($activeTab === 'backups')
                 <div class="space-y-6">
                     <!-- Backup & Restore Action Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Express Backup Download Card -->
-                        <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white border border-slate-800 space-y-3 shadow-sm">
-                            <div class="flex items-center gap-2">
-                                <span class="h-2 w-2 rounded-full bg-teal-400"></span>
-                                <h3 class="text-sm font-bold">Générer une Sauvegarde Expresse</h3>
-                            </div>
-                            <p class="text-xs text-slate-300">Téléchargez instantanément une copie complète sécurisée de vos données (Clients, Polices, Règlements, Paramètres).</p>
-                            <button wire:click="triggerExpressBackup" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
-                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 12a9 3 0 0 0 5 2.69"/><path d="M21 9.3V5"/><path d="M3 5v14a9 3 0 0 0 12 2.84"/><path d="M13 18h8"/><path d="m18 15 3 3-3 3"/></svg>
-                                Sauvegarder & Télécharger
-                            </button>
-                        </div>
-
+                    <div class="grid grid-cols-1 gap-4">
                         <!-- Upload & Restore Card -->
                         <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3 shadow-sm">
                             <h3 class="text-sm font-bold text-slate-800">Restaurer un Fichier de Sauvegarde</h3>
