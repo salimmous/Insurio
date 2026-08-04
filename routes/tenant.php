@@ -104,7 +104,6 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/produits', \App\Livewire\Admin\GestionProducts::class)->name('admin.products')->middleware('can:contracts.view');
         Route::get('/admin/rapports-bi', \App\Livewire\Admin\RapportsBI::class)->name('admin.rapports-bi')->middleware('can:clients.view');
         Route::get('/admin/website', \App\Livewire\Admin\AgencyWebsiteManager::class)->name('admin.website')->middleware('can:clients.view');
-        Route::get('/admin/activity-timeline', \App\Livewire\Admin\ActivityTimeline::class)->name('admin.activity-timeline')->middleware('can:clients.view');
         Route::get('/admin/import-manager', \App\Livewire\Admin\ImportManager::class)->name('admin.import-manager')->middleware('can:clients.create');
         Route::get('/admin/compagnies', \App\Livewire\Admin\GestionInsurers::class)->name('admin.compagnies')->middleware('can:contracts.view');
         Route::get('/admin/payments', \App\Livewire\Admin\PaymentManager::class)->name('admin.payments')->middleware('can:payments.manage');
