@@ -691,7 +691,7 @@
                             <form wire:submit.prevent="restoreUploadedBackup" class="space-y-3">
                                 <input type="file" wire:model="uploadedBackupFile" accept=".json" class="w-full text-xs text-slate-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer">
                                 @error('uploadedBackupFile') <span class="text-xs text-rose-500 block">{{ $message }}</span> @enderror
-                                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50" @if(!$uploadedBackupFile) disabled @endif>
+                                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50" @if(empty($this->uploadedBackupFile)) disabled @endif>
                                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
                                     Restaurer le Fichier Sélectionné
                                 </button>
