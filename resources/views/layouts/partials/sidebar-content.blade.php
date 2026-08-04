@@ -386,24 +386,6 @@
                 Agenda & Calendrier
             </div>
         </a>
-
-        <!-- Importation Excel -->
-        @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('Agency Owner'))
-            <a href="{{ Route::has('admin.import-manager') ? route('admin.import-manager') : '#' }}" 
-               class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.import-manager*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
-               :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
-                <!-- Lucide: FileSpreadsheet (21px) -->
-                <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.import-manager*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                    <path d="M8 13h8M8 17h8M12 9v10" />
-                </svg>
-                <span class="ml-[14px] truncate" x-show="!sidebarCollapsed">Importation Excel</span>
-                <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-2xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
-                    Importation Excel
-                </div>
-            </a>
-        @endif
     </div>
 
     <!-- SECTION: CONFIGURATION -->
