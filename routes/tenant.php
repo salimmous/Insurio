@@ -112,7 +112,6 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/cheques/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'generateChequesPdf'])->name('admin.cheques.pdf')->middleware('can:clients.view');
         Route::get('/admin/payments-center/{id}', \App\Livewire\Admin\PaymentWorkspace::class)->name('admin.payments.workspace')->middleware('can:clients.view');
         Route::get('/admin/cloture-caisse', \App\Livewire\Admin\ClotureCaisse::class)->name('admin.cloture-caisse')->middleware('can:clients.view');
-        Route::get('/admin/vault', \App\Livewire\Admin\DocumentVault::class)->name('admin.vault')->middleware('can:clients.view');
         Route::get('/admin/agenda', \App\Livewire\Admin\AgendaCenter::class)->name('admin.agenda')->middleware('can:clients.view');
         Route::get('/admin/vehicules', \App\Livewire\Admin\GestionVehicules::class)->name('admin.vehicules')->middleware('can:clients.view');
 
