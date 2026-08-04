@@ -86,21 +86,6 @@
             </div>
         </a>
 
-        <!-- Communications -->
-        <a href="{{ Route::has('admin.communications') ? route('admin.communications') : '#' }}" 
-           class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.communications*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
-           :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
-            <!-- Lucide: MessagesSquare (21px) -->
-            <svg width="21" height="21" class="h-[21px] w-[21px] shrink-0 transition-colors {{ request()->routeIs('admin.communications*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2z" />
-                <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
-            </svg>
-            <span class="ml-[14px] truncate" x-show="!sidebarCollapsed">Communications</span>
-            <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-2xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
-                Communications
-            </div>
-        </a>
-
         <!-- Produits -->
         @if(auth()->user()->hasRole('agency-admin'))
             <a href="{{ Route::has('admin.products') ? route('admin.products') : '#' }}" 
