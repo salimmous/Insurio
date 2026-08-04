@@ -89,12 +89,21 @@ class FormulaireContrat extends Component
 
     public function getMarquesDisponibles(): array
     {
-        return array_keys(config('vehicules_maroc', []));
+        \App\Services\VehiculeCatalogService::seedIfEmpty();
+        $dbMarques = \App\Models\VehiculeMarque::where('is_active', true)->orderBy('nom')->pluck('nom')->toArray();
+        return !empty($dbMarques) ? $dbMarques : array_keys(config('vehicules_maroc', []));
     }
 
     public function getModelesDisponibles(): array
     {
         if (!$this->marque) return [];
+        
+        $marque = \App\Models\VehiculeMarque::where('nom', $this->marque)->first();
+        if ($marque) {
+            $dbModeles = \App\Models\VehiculeModele::where('marque_id', $marque->id)->where('is_active', true)->orderBy('nom')->pluck('nom')->toArray();
+            if (!empty($dbModeles)) return $dbModeles;
+        }
+
         $vehicules = config('vehicules_maroc', []);
         return $vehicules[$this->marque]['modeles'] ?? [];
     }
