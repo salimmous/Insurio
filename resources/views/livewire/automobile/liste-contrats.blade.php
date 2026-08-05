@@ -14,34 +14,8 @@
         
         <!-- Search & Filter Controls -->
         <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <input wire:model.live="search" type="text" placeholder="Rechercher..." 
-                   class="bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all w-full md:w-64">
-
-            <select wire:model.live="filterCompagnie" class="bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3 py-2 text-sm text-slate-800 outline-none transition-all">
-                <option value="">Compagnies (Toutes)</option>
-                @foreach($compagnies as $compagnie)
-                <option value="{{ $compagnie->id }}">{{ $compagnie->nom }}</option>
-                @endforeach
-            </select>
-
-            <select wire:model.live="filterStatut" class="bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-3 py-2 text-sm text-slate-800 outline-none transition-all">
-                @if(request()->routeIs('admin.renouvellements'))
-                    <option value="">Tous les statuts (Priorité Échéance)</option>
-                    <option value="expiring_1_day">🚨 Échéance 1 jour ({{ $countExpiring1Day }})</option>
-                    <option value="expiring_7_days">⚠️ Échéance 7 jours ({{ $countExpiring7Days }})</option>
-                    <option value="expiring_10_days">🔔 Échéance 10 jours ({{ $countExpiring10Days }})</option>
-                @else
-                    <option value="">Tous les règlements</option>
-                    <option value="reglement_solde">Soldé / Totalement Payé ({{ $countReglementSolde }})</option>
-                    <option value="reglement_partiel">Partiel / Reste Solde ({{ $countReglementPartiel }})</option>
-                    <option value="reglement_non_paye">Non Payé ({{ $countReglementNonPaye }})</option>
-                    <option value="reglement_impaye">Non Soldé / Reste à Payer ({{ $countReglementImpaye }})</option>
-                @endif
-                <option value="actif">Statut: Actifs</option>
-                <option value="expire">Statut: Expirés</option>
-                <option value="resilie">Statut: Résiliés</option>
-                <option value="annule">Statut: Annulés</option>
-            </select>
+            <input wire:model.live="search" type="text" placeholder="Rechercher client, contrat, police, immatriculation..." 
+                   class="bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all w-full md:w-80">
 
             <a href="{{ route('automobile.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap">
                 <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
