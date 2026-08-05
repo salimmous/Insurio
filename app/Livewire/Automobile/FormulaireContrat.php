@@ -116,31 +116,72 @@ class FormulaireContrat extends Component
 
     public function getApporteursSearchResultsProperty()
     {
-        if (trim($this->searchApporteur) === '') {
-            return Apporteur::latest()->limit(8)->get();
-        }
-        return Apporteur::where('nom', 'like', '%' . $this->searchApporteur . '%')
-            ->orWhere('prenom', 'like', '%' . $this->searchApporteur . '%')
-            ->orWhere('email', 'like', '%' . $this->searchApporteur . '%')
-            ->orWhere('code_apporteur', 'like', '%' . $this->searchApporteur . '%')
-            ->limit(10)
-            ->get();
-    }
+        $query = trim($this->searchApporteur);
 
-    public function selectApporteurFromSearch($apporteurId = null)
-    {
-        if ($apporteurId) {
-            $apporteur = Apporteur::find($apporteurId);
-            if ($apporteur) {
-                $this->apporteur_id = $apporteur->id;
-                $this->nom_apporteur = $apporteur->nom . ' ' . $apporteur->prenom;
-                $this->searchApporteur = $this->nom_apporteur;
-                if ($apporteur->taux_commission && (float)$this->prime_rc > 0) {
-                    $this->commission_auto = round((float)$this->prime_rc * ((float)$apporteur->taux_commission / 100), 2);
-                }
-                return;
+        if ($query === '') {
+            $clients = Client::latest()->limit(6)->get();
+            $apporteurs = Apporteur::latest()->limit(6)->get();
+        } else {
+            $clients = Client::where('last_name', 'like', '%' . $query . '%')
+                ->orWhere('first_name', 'like', '%' . $query . '%')
+                ->orWhere('email', 'like', '%' . $query . '%')
+                ->orWhere('phone', 'like', '%' . $query . '%')
+                ->orWhere('cin', 'like', '%' . $query . '%')
+                ->limit(8)
+                ->get();
+
+            $apporteurs = Apporteur::where('nom', 'like', '%' . $query . '%')
+                ->orWhere('prenom', 'like', '%' . $query . '%')
+                ->orWhere('email', 'like', '%' . $query . '%')
+                ->orWhere('code_apporteur', 'like', '%' . $query . '%')
+                ->limit(8)
+                ->get();
+        }
+
+        $results = collect();
+
+        foreach ($clients as $client) {
+            $appRec = Apporteur::where('email', $client->email)->orWhere('telephone', $client->phone)->first();
+            $results->push((object) [
+                'id' => $appRec ? $appRec->id : $client->id,
+                'nom' => $client->nom,
+                'prenom' => $client->prenom,
+                'code' => $client->formatted_reference,
+                'telephone' => $client->telephone,
+                'source' => 'Client',
+                'taux_commission' => $appRec ? $appRec->taux_commission : 10.00,
+            ]);
+        }
+
+        foreach ($apporteurs as $app) {
+            if (!$results->contains('id', $app->id)) {
+                $results->push((object) [
+                    'id' => $app->id,
+                    'nom' => $app->nom,
+                    'prenom' => $app->prenom,
+                    'code' => $app->code_apporteur ?? ('APP-' . $app->id),
+                    'telephone' => $app->telephone,
+                    'source' => 'Apporteur',
+                    'taux_commission' => $app->taux_commission ?? 10.00,
+                ]);
             }
         }
+
+        return $results;
+    }
+
+    public function selectApporteurFromSearch($id = null, $nom = null, $prenom = null, $taux = 10.00)
+    {
+        if ($id || $nom) {
+            $this->apporteur_id = $id;
+            $this->nom_apporteur = trim(($nom ?? '') . ' ' . ($prenom ?? ''));
+            $this->searchApporteur = $this->nom_apporteur;
+            if ((float)$this->prime_rc > 0 && $taux) {
+                $this->commission_auto = round((float)$this->prime_rc * ((float)$taux / 100), 2);
+            }
+            return;
+        }
+
         $this->apporteur_id = null;
         $this->nom_apporteur = '';
         $this->searchApporteur = '';

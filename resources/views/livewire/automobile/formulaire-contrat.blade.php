@@ -146,14 +146,19 @@
                                 </div>
 
                                 @forelse($this->apporteursSearchResults as $app)
-                                <div wire:click="selectApporteurFromSearch({{ $app->id }})" @click="open = false" 
+                                <div wire:click="selectApporteurFromSearch({{ $app->id }}, '{{ addslashes($app->nom) }}', '{{ addslashes($app->prenom) }}', {{ $app->taux_commission }})" @click="open = false" 
                                      class="p-2.5 hover:bg-indigo-50/80 cursor-pointer flex items-center justify-between transition-colors">
                                     <div>
-                                        <div class="font-bold text-slate-800 text-xs">{{ $app->nom }} {{ $app->prenom }}</div>
-                                        <div class="text-[10px] text-slate-400 font-mono">{{ $app->code_apporteur ?? 'APP-'.$app->id }} {{ $app->telephone ? '• '.$app->telephone : '' }}</div>
+                                        <div class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                                            <span>{{ $app->nom }} {{ $app->prenom }}</span>
+                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold {{ $app->source === 'Client' ? 'bg-sky-100 text-sky-800' : 'bg-purple-100 text-purple-800' }}">
+                                                {{ $app->source }}
+                                            </span>
+                                        </div>
+                                        <div class="text-[10px] text-slate-400 font-mono">{{ $app->code }} {{ $app->telephone ? '• '.$app->telephone : '' }}</div>
                                     </div>
                                     <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-[11px] font-mono">
-                                        {{ number_format($app->taux_commission ?? 0, 1) }}%
+                                        {{ number_format($app->taux_commission ?? 10, 1) }}%
                                     </span>
                                 </div>
                                 @empty
