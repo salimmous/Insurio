@@ -24,10 +24,11 @@ class VisionApporteurModal extends Component
         $this->isOpen = false;
     }
 
-    public function selectApporteur($id, $nom = '', $prenom = '', $taux = 10.00)
+    public function selectApporteur($id, $nom = '', $prenom = '', $taux = 10.00, $clientId = null)
     {
         $this->dispatch('apporteurSelected', [
             'id' => is_numeric($id) ? (int)$id : null,
+            'client_id' => is_numeric($clientId) ? (int)$clientId : (is_numeric($id) ? (int)$id : null),
             'nom' => $nom,
             'prenom' => $prenom,
             'taux' => (float)$taux,
@@ -82,6 +83,7 @@ class VisionApporteurModal extends Component
 
             $combined->push((object) [
                 'id' => $appRec ? $appRec->id : $client->id,
+                'client_id' => $client->id,
                 'code' => $client->formatted_reference,
                 'nom' => $client->nom,
                 'prenom' => $client->prenom,
@@ -95,6 +97,7 @@ class VisionApporteurModal extends Component
             if (!$combined->contains('id', $app->id)) {
                 $combined->push((object) [
                     'id' => $app->id,
+                    'client_id' => null,
                     'code' => $app->code_apporteur ?? 'APP-' . $app->id,
                     'nom' => $app->nom,
                     'prenom' => $app->prenom,

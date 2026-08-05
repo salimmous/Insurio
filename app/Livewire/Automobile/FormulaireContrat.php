@@ -265,6 +265,7 @@ class FormulaireContrat extends Component
     {
         if (is_array($payload)) {
             $apporteurId = is_numeric($payload['id'] ?? null) ? (int)$payload['id'] : null;
+            $clientId = is_numeric($payload['client_id'] ?? null) ? (int)$payload['client_id'] : $apporteurId;
             $nom = is_string($payload['nom'] ?? '') ? $payload['nom'] : '';
             $prenom = is_string($payload['prenom'] ?? '') ? $payload['prenom'] : '';
             $taux = is_numeric($payload['taux'] ?? 10) ? (float)$payload['taux'] : 10.00;
@@ -273,10 +274,10 @@ class FormulaireContrat extends Component
             $this->nom_apporteur = trim($nom . ' ' . $prenom);
             $this->searchApporteur = $this->nom_apporteur;
 
-            if ($this->apporteur_id && (empty($this->client_id) || $this->auto_synced_client)) {
-                $this->client_id = $this->apporteur_id;
+            // Always auto-fill Client (Souscripteur) with the selected Apporteur's info
+            if (!empty($this->nom_apporteur)) {
+                $this->client_id = $clientId;
                 $this->souscripteur = $this->nom_apporteur;
-                $this->auto_synced_client = true;
             }
 
             if ((float)$this->prime_rc > 0 && $taux) {
@@ -289,14 +290,11 @@ class FormulaireContrat extends Component
             $this->apporteur_id = (int)$payload;
             $apporteur = Apporteur::find((int)$payload);
             if ($apporteur) {
-                $this->nom_apporteur = $apporteur->nom . ' ' . $apporteur->prenom;
+                $this->nom_apporteur = trim($apporteur->nom . ' ' . $apporteur->prenom);
                 $this->searchApporteur = $this->nom_apporteur;
 
-                if (empty($this->client_id) || $this->auto_synced_client) {
-                    $this->client_id = (int)$payload;
-                    $this->souscripteur = $this->nom_apporteur;
-                    $this->auto_synced_client = true;
-                }
+                $this->client_id = (int)$payload;
+                $this->souscripteur = $this->nom_apporteur;
 
                 if ($apporteur->taux_commission && (float)$this->prime_rc > 0) {
                     $this->commission_auto = round((float)$this->prime_rc * ((float)$apporteur->taux_commission / 100), 2);
