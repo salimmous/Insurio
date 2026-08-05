@@ -412,16 +412,7 @@ class ListeContrats extends Component
             }
         }
 
-        if (!empty($this->dateFrom) && !empty($this->dateTo)) {
-            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
-            $query->whereBetween($field, [$this->dateFrom, $this->dateTo]);
-        } elseif (!empty($this->dateFrom)) {
-            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
-            $query->where($field, '>=', $this->dateFrom);
-        } elseif (!empty($this->dateTo)) {
-            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
-            $query->where($field, '<=', $this->dateTo);
-        }
+        $this->applyDateFilter($query);
 
         return $query->pluck('id')->map(fn($id) => (string)$id)->toArray();
     }
@@ -573,16 +564,7 @@ class ListeContrats extends Component
         }
 
         // Filter by Date
-        if (!empty($this->dateFrom) && !empty($this->dateTo)) {
-            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
-            $query->whereBetween($field, [$this->dateFrom, $this->dateTo]);
-        } elseif (!empty($this->dateFrom)) {
-            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
-            $query->where($field, '>=', $this->dateFrom);
-        } elseif (!empty($this->dateTo)) {
-            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
-            $query->where($field, '<=', $this->dateTo);
-        }
+        $this->applyDateFilter($query);
 
         // Priority sorting: put contracts expiring soonest right at the top
         if (empty($this->filterStatut) || str_starts_with($this->filterStatut, 'expiring_')) {
@@ -609,5 +591,53 @@ class ListeContrats extends Component
             'countReglementImpaye' => $countReglementImpaye,
             'reglementLines' => $this->reglementLines,
         ])->layout('layouts.app');
+    }
+
+    protected function applyDateFilter($query)
+    {
+        if (empty($this->dateFrom) && empty($this->dateTo)) {
+            return;
+        }
+
+        $dateFrom = $this->dateFrom;
+        $dateTo = $this->dateTo;
+
+        $primaryCol = match ($this->dateField) {
+            'date_effet' => 'start_date',
+            'date_echeance' => 'end_date',
+            'date_production' => 'created_at',
+            default => 'start_date',
+        };
+
+        $fallbackCol = match ($this->dateField) {
+            'date_effet' => 'date_effet',
+            'date_echeance' => 'date_echeance',
+            'date_production' => 'date_production',
+            default => 'date_effet',
+        };
+
+        $query->where(function ($q) use ($primaryCol, $fallbackCol, $dateFrom, $dateTo) {
+            $q->where(function ($sub) use ($primaryCol, $dateFrom, $dateTo) {
+                if (!empty($dateFrom) && !empty($dateTo)) {
+                    $sub->whereBetween($primaryCol, [$dateFrom, $dateTo]);
+                } elseif (!empty($dateFrom)) {
+                    $sub->where($primaryCol, '>=', $dateFrom);
+                } elseif (!empty($dateTo)) {
+                    $sub->where($primaryCol, '<=', $dateTo);
+                }
+            });
+
+            if (\Illuminate\Support\Facades\Schema::hasColumn('contracts', $fallbackCol)) {
+                $q->orWhere(function ($sub) use ($fallbackCol, $dateFrom, $dateTo) {
+                    if (!empty($dateFrom) && !empty($dateTo)) {
+                        $sub->whereBetween($fallbackCol, [$dateFrom, $dateTo]);
+                    } elseif (!empty($dateFrom)) {
+                        $sub->where($fallbackCol, '>=', $dateFrom);
+                    } elseif (!empty($dateTo)) {
+                        $sub->where($fallbackCol, '<=', $dateTo);
+                    }
+                });
+            }
+        });
     }
 }
