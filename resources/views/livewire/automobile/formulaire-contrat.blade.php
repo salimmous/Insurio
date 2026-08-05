@@ -183,17 +183,13 @@
                 </div>
             </div>
 
-            <!-- SECTION 4: Bloc de Calculs & Taxes (Side-by-Side Auto vs PTA) -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
                 <!-- Bloc Automobile -->
                 <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
                     <h2 class="text-md font-semibold text-emerald-600 border-b border-slate-100 pb-2 flex justify-between items-center">
                         <span>Calculs Partie AUTOMOBILE</span>
-                        <span class="text-xs text-slate-400 uppercase">Bloc 1</span>
                     </h2>
                     
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-500 mb-2">Taxe Auto</label>
                             <input wire:model.live="taxe_auto" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
@@ -217,41 +213,6 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-500 mb-2">Taxe sur Commission (TPS)</label>
                             <input wire:model.live="tps_auto" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bloc PTA (Garanties Annexes) -->
-                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
-                    <h2 class="text-md font-semibold text-indigo-600 border-b border-slate-100 pb-2 flex justify-between items-center">
-                        <span>Calculs Partie PTA (Annexes)</span>
-                        <span class="text-xs text-slate-400 uppercase">Bloc 2</span>
-                    </h2>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Garantie PTA (Montant)</label>
-                            <input wire:model.live="montant_pta" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Taxe PTA</label>
-                            <input wire:model.live="montant_taxe_pta" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Commission PTA</label>
-                            <input wire:model.live="commission_pta" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Taxe Commission (TPS)</label>
-                            <input wire:model.live="tps_pta" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Autres Accessoires</label>
-                            <input wire:model.live="accessoires" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
                         </div>
                     </div>
                 </div>
