@@ -11,6 +11,7 @@ class GestionVehicules extends Component
 {
     public $search = '';
     public $filterType = 'all'; // all, voiture, moto, autocar
+    public $displayMode = 'table'; // 'table' or 'grid'
 
     // Brand Form
     public $showBrandModal = false;

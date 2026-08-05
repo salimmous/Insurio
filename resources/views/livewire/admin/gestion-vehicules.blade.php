@@ -50,11 +50,25 @@
 
     <!-- Filters & Search Bar -->
     <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
-        <!-- Search -->
-        <div class="relative w-full md:w-96">
-            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Rechercher une marque ou modèle..." 
-                   class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 outline-none transition">
-            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <!-- Search & View Toggle -->
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <div class="relative w-full md:w-80">
+                <input wire:model.live.debounce.300ms="search" type="text" placeholder="Rechercher une marque ou modèle..." 
+                       class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 outline-none transition">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+
+            <!-- View Mode Switcher -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl shrink-0">
+                <button wire:click="$set('displayMode', 'table')" title="Vue Tableau (Lignes)" 
+                        class="p-1.5 rounded-lg transition {{ $displayMode === 'table' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-500 hover:text-slate-700' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                </button>
+                <button wire:click="$set('displayMode', 'grid')" title="Vue Grille (Cartes)" 
+                        class="p-1.5 rounded-lg transition {{ $displayMode === 'grid' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-500 hover:text-slate-700' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </button>
+            </div>
         </div>
 
         <!-- Filter Tabs -->
@@ -81,97 +95,161 @@
         </div>
     </div>
 
-    <!-- Brands Table Rows View -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-slate-700 min-w-[750px]">
-                <thead class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
-                    <tr>
-                        <th class="px-5 py-3.5 w-64">Marque</th>
-                        <th class="px-5 py-3.5 w-36">Type</th>
-                        <th class="px-5 py-3.5">Modèles Configurés</th>
-                        <th class="px-5 py-3.5 text-right w-44">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse($marques as $marque)
-                        <tr class="hover:bg-slate-50/70 transition-colors">
-                            <!-- Marque info & Logo -->
-                            <td class="px-5 py-4 whitespace-nowrap">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/80 p-1 flex items-center justify-center shrink-0 relative overflow-hidden shadow-2xs">
-                                        <img src="{{ $marque->logo_url }}" 
-                                             alt="{{ $marque->nom }}" 
-                                             class="max-w-full max-h-full object-contain"
-                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                                        <div class="w-full h-full bg-slate-100 text-slate-700 font-black text-xs items-center justify-center rounded-lg uppercase hidden">
-                                            {{ substr($marque->nom, 0, 2) }}
+    @if($displayMode === 'table')
+        <!-- Brands Table Rows View -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-700 min-w-[750px]">
+                    <thead class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+                        <tr>
+                            <th class="px-5 py-3.5 w-64">Marque</th>
+                            <th class="px-5 py-3.5 w-36">Type</th>
+                            <th class="px-5 py-3.5">Modèles Configurés</th>
+                            <th class="px-5 py-3.5 text-right w-44">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($marques as $marque)
+                            <tr class="hover:bg-slate-50/70 transition-colors">
+                                <!-- Marque info & Logo -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/80 p-1 flex items-center justify-center shrink-0 relative overflow-hidden shadow-2xs">
+                                            <img src="{{ $marque->logo_url }}" 
+                                                 alt="{{ $marque->nom }}" 
+                                                 class="max-w-full max-h-full object-contain"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                            <div class="w-full h-full bg-slate-100 text-slate-700 font-black text-xs items-center justify-center rounded-lg uppercase hidden">
+                                                {{ substr($marque->nom, 0, 2) }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-slate-900 text-sm">{{ $marque->nom }}</div>
+                                            <div class="text-[10px] text-slate-400 font-semibold">{{ $marque->modeles->count() }} modèle(s)</div>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div class="font-bold text-slate-900 text-sm">{{ $marque->nom }}</div>
-                                        <div class="text-[10px] text-slate-400 font-semibold">{{ $marque->modeles->count() }} modèle(s)</div>
+                                </td>
+
+                                <!-- Type Badge -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <span class="text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-md inline-flex items-center gap-1
+                                                 {{ $marque->type === 'voiture' ? 'bg-teal-50 text-teal-700 border border-teal-200' : ($marque->type === 'moto' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200') }}">
+                                        {{ $marque->type === 'voiture' ? '🚗 Voiture' : ($marque->type === 'moto' ? '🏍️ Moto' : '🚌 Autocar') }}
+                                    </span>
+                                </td>
+
+                                <!-- Modèles Pills List -->
+                                <td class="px-5 py-4">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        @forelse($marque->modeles as $modele)
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition group">
+                                                <span>{{ $modele->nom }}</span>
+                                                @if($modele->libelle_annee)
+                                                    <span class="text-[10px] font-mono text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded-md font-semibold border border-teal-100/80">{{ $modele->libelle_annee }}</span>
+                                                @endif
+                                                <button wire:click="openModelModal({{ $marque->id }}, {{ $modele->id }})" title="Modifier Modèle" class="text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition">✎</button>
+                                                <button wire:confirm="Supprimer le modèle {{ $modele->nom }} ?" wire:click="deleteModel({{ $modele->id }})" title="Supprimer Modèle" class="text-slate-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition">✕</button>
+                                            </span>
+                                        @empty
+                                            <span class="text-xs text-slate-400 italic">Aucun modèle configuré</span>
+                                        @endforelse
+
+                                        <button wire:click="openModelModal({{ $marque->id }})" class="text-xs font-bold text-teal-600 hover:text-teal-800 transition px-2 py-1 bg-teal-50 hover:bg-teal-100 rounded-lg border border-teal-200/60 inline-flex items-center gap-1">
+                                            <span>+ Ajouter Modèle</span>
+                                        </button>
                                     </div>
-                                </div>
-                            </td>
+                                </td>
 
-                            <!-- Type Badge -->
-                            <td class="px-5 py-4 whitespace-nowrap">
-                                <span class="text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-md inline-flex items-center gap-1
-                                             {{ $marque->type === 'voiture' ? 'bg-teal-50 text-teal-700 border border-teal-200' : ($marque->type === 'moto' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200') }}">
-                                    {{ $marque->type === 'voiture' ? '🚗 Voiture' : ($marque->type === 'moto' ? '🏍️ Moto' : '🚌 Autocar') }}
-                                </span>
-                            </td>
-
-                            <!-- Modèles Pills List -->
-                            <td class="px-5 py-4">
-                                <div class="flex flex-wrap items-center gap-1.5">
-                                    @forelse($marque->modeles as $modele)
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition group">
-                                            <span>{{ $modele->nom }}</span>
-                                            @if($modele->libelle_annee)
-                                                <span class="text-[10px] font-mono text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded-md font-semibold border border-teal-100/80">{{ $modele->libelle_annee }}</span>
-                                            @endif
-                                            <button wire:click="openModelModal({{ $marque->id }}, {{ $modele->id }})" title="Modifier Modèle" class="text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition">✎</button>
-                                            <button wire:confirm="Supprimer le modèle {{ $modele->nom }} ?" wire:click="deleteModel({{ $modele->id }})" title="Supprimer Modèle" class="text-slate-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition">✕</button>
-                                        </span>
-                                    @empty
-                                        <span class="text-xs text-slate-400 italic">Aucun modèle configuré</span>
-                                    @endforelse
-
-                                    <button wire:click="openModelModal({{ $marque->id }})" class="text-xs font-bold text-teal-600 hover:text-teal-800 transition px-2 py-1 bg-teal-50 hover:bg-teal-100 rounded-lg border border-teal-200/60 inline-flex items-center gap-1">
-                                        <span>+ Ajouter Modèle</span>
-                                    </button>
-                                </div>
-                            </td>
-
-                            <!-- Actions -->
-                            <td class="px-5 py-4 whitespace-nowrap text-right">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <button wire:click="openBrandModal({{ $marque->id }})" title="Modifier Marque / Logo" class="p-1.5 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                    </button>
-                                    <button wire:confirm="Voulez-vous supprimer cette marque et tous ses modèles ?" wire:click="deleteBrand({{ $marque->id }})" title="Supprimer Marque" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="p-12 text-center">
-                                <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl mx-auto flex items-center justify-center mb-3">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                                </div>
-                                <h3 class="text-base font-bold text-slate-700">Aucune marque trouvée</h3>
-                                <p class="text-xs text-slate-500 mt-1">Essayez un autre mot-clé ou ajoutez une nouvelle marque.</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                <!-- Actions -->
+                                <td class="px-5 py-4 whitespace-nowrap text-right">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <button wire:click="openBrandModal({{ $marque->id }})" title="Modifier Marque / Logo" class="p-1.5 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        </button>
+                                        <button wire:confirm="Voulez-vous supprimer cette marque et tous ses modèles ?" wire:click="deleteBrand({{ $marque->id }})" title="Supprimer Marque" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="p-12 text-center">
+                                    <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl mx-auto flex items-center justify-center mb-3">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    </div>
+                                    <h3 class="text-base font-bold text-slate-700">Aucune marque trouvée</h3>
+                                    <p class="text-xs text-slate-500 mt-1">Essayez un autre mot-clé ou ajoutez une nouvelle marque.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    @else
+        <!-- Brands Grid View -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @forelse($marques as $marque)
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex flex-col justify-between overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/80 p-1 flex items-center justify-center shrink-0 relative overflow-hidden shadow-2xs">
+                                <img src="{{ $marque->logo_url }}" alt="{{ $marque->nom }}" class="max-w-full max-h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                <div class="w-full h-full bg-slate-100 text-slate-700 font-black text-xs items-center justify-center rounded-lg uppercase hidden">
+                                    {{ substr($marque->nom, 0, 2) }}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800">{{ $marque->nom }}</h3>
+                                <span class="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md {{ $marque->type === 'voiture' ? 'bg-teal-50 text-teal-600 border border-teal-100' : ($marque->type === 'moto' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 'bg-indigo-50 text-indigo-600 border border-indigo-100') }}">
+                                    {{ $marque->type }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button wire:click="openBrandModal({{ $marque->id }})" title="Modifier Marque / Logo" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </button>
+                            <button wire:confirm="Voulez-vous supprimer cette marque et tous ses modèles ?" wire:click="deleteBrand({{ $marque->id }})" title="Supprimer Marque" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Modèles ({{ $marque->modeles->count() }})</span>
+                            <button wire:click="openModelModal({{ $marque->id }})" class="text-[11px] font-bold text-teal-600 hover:text-teal-800 transition flex items-center gap-1">
+                                <span>+ Ajouter Modèle</span>
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
+                            @forelse($marque->modeles as $modele)
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition group">
+                                    <span>{{ $modele->nom }}</span>
+                                    @if($modele->libelle_annee)
+                                        <span class="text-[10px] font-mono text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded-md font-semibold border border-teal-100/80">{{ $modele->libelle_annee }}</span>
+                                    @endif
+                                    <button wire:click="openModelModal({{ $marque->id }}, {{ $modele->id }})" class="text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition">✎</button>
+                                    <button wire:confirm="Supprimer le modèle {{ $modele->nom }} ?" wire:click="deleteModel({{ $modele->id }})" class="text-slate-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition">✕</button>
+                                </span>
+                            @empty
+                                <span class="text-xs text-slate-400 italic">Aucun modèle configuré</span>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full bg-white p-12 rounded-2xl border border-slate-200/80 text-center">
+                    <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl mx-auto flex items-center justify-center mb-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-700">Aucune marque trouvée</h3>
+                    <p class="text-xs text-slate-500 mt-1">Essayez un autre mot-clé ou ajoutez une nouvelle marque.</p>
+                </div>
+            @endforelse
+        </div>
+    @endif
 
     <!-- Modal Brand -->
     @if($showBrandModal)
