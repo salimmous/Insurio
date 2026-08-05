@@ -216,7 +216,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- SUMMARY BLOCK: Totaux & Calcul de Marge HT Avant Taxes -->
             <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 text-white rounded-2xl p-6 shadow-xl space-y-6">
