@@ -7,8 +7,11 @@
                 @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('comptable'))
                     <!-- Branch Filter Dropdown -->
                     <div class="min-w-[220px]">
-                        <label class="block text-[11px] font-extrabold tracking-wider mb-1 uppercase" style="color: #334155 !important;">Filtrer par Succursale</label>
-                        <select wire:model.live="selectedBranch" class="w-full bg-slate-50 border border-slate-300 focus:bg-white rounded-xl px-3 py-2 text-xs font-bold outline-none transition-all" style="color: #0f172a !important; background-color: #f8fafc !important;">
+                        <label class="flex items-center gap-1.5 text-[11px] font-extrabold tracking-wider mb-1 uppercase.select-none" style="color: #334155 !important;">
+                            <svg class="w-3.5 h-3.5 text-teal-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0H7m4 0v10"></path></svg>
+                            Filtrer par Succursale
+                        </label>
+                        <select wire:model.live="selectedBranch" class="w-full bg-slate-50 border border-slate-300 focus:bg-white rounded-xl px-3 py-2 text-xs font-bold outline-none transition-all cursor-pointer" style="color: #0f172a !important; background-color: #f8fafc !important;">
                             <option value="">Toutes les succursales</option>
                             @foreach($branchList as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->nom }} ({{ $branch->ville }})</option>
@@ -17,8 +20,11 @@
                     </div>
                 @else
                     <div>
-                        <span class="text-[11px] font-extrabold tracking-wider block uppercase" style="color: #334155 !important;">Succursale Active</span>
-                        <span class="text-xs font-bold" style="color: #0f172a !important;">
+                        <span class="flex items-center gap-1.5 text-[11px] font-extrabold tracking-wider uppercase block" style="color: #334155 !important;">
+                            <svg class="w-3.5 h-3.5 text-teal-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0H7m4 0v10"></path></svg>
+                            Succursale Active
+                        </span>
+                        <span class="text-xs font-bold block mt-0.5" style="color: #0f172a !important;">
                             {{ $branchList->firstWhere('id', $selectedBranch)->nom ?? 'Siège Central' }}
                         </span>
                     </div>
@@ -27,28 +33,36 @@
                 <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
 
                 <div>
-                    <span class="text-[11px] font-extrabold tracking-wider block uppercase" style="color: #334155 !important;">Période Active</span>
+                    <span class="flex items-center gap-1.5 text-[11px] font-extrabold tracking-wider uppercase block" style="color: #334155 !important;">
+                        <svg class="w-3.5 h-3.5 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Période Active
+                    </span>
                     <div class="flex items-center gap-1.5 mt-1">
-                        <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-[11px] font-extrabold rounded-lg border border-indigo-200 uppercase" style="color: #4338ca !important; background-color: #eef2ff !important; border-color: #c7d2fe !important;">Tous les contrats</span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 text-[11px] font-extrabold rounded-lg border border-indigo-200 uppercase" style="color: #4338ca !important; background-color: #eef2ff !important; border-color: #c7d2fe !important;">
+                            <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Tous les contrats
+                        </span>
                     </div>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
-                <button wire:click="refreshDashboard" class="font-extrabold px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-sm" style="color: #0f172a !important; background-color: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; cursor: pointer;">
-                    <span>🔄</span> <span style="color: #0f172a !important; font-weight: 800;">Actualiser</span>
+                <button wire:click="refreshDashboard" class="font-extrabold px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-2 shadow-sm hover:bg-slate-200" style="color: #0f172a !important; background-color: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; cursor: pointer;">
+                    <svg wire:loading.class="animate-spin" class="w-4 h-4 text-slate-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span style="color: #0f172a !important; font-weight: 800;">Actualiser</span>
                 </button>
-                <div class="text-[11px] font-mono font-bold" style="color: #334155 !important;">
-                    Rafraîchi à: {{ now()->format('H:i:s') }}
+                <div class="flex items-center gap-1.5 text-[11px] font-mono font-bold" style="color: #334155 !important;">
+                    <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Rafraîchi à: {{ now()->format('H:i:s') }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Connection Banner & Status -->
-        <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex items-center gap-4">
                 <div class="h-12 w-12 bg-teal-500/10 text-teal-400 rounded-xl flex items-center justify-center border border-teal-500/20 shadow-inner">
-                    <span class="text-xl">🏢</span>
+                    <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0H7m4 0v10"></path></svg>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
@@ -84,15 +98,19 @@
         <div class="flex items-center">
             <div class="inline-flex bg-slate-200/70 p-1.5 rounded-2xl gap-1.5 border border-slate-200/80 shadow-inner">
                 <button wire:click="setTab('portfolio')" class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 {{ $activeDashboardTab === 'portfolio' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60' }}">
-                    <span>💼</span> Portefeuille (Portfolio)
+                    <svg class="w-4 h-4 {{ $activeDashboardTab === 'portfolio' ? 'text-teal-400' : 'text-slate-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    Portefeuille (Portfolio)
                 </button>
                 <button wire:click="setTab('executive')" class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 {{ $activeDashboardTab === 'executive' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60' }}">
-                    <span>📈</span> CEO & Finance
+                    <svg class="w-4 h-4 {{ $activeDashboardTab === 'executive' ? 'text-indigo-400' : 'text-slate-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    CEO & Finance
                 </button>
                 <button wire:click="setTab('operations')" class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 {{ $activeDashboardTab === 'operations' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60' }}">
-                    <span>⚡</span> Command Center
+                    <svg class="w-4 h-4 {{ $activeDashboardTab === 'operations' ? 'text-amber-400' : 'text-slate-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Command Center
                 </button>
             </div>
+        </div></div>
         </div>
 
         <!-- PORTFOLIO VIEW -->
