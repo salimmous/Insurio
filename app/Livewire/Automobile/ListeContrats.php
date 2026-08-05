@@ -586,9 +586,9 @@ class ListeContrats extends Component
         $this->applyDateFilter($query);
 
         // Priority sorting: put contracts expiring soonest right at the top
-        if (empty($this->filterStatut) || str_starts_with($this->filterStatut, 'expiring_')) {
-            $query->orderByRaw("CASE WHEN statut = 'actif' AND date_echeance >= CURRENT_DATE THEN 0 ELSE 1 END ASC")
-                  ->orderBy('date_echeance', 'asc');
+        if ($this->isRenouvellements || empty($this->filterStatut) || str_starts_with($this->filterStatut, 'expiring_')) {
+            $query->orderByRaw("CASE WHEN statut = 'actif' AND COALESCE(end_date, date_echeance) >= CURRENT_DATE THEN 0 ELSE 1 END ASC")
+                  ->orderByRaw("COALESCE(end_date, date_echeance) ASC");
         } else {
             $query->latest();
         }
