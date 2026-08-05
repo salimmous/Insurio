@@ -12,8 +12,9 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <button wire:click="openCreateModal" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition">
-                ⚡ Nouvelles Entrée au Grand Livre
+            <button wire:click="openCreateModal" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>Nouvelle Entrée au Grand Livre</span>
             </button>
         </div>
     </div>
@@ -205,7 +206,10 @@
                                 </td>
                                 <td class="px-6 py-4 text-right font-mono">
                                     <span class="text-[10px] font-bold text-slate-500 block">{{ $item->receipt_number }}</span>
-                                    <button class="text-indigo-600 hover:underline font-bold text-[11px]">Imprimer Reçu 🖨️</button>
+                                    <button class="text-indigo-600 hover:underline font-bold text-[11px] inline-flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H9v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                        <span>Imprimer Reçu</span>
+                                    </button>
                                 </td>
                             </tr>
                         @empty
@@ -280,35 +284,42 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($chq->status === 'collected')
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                            ✅ Encaissé
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                            <span>Encaissé</span>
                                         </span>
                                     @elseif($chq->status === 'deposited')
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                                            🏛️ Déposé
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                            <svg class="w-3.5 h-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m3 0h1m-4-8l-2-2m0 0l-2 2m2-2v4m4-6l-2-2m0 0l-2 2m2-2v4"/></svg>
+                                            <span>Déposé</span>
                                         </span>
                                     @elseif($chq->status === 'returned')
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                                            ❌ Impayé / Rejeté
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                            <svg class="w-3.5 h-3.5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            <span>Impayé / Rejeté</span>
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                                            ⏳ En Portefeuille
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            <span>En Portefeuille</span>
                                         </span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right font-mono">
                                     <div class="flex items-center justify-end gap-2">
                                         @if($chq->status === 'received' || $chq->status === 'pending')
-                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'deposited')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs">
-                                                Déposer 🏛️
+                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'deposited')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs inline-flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m3 0h1m-4-8l-2-2m0 0l-2 2m2-2v4m4-6l-2-2m0 0l-2 2m2-2v4"/></svg>
+                                                <span>Déposer</span>
                                             </button>
                                         @elseif($chq->status === 'deposited')
-                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'collected')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs">
-                                                Encaissé ✅
+                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'collected')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs inline-flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                                <span>Encaissé</span>
                                             </button>
-                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'returned')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs">
-                                                Impayé ❌
+                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'returned')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs inline-flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                <span>Impayé</span>
                                             </button>
                                         @endif
                                     </div>
@@ -334,7 +345,9 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-6">
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="text-2xl">💰</span>
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
                             <h3 class="font-black text-xl text-white tracking-tight">Caisse Principale Agence</h3>
                             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                                 SUIVI EN TEMPS RÉEL
@@ -344,11 +357,13 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-3">
-                        <button wire:click="openCashMovementModal('credit')" class="inline-flex items-center justify-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-lg transition">
-                            🟢 + Entrée Espèces
+                        <button wire:click="openCashMovementModal('credit')" class="inline-flex items-center justify-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-lg transition gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            <span>+ Entrée Espèces</span>
                         </button>
-                        <button wire:click="openCashMovementModal('debit')" class="inline-flex items-center justify-center px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold text-xs shadow-lg transition">
-                            🔴 - Sortie / Retrait Espèces
+                        <button wire:click="openCashMovementModal('debit')" class="inline-flex items-center justify-center px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold text-xs shadow-lg transition gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
+                            <span>- Sortie / Retrait Espèces</span>
                         </button>
                     </div>
                 </div>
@@ -389,7 +404,10 @@
             <div class="space-y-6">
                 <div class="flex justify-between items-center px-1">
                     <h4 class="font-black text-lg text-slate-900 flex items-center gap-2">
-                        <span>📖 Journal Quotidien Détaillé de Caisse</span>
+                        <svg class="w-5 h-5 text-indigo-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span>Journal Quotidien Détaillé de Caisse</span>
                         <span class="text-xs font-normal text-slate-500">(Calcul et suivi du solde après chaque mouvement)</span>
                     </h4>
                 </div>
@@ -400,7 +418,10 @@
                         <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                             <div class="flex items-center gap-3">
                                 <span class="font-black text-sm text-slate-900 capitalize flex items-center gap-2">
-                                    📅 {{ $day['formatted_date'] }}
+                                    <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span>{{ $day['formatted_date'] }}</span>
                                 </span>
                                 @if($day['is_today'])
                                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
@@ -450,11 +471,13 @@
                                             <td class="px-6 py-3.5 whitespace-nowrap">
                                                 @if($tx->entry_type === 'credit')
                                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                                        <span>🟢</span> Entrée Espèces (+)
+                                                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                                        <span>Entrée Espèces (+)</span>
                                                     </span>
                                                 @else
                                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                                                        <span>🔴</span> Sortie / Retrait (-)
+                                                        <svg class="w-3.5 h-3.5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
+                                                        <span>Sortie / Retrait (-)</span>
                                                     </span>
                                                 @endif
                                             </td>
@@ -478,8 +501,9 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-3.5 text-right font-mono font-black text-sm text-slate-900 bg-slate-50/80 whitespace-nowrap border-l border-slate-200">
-                                                <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200">
-                                                    💼 {{ number_format($tx->running_balance, 2) }} DH
+                                                <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200 inline-flex items-center gap-1.5">
+                                                    <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                                    <span>{{ number_format($tx->running_balance, 2) }} DH</span>
                                                 </span>
                                             </td>
                                         </tr>
@@ -653,12 +677,16 @@
                 <div class="flex justify-between items-center border-b pb-4">
                     <div>
                         <h3 class="font-black text-lg text-slate-900 flex items-center gap-2">
-                            <span>💸</span>
+                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
                             <span>Enregistrer un Mouvement de Caisse</span>
                         </h3>
                         <p class="text-xs text-slate-500 mt-0.5">Entrée ou retrait direct d'espèces avec mise à jour du solde de caisse.</p>
                     </div>
-                    <button wire:click="closeCashMovementModal" class="text-slate-400 hover:text-slate-600 font-bold text-lg">✕</button>
+                    <button wire:click="closeCashMovementModal" class="text-slate-400 hover:text-slate-600 font-bold text-lg p-1">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
 
                 <form wire:submit.prevent="recordCashMovement" class="space-y-4 text-xs font-semibold">
@@ -668,12 +696,12 @@
                         <div class="grid grid-cols-2 gap-3">
                             <button type="button" wire:click="$set('cash_movement_type', 'debit')" 
                                     class="py-3 px-4 rounded-xl border font-bold flex items-center justify-center gap-2 transition {{ $cash_movement_type === 'debit' ? 'bg-rose-50 border-rose-500 text-rose-700 shadow-xs' : 'border-slate-200 text-slate-600 hover:bg-slate-50' }}">
-                                <span>🔴</span>
+                                <svg class="w-4 h-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
                                 <span>Sortie / Retrait (-)</span>
                             </button>
                             <button type="button" wire:click="$set('cash_movement_type', 'credit')" 
                                     class="py-3 px-4 rounded-xl border font-bold flex items-center justify-center gap-2 transition {{ $cash_movement_type === 'credit' ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-xs' : 'border-slate-200 text-slate-600 hover:bg-slate-50' }}">
-                                <span>🟢</span>
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                 <span>Entrée Espèces (+)</span>
                             </button>
                         </div>
