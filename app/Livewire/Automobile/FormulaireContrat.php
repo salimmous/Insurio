@@ -559,12 +559,91 @@ class FormulaireContrat extends Component
         $returnUrl = session('contract_form_return_url', route('automobile.index'));
         session()->forget('contract_form_return_url');
 
+        // Separate auto-detail fields from contract core fields
+        $autoDetailData = [
+            'vehicule_id' => $vehicule->id,
+            'usage' => $this->usage,
+            'code_classe' => $this->code_classe,
+            'sous_classe' => $this->sous_classe,
+            'marque' => $this->marque,
+            'modele' => $this->modele,
+            'annee' => $this->annee,
+            'motorisation' => $this->motorisation,
+            'matricule' => $this->matricule,
+            'puissance_fiscale' => $this->puissance_fiscale,
+            'nb_places' => $this->nb_places,
+            'carburant' => $this->carburant,
+            'nbr_mois' => $this->nbr_mois,
+            'valeur_vehicule' => $this->valeur_vehicule,
+            'date_mise_circulation' => $this->date_mise_circulation ? Carbon::parse($this->date_mise_circulation) : null,
+        ];
+
+        $coreData = [
+            'numero_contrat' => $this->numero_contrat,
+            'terme' => $this->terme,
+            'compagnie_id' => $this->compagnie_id,
+            'police' => $this->police,
+            'avenant' => $this->avenant,
+            'type_affaire' => $this->type_affaire,
+            'attestation' => $this->attestation,
+            'quittance' => $this->quittance,
+            'client_id' => $this->client_id,
+            'souscripteur' => $this->souscripteur,
+            'apporteur_id' => $this->apporteur_id,
+            'branche_code' => $this->branche_code,
+            'branche_libelle' => $this->branche_libelle,
+            'branch_id' => $this->branch_id,
+            'product_id' => $this->product_id,
+            'date_effet' => Carbon::parse($this->date_effet),
+            'date_echeance' => Carbon::parse($this->date_echeance),
+            'date_production' => $this->date_production ? Carbon::parse($this->date_production) : now(),
+            'date_resiliation' => $this->date_resiliation ? Carbon::parse($this->date_resiliation) : null,
+            'prime_rc' => $this->prime_rc,
+            'def_rec' => $this->def_rec,
+            'tierce' => $this->tierce,
+            'collision' => $this->collision,
+            'vol' => $this->vol,
+            'incendie' => $this->incendie,
+            'bris_glace' => $this->bris_glace,
+            'individuel' => $this->individuel,
+            'taxe_auto' => $this->taxe_auto,
+            'accessoire_auto_cie' => $this->accessoire_auto_cie,
+            'timbre' => $this->timbre,
+            'commission_auto' => $this->commission_auto,
+            'tps_auto' => $this->tps_auto,
+            'montant_pta' => $this->montant_pta,
+            'montant_taxe_pta' => $this->montant_taxe_pta,
+            'commission_pta' => $this->commission_pta,
+            'tps_pta' => $this->tps_pta,
+            'accessoires' => $this->accessoires,
+            'prime_totale' => $this->prime_totale,
+        ];
+
         if ($this->contratId) {
             $contrat = ContratAuto::findOrFail($this->contratId);
-            $contrat->update($data);
+
+            // Update AutoContractDetail directly if it exists
+            if ($contrat->details_id && $contrat->details_type) {
+                $detailClass = $contrat->details_type;
+                $detail = $detailClass::find($contrat->details_id);
+                if ($detail) {
+                    $detail->update($autoDetailData);
+                    $coreData['vehicule_id'] = $detail->vehicule_id ?? $vehicule->id;
+                }
+            } else {
+                // No details row yet - create one
+                $detail = \App\Models\AutoContractDetail::create($autoDetailData);
+                $coreData['details_id'] = $detail->id;
+                $coreData['details_type'] = \App\Models\AutoContractDetail::class;
+                $coreData['vehicule_id'] = $detail->vehicule_id ?? $vehicule->id;
+            }
+
+            $contrat->update($coreData);
             session()->flash('message', 'Contrat N° ' . $contrat->numero_contrat . ' mis à jour avec succès.');
         } else {
-            $contrat = ContratAuto::create($data);
+            // For creation, pass all fields and let booted() handle separation
+            $createData = array_merge($coreData, $autoDetailData);
+            $contrat = ContratAuto::create($createData);
             session()->flash('message', 'Contrat N° ' . $contrat->numero_contrat . ' créé avec succès.');
         }
 
