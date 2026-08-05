@@ -629,6 +629,16 @@ class ListeContrats extends Component
     protected function applyDateFilter($query)
     {
         if (empty($this->dateFrom) && empty($this->dateTo)) {
+            // Default behavior for Renouvellements page: filter contracts expiring within 30 days
+            if ($this->isRenouvellements) {
+                $maxEcheance = now()->addDays(30)->endOfDay()->toDateTimeString();
+                $query->where(function ($q) use ($maxEcheance) {
+                    $q->where('end_date', '<=', $maxEcheance);
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('contracts', 'date_echeance')) {
+                        $q->orWhere('date_echeance', '<=', $maxEcheance);
+                    }
+                });
+            }
             return;
         }
 
@@ -639,14 +649,14 @@ class ListeContrats extends Component
             'date_effet' => 'start_date',
             'date_echeance' => 'end_date',
             'date_production' => 'created_at',
-            default => 'start_date',
+            default => 'end_date',
         };
 
         $fallbackCol = match ($this->dateField) {
             'date_effet' => 'date_effet',
             'date_echeance' => 'date_echeance',
             'date_production' => 'date_production',
-            default => 'date_effet',
+            default => 'date_echeance',
         };
 
         $query->where(function ($q) use ($primaryCol, $fallbackCol, $dateFrom, $dateTo) {
