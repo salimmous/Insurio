@@ -242,19 +242,36 @@ class FormulaireContrat extends Component
         $this->souscripteur = $client->nom . ' ' . $client->prenom;
     }
 
-    public function handleApporteurSelected($apporteurId)
+    public function handleApporteurSelected($payload = null)
     {
-        $this->apporteur_id = $apporteurId;
-        if ($apporteurId) {
-            $apporteur = Apporteur::find($apporteurId);
+        if (is_array($payload)) {
+            $apporteurId = $payload['id'] ?? null;
+            $nom = $payload['nom'] ?? '';
+            $prenom = $payload['prenom'] ?? '';
+            $taux = $payload['taux'] ?? 10.00;
+
+            $this->apporteur_id = $apporteurId;
+            $this->nom_apporteur = trim($nom . ' ' . $prenom);
+            $this->searchApporteur = $this->nom_apporteur;
+            if ((float)$this->prime_rc > 0 && $taux) {
+                $this->commission_auto = round((float)$this->prime_rc * ((float)$taux / 100), 2);
+            }
+            return;
+        }
+
+        $this->apporteur_id = $payload;
+        if ($payload) {
+            $apporteur = Apporteur::find($payload);
             if ($apporteur) {
                 $this->nom_apporteur = $apporteur->nom . ' ' . $apporteur->prenom;
+                $this->searchApporteur = $this->nom_apporteur;
                 if ($apporteur->taux_commission && (float)$this->prime_rc > 0) {
                     $this->commission_auto = round((float)$this->prime_rc * ((float)$apporteur->taux_commission / 100), 2);
                 }
             }
         } else {
-            $this->nom_apporteur = 'Aucun';
+            $this->nom_apporteur = '';
+            $this->searchApporteur = '';
             $this->commission_auto = 0;
         }
     }
