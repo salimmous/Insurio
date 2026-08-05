@@ -52,9 +52,7 @@ class ListeContrats extends Component
         if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || request()->has('renouvellements')) {
             $this->isRenouvellements = true;
             $this->dateField = 'date_echeance';
-            if (empty($this->filterStatut)) {
-                $this->filterStatut = 'expiring_10_days';
-            }
+            $this->filterStatut = '';
         }
     }
 
