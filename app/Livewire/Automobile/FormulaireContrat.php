@@ -626,6 +626,13 @@ class FormulaireContrat extends Component
             'prime_totale' => $this->prime_totale,
         ];
 
+        $validSuccursaleId = null;
+        if (!empty($this->branch_id) && class_exists(\App\Models\Succursale::class)) {
+            if (\App\Models\Succursale::where('id', $this->branch_id)->exists()) {
+                $validSuccursaleId = (int)$this->branch_id;
+            }
+        }
+
         if ($this->contratId) {
             $contrat = ContratAuto::withoutGlobalScopes()->find($this->contratId)
                 ?? ContratAuto::findOrFail($this->contratId);
@@ -654,7 +661,7 @@ class FormulaireContrat extends Component
                 'end_date' => Carbon::parse($this->date_echeance),
                 'premium_amount' => $this->prime_totale,
                 'insurance_type_id' => $this->product_id,
-                'succursale_id' => $this->branch_id,
+                'succursale_id' => $validSuccursaleId,
             ]);
 
             $contrat->update($fullUpdateData);
