@@ -18,13 +18,13 @@
                    x-ref="searchInput"
                    placeholder="Rechercher un client, contrat, ou menu... (Esc pour fermer)" 
                    class="w-full bg-transparent border-0 outline-none text-xs text-slate-800 px-3 py-1.5 focus:ring-0">
-            <span class="bg-slate-100 border border-slate-200 rounded px-1 text-[9px] font-mono text-slate-450 shadow-sm">ESC</span>
+            <span class="bg-slate-100 border border-slate-200 rounded px-1 text-[9px] font-mono text-slate-500 shadow-sm">ESC</span>
         </div>
 
         <!-- Search Results -->
         <div class="max-h-[350px] overflow-y-auto p-4 space-y-4">
             @if(empty($clients) && empty($contracts) && empty($pages))
-                <div class="text-center text-xs text-slate-450 py-6">
+                <div class="text-center text-xs text-slate-500 py-6">
                     Tapez au moins 2 caractères pour rechercher...
                 </div>
             @endif

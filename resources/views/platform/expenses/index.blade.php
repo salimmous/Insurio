@@ -137,13 +137,13 @@
                                             @csrf
 
                                             <div>
-                                                <label for="title" class="block text-xs font-semibold uppercase tracking-wider text-slate-450 mb-2">Libellé / Titre de la charge</label>
+                                                <label for="title" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Libellé / Titre de la charge</label>
                                                 <input type="text" id="title" name="title" value="{{ old('title') }}" required placeholder="Ex: Hébergement Serveur VPS"
                                                        class="w-full bg-slate-50 border border-slate-250 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 outline-none text-sm transition-all">
                                             </div>
 
                                             <div>
-                                                <label for="category" class="block text-xs font-semibold uppercase tracking-wider text-slate-450 mb-2">Catégorie</label>
+                                                <label for="category" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Catégorie</label>
                                                 <select id="category" name="category" required
                                                         class="w-full bg-slate-50 border border-slate-250 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 outline-none text-sm transition-all">
                                                     <option value="Hébergement">Hébergement & Serveurs</option>
@@ -157,20 +157,20 @@
 
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label for="amount" class="block text-xs font-semibold uppercase tracking-wider text-slate-450 mb-2">Montant (DH)</label>
+                                                    <label for="amount" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Montant (DH)</label>
                                                     <input type="number" step="0.01" min="0.01" id="amount" name="amount" value="{{ old('amount') }}" required placeholder="Ex: 150.00"
                                                            class="w-full bg-slate-50 border border-slate-250 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 outline-none text-sm font-mono transition-all">
                                                 </div>
 
                                                 <div>
-                                                    <label for="expense_date" class="block text-xs font-semibold uppercase tracking-wider text-slate-450 mb-2">Date</label>
+                                                    <label for="expense_date" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Date</label>
                                                     <input type="date" id="expense_date" name="expense_date" value="{{ old('expense_date', now()->format('Y-m-d')) }}" required
                                                            class="w-full bg-slate-50 border border-slate-250 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 outline-none text-sm transition-all">
                                                 </div>
                                             </div>
 
                                             <div>
-                                                <label for="description" class="block text-xs font-semibold uppercase tracking-wider text-slate-450 mb-2">Description / Notes (Optionnel)</label>
+                                                <label for="description" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Description / Notes (Optionnel)</label>
                                                 <textarea id="description" name="description" rows="3" placeholder="Notes complémentaires sur cette dépense..."
                                                           class="w-full bg-slate-50 border border-slate-250 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 outline-none text-sm transition-all">{{ old('description') }}</textarea>
                                             </div>

@@ -103,7 +103,7 @@
     <div class="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
         <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <h2 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Registre des Cabinets</h2>
-            <span class="text-[10px] text-slate-450 font-bold font-mono">Total: {{ $tenants->count() }}</span>
+            <span class="text-[10px] text-slate-500 font-bold font-mono">Total: {{ $tenants->count() }}</span>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-650 min-w-[700px]">
@@ -160,27 +160,27 @@
             
             <div class="space-y-3.5 text-xs">
                 <div class="flex justify-between items-center">
-                    <span class="text-slate-450 font-medium">Uptime Serveur</span>
+                    <span class="text-slate-500 font-medium">Uptime Serveur</span>
                     <span class="font-mono font-bold text-emerald-600">{{ $serverHealth }}</span>
                 </div>
                 <div class="flex justify-between items-center border-t border-slate-50 pt-2.5">
-                    <span class="text-slate-450 font-medium">Statut des Queues</span>
+                    <span class="text-slate-500 font-medium">Statut des Queues</span>
                     <span class="font-mono font-bold text-emerald-600">{{ $queueStatus }}</span>
                 </div>
                 <div class="flex justify-between items-center border-t border-slate-50 pt-2.5">
-                    <span class="text-slate-450 font-medium">Moteur Cron/Schedule</span>
+                    <span class="text-slate-500 font-medium">Moteur Cron/Schedule</span>
                     <span class="font-mono font-bold text-emerald-600">{{ $cronStatus }}</span>
                 </div>
                 <div class="flex justify-between items-center border-t border-slate-50 pt-2.5">
-                    <span class="text-slate-450 font-medium">Taille Base de Données</span>
+                    <span class="text-slate-500 font-medium">Taille Base de Données</span>
                     <span class="font-mono font-bold text-slate-700">{{ $databaseUsage }}</span>
                 </div>
                 <div class="flex justify-between items-center border-t border-slate-50 pt-2.5">
-                    <span class="text-slate-450 font-medium">Stockage Fichiers</span>
+                    <span class="text-slate-500 font-medium">Stockage Fichiers</span>
                     <span class="font-mono font-bold text-slate-700">{{ $storageUsage }}</span>
                 </div>
                 <div class="flex justify-between items-center border-t border-slate-50 pt-2.5">
-                    <span class="text-slate-450 font-medium">Appels API (30j)</span>
+                    <span class="text-slate-500 font-medium">Appels API (30j)</span>
                     <span class="font-mono font-bold text-slate-700">{{ number_format($apiUsageCount) }}</span>
                 </div>
             </div>

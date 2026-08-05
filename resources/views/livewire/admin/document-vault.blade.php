@@ -5,7 +5,7 @@
         <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-xl font-bold text-slate-800">Coffre-fort Documents</h1>
-                <p class="text-xs text-slate-450 mt-1">Consulter et gérer l'ensemble des documents téléversés pour tous les clients.</p>
+                <p class="text-xs text-slate-500 mt-1">Consulter et gérer l'ensemble des documents téléversés pour tous les clients.</p>
             </div>
         </div>
 

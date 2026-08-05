@@ -7,7 +7,7 @@
                 @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('comptable'))
                     <!-- Branch Filter Dropdown -->
                     <div class="min-w-[200px]">
-                        <label class="block text-[9px] font-bold text-slate-450 tracking-wider mb-1 uppercase">Filtrer par Succursale</label>
+                        <label class="block text-[9px] font-bold text-slate-500 tracking-wider mb-1 uppercase">Filtrer par Succursale</label>
                         <select wire:model.live="selectedBranch" class="w-full bg-slate-50 border border-slate-200 focus:bg-white rounded-xl px-3 py-1.5 text-xs font-semibold outline-none transition-all text-slate-700">
                             <option value="">Toutes les succursales</option>
                             @foreach($branchList as $branch)
@@ -17,7 +17,7 @@
                     </div>
                 @else
                     <div>
-                        <span class="text-[9px] font-bold text-slate-450 tracking-wider block uppercase">Succursale Active</span>
+                        <span class="text-[9px] font-bold text-slate-500 tracking-wider block uppercase">Succursale Active</span>
                         <span class="text-xs font-bold text-slate-700">
                             {{ $branchList->firstWhere('id', $selectedBranch)->nom ?? 'Siège Central' }}
                         </span>
@@ -27,18 +27,18 @@
                 <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
 
                 <div>
-                    <span class="text-[9px] font-bold text-slate-450 tracking-wider block uppercase">Période Active</span>
+                    <span class="text-[9px] font-bold text-slate-500 tracking-wider block uppercase">Période Active</span>
                     <div class="flex items-center gap-1.5 mt-0.5">
-                        <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-extrabold rounded-md border border-indigo-150 uppercase">Tous les contrats</span>
+                        <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-extrabold rounded-md border border-indigo-200 uppercase">Tous les contrats</span>
                     </div>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
-                <button wire:click="refreshDashboard" class="bg-slate-50 hover:bg-slate-100 text-slate-750 border border-slate-200 font-bold px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-sm">
+                <button wire:click="refreshDashboard" class="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-sm">
                     <span>🔄</span> Actualiser
                 </button>
-                <div class="text-[10px] text-slate-450 font-mono font-bold">
+                <div class="text-[10px] text-slate-500 font-mono font-bold">
                     Rafraîchi à: {{ now()->format('H:i:s') }}
                 </div>
             </div>
@@ -57,7 +57,7 @@
                             Morocco ERP
                         </span>
                     </div>
-                    <p class="text-xs text-slate-350 mt-1">Supervision de la production, de l'état de recouvrement des succursales et des encaissements.</p>
+                    <p class="text-xs text-slate-300 mt-1">Supervision de la production, de l'état de recouvrement des succursales et des encaissements.</p>
                 </div>
             </div>
 
@@ -100,22 +100,22 @@
             <!-- Metrics Row -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Contrats Actifs</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Contrats Actifs</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ $activeContractsCount }}</span>
                     <span class="text-[9px] text-teal-600 font-bold block mt-2">Taux Rétention: {{ $customerRetention }}%</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">À Renouveler (30j)</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">À Renouveler (30j)</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ $expiring30Count }}</span>
                     <span class="text-[9px] text-indigo-600 font-bold block mt-2">Taux Renouvellement: {{ $renewalRate }}%</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Contrats Expirés</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Contrats Expirés</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ $expiredContractsCount }}</span>
-                    <span class="text-[9px] text-slate-450 block mt-2">Fin de couverture</span>
+                    <span class="text-[9px] text-slate-500 block mt-2">Fin de couverture</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Taux de Sinistralité</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Taux de Sinistralité</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ $claimsWaitingCount }} en attente</span>
                     <span class="text-[9px] text-amber-600 font-bold block mt-2">Sinistres à suivre</span>
                 </div>
@@ -171,14 +171,14 @@
                     <!-- Latest Contracts List -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                         <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <h2 class="font-bold text-slate-850 text-xs uppercase tracking-wider">Derniers Contrats Émis</h2>
+                            <h2 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Derniers Contrats Émis</h2>
                             <a href="{{ route('automobile.index') }}" class="text-[10px] text-teal-650 hover:text-teal-950 font-bold uppercase tracking-wider">Voir registre</a>
                         </div>
                         <div class="divide-y divide-slate-100">
                             @forelse($latestContracts as $contrat)
                                 <div class="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
                                     <div>
-                                        <div class="font-bold text-slate-850 font-mono text-sm">#{{ $contrat->contract_number }}</div>
+                                        <div class="font-bold text-slate-800 font-mono text-sm">#{{ $contrat->contract_number }}</div>
                                         <div class="text-xs text-slate-500 mt-0.5">Client: {{ $contrat->client->first_name ?? '' }} {{ $contrat->client->last_name ?? '' }} | Succursale: {{ $contrat->succursale->nom ?? 'N/A' }}</div>
                                     </div>
                                     <div class="text-right">
@@ -216,7 +216,7 @@
                     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                         <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
                             <span class="text-xs">🔄</span>
-                            <h2 class="font-bold text-slate-850 text-xs uppercase tracking-wider">Alertes Échéances (30 jours)</h2>
+                            <h2 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Alertes Échéances (30 jours)</h2>
                         </div>
                         <div class="p-4 space-y-3">
                             @forelse($expiringContracts as $contrat)
@@ -225,7 +225,7 @@
                                 @endphp
                                 <div class="bg-slate-50 border border-slate-200/60 p-3.5 rounded-xl flex justify-between items-center">
                                     <div class="space-y-1">
-                                        <div class="font-bold text-slate-850 text-xs font-mono">#{{ $contrat->contract_number }}</div>
+                                        <div class="font-bold text-slate-800 text-xs font-mono">#{{ $contrat->contract_number }}</div>
                                         <div class="text-[10px] text-slate-500 truncate max-w-[140px]">{{ $contrat->client->first_name ?? '' }} {{ $contrat->client->last_name ?? '' }}</div>
                                     </div>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide {{ $daysLeft <= 7 ? 'bg-rose-50 text-rose-700 border border-rose-250/60' : 'bg-amber-50 text-amber-700 border border-amber-250/60' }}">
@@ -247,22 +247,22 @@
             <!-- Metrics Row -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Recettes Mensuelles</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Recettes Mensuelles</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ number_format($monthlyRevenue, 2) }} DH</span>
                     <span class="text-[9px] text-teal-600 font-bold block mt-2">Encaissé aujourd'hui: {{ number_format($todayRevenue, 2) }} DH</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Production Totale</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Production Totale</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ number_format($totalProduction, 2) }} DH</span>
-                    <span class="text-[9px] text-slate-450 block mt-2">Moyenne prime: {{ number_format($averagePremium, 2) }} DH</span>
+                    <span class="text-[9px] text-slate-500 block mt-2">Moyenne prime: {{ number_format($averagePremium, 2) }} DH</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Bénéfice Net Estimé</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Bénéfice Net Estimé</span>
                     <span class="text-2xl font-black font-mono block mt-1 {{ $netProfit >= 0 ? 'text-emerald-700' : 'text-rose-650' }}">{{ number_format($netProfit, 2) }} DH</span>
-                    <span class="text-[9px] text-slate-450 block mt-2">Commissions totales: {{ number_format($totalCommissions, 2) }} DH</span>
+                    <span class="text-[9px] text-slate-500 block mt-2">Commissions totales: {{ number_format($totalCommissions, 2) }} DH</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Total Charges & Dépenses</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Total Charges & Dépenses</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ number_format($totalExpenses, 2) }} DH</span>
                     <span class="text-[9px] text-rose-650 font-bold block mt-2">Dépenses d'agence enregistrées</span>
                 </div>
@@ -323,7 +323,7 @@
                     <!-- Expenses Breakdown -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                         <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                            <h2 class="font-bold text-slate-850 text-xs uppercase tracking-wider">Répartition des Charges</h2>
+                            <h2 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Répartition des Charges</h2>
                         </div>
                         <div class="p-5 space-y-4">
                             <div>
@@ -363,22 +363,22 @@
             <!-- Metrics Row -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Encaissements Aujourd'hui</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Encaissements Aujourd'hui</span>
                     <span class="text-2xl font-black text-teal-650 font-mono block mt-1">{{ number_format($todayRevenue, 2) }} DH</span>
                     <span class="text-[9px] text-slate-400 block mt-2">Transactions guichet & banque</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Impays Recouvrables</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Impays Recouvrables</span>
                     <span class="text-2xl font-black text-rose-650 font-mono block mt-1">{{ number_format($totalImpayes, 2) }} DH</span>
                     <span class="text-[9px] text-rose-700 font-bold block mt-2">Déficit de recouvrement</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Sinistres à Gérer</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Sinistres à Gérer</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ $claimsWaitingCount }}</span>
                     <span class="text-[9px] text-amber-600 font-bold block mt-2">Prises en charge & constats</span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200/85 shadow-sm">
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450 block">Collaborateurs Connectés</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block">Collaborateurs Connectés</span>
                     <span class="text-2xl font-black text-slate-900 font-mono block mt-1">{{ $employeesOnlineCount }}</span>
                     <span class="text-[9px] text-emerald-600 font-bold block mt-2">🟢 Session active</span>
                 </div>

@@ -156,12 +156,12 @@
                                     <h3 class="text-[10px] font-extrabold uppercase text-slate-400">Détails Chèque Enregistrés</h3>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <p class="text-slate-450">N° Chèque: <span class="text-slate-800 font-bold font-mono">{{ $payment->cheque_number }}</span></p>
-                                            <p class="text-slate-450 mt-1">Banque émettrice: <span class="text-slate-800 font-bold">{{ $payment->bank_name }}</span></p>
+                                            <p class="text-slate-500">N° Chèque: <span class="text-slate-800 font-bold font-mono">{{ $payment->cheque_number }}</span></p>
+                                            <p class="text-slate-500 mt-1">Banque émettrice: <span class="text-slate-800 font-bold">{{ $payment->bank_name }}</span></p>
                                         </div>
                                         <div>
-                                            <p class="text-slate-450">Date d'émission: <span class="text-slate-800 font-mono">{{ $payment->cheque_issue_date ? $payment->cheque_issue_date->format('d/m/Y') : '-' }}</span></p>
-                                            <p class="text-slate-450 mt-1">Date encaissement: <span class="text-slate-800 font-mono">{{ $payment->cheque_clearance_date ? $payment->cheque_clearance_date->format('d/m/Y') : '-' }}</span></p>
+                                            <p class="text-slate-500">Date d'émission: <span class="text-slate-800 font-mono">{{ $payment->cheque_issue_date ? $payment->cheque_issue_date->format('d/m/Y') : '-' }}</span></p>
+                                            <p class="text-slate-500 mt-1">Date encaissement: <span class="text-slate-800 font-mono">{{ $payment->cheque_clearance_date ? $payment->cheque_clearance_date->format('d/m/Y') : '-' }}</span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -225,12 +225,12 @@
                                             @if($inst->status !== 'paid')
                                                 <button wire:click="recordInstallmentPayment({{ $inst->id }})" class="px-2.5 py-1 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700">Acquitter</button>
                                             @else
-                                                <span class="text-slate-450 font-bold font-mono">{{ $inst->receipt_number }}</span>
+                                                <span class="text-slate-500 font-bold font-mono">{{ $inst->receipt_number }}</span>
                                             @endif
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="text-slate-450 italic text-center py-6">Aucun plan d'échéances généré pour ce règlement.</div>
+                                    <div class="text-slate-500 italic text-center py-6">Aucun plan d'échéances généré pour ce règlement.</div>
                                 @endforelse
                             </div>
                         </div>
@@ -275,7 +275,7 @@
                                             </div>
                                         </li>
                                     @empty
-                                        <div class="text-slate-450 italic py-6">Aucun log d'audit.</div>
+                                        <div class="text-slate-500 italic py-6">Aucun log d'audit.</div>
                                     @endforelse
                                 </ul>
                             </div>

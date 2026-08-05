@@ -263,7 +263,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div>
                         <h2 class="text-base font-bold text-slate-800">Profil & Coordonnées Légales</h2>
-                        <p class="text-xs text-slate-450 mt-0.5">Renseignez les données légales figurant sur vos contrats et quittances d'assurance.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Renseignez les données légales figurant sur vos contrats et quittances d'assurance.</p>
                     </div>
                     <span class="px-2.5 py-1 bg-slate-100 text-slate-700 text-[10px] font-bold rounded-lg uppercase">Obligatoire MAROC</span>
                 </div>
@@ -334,7 +334,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div>
                         <h2 class="text-base font-bold text-slate-800">Identité Visuelle & White-Label</h2>
-                        <p class="text-xs text-slate-450 mt-0.5">Personnalisez le logo et les couleurs de votre plateforme d'agence.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Personnalisez le logo et les couleurs de votre plateforme d'agence.</p>
                     </div>
                 </div>
 
@@ -401,7 +401,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div>
                         <h2 class="text-base font-bold text-slate-800">Règles Métiers & Numérotation</h2>
-                        <p class="text-xs text-slate-450 mt-0.5">Définissez les préfixes de numérotation pour les devis, contrats, quittances et sinistres.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Définissez les préfixes de numérotation pour les devis, contrats, quittances et sinistres.</p>
                     </div>
                 </div>
 
@@ -459,7 +459,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div>
                         <h2 class="text-base font-bold text-slate-800">Barèmes de Commission & Déclencheurs</h2>
-                        <p class="text-xs text-slate-450 mt-0.5">Règles de calcul des rémunérations des agents et apporteurs d'affaires.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Règles de calcul des rémunérations des agents et apporteurs d'affaires.</p>
                     </div>
                 </div>
 
@@ -503,7 +503,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div>
                         <h2 class="text-base font-bold text-slate-800">Serveur d'Envoi SMTP & Test</h2>
-                        <p class="text-xs text-slate-450 mt-0.5">Configuration du relais SMTP pour les alertes d'échéances et quittances PDF.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Configuration du relais SMTP pour les alertes d'échéances et quittances PDF.</p>
                     </div>
                     <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-extrabold rounded-lg border border-emerald-200">
                         ● Connecté
@@ -563,7 +563,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div>
                         <h2 class="text-base font-bold text-slate-800">Sécurité, 2FA & Permissions Rôles</h2>
-                        <p class="text-xs text-slate-450 mt-0.5">Contrôlez les accès aux modules et exigences de sécurité.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Contrôlez les accès aux modules et exigences de sécurité.</p>
                     </div>
                 </div>
 
@@ -625,7 +625,7 @@
             <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-6">
                 <div class="border-b border-slate-100 pb-4">
                     <h2 class="text-base font-bold text-slate-800 uppercase tracking-wide">Workspace: {{ strtoupper($activeTab) }}</h2>
-                    <p class="text-xs text-slate-450 mt-0.5">Ce module de contrôle est actif et configuré aux normes de l'agence.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Ce module de contrôle est actif et configuré aux normes de l'agence.</p>
                 </div>
 
                 @if($activeTab === 'subscription')
@@ -633,7 +633,7 @@
                     <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-2xl border border-slate-800 space-y-3">
                         <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-[9px] font-bold uppercase tracking-widest">Actif</span>
                         <h3 class="text-lg font-extrabold">{{ $subscription['plan'] }}</h3>
-                        <p class="text-xs text-slate-350">Licence entreprise permanente avec support prioritaire 24/7 et sauvegardes automatisées.</p>
+                        <p class="text-xs text-slate-300">Licence entreprise permanente avec support prioritaire 24/7 et sauvegardes automatisées.</p>
                         <div class="text-sm font-mono font-bold text-teal-400">{{ $subscription['price'] }}</div>
                     </div>
                 </div>
@@ -675,7 +675,7 @@
                         <path d="m18 3-4 4 5 5 4-4-5-5Z" />
                     </svg>
                     <h3 class="text-sm font-bold text-slate-700">Module Opérationnel</h3>
-                    <p class="text-xs text-slate-450 mt-1">Les paramètres de cette section sont gérés automatiquement par le noyau Insurio Enterprise.</p>
+                    <p class="text-xs text-slate-500 mt-1">Les paramètres de cette section sont gérés automatiquement par le noyau Insurio Enterprise.</p>
                 </div>
                 @endif
             </div>

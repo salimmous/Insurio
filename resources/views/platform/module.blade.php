@@ -109,7 +109,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-5 py-6 text-center text-slate-450">Aucun abonnement configuré.</td>
+                                <td colspan="5" class="px-5 py-6 text-center text-slate-500">Aucun abonnement configuré.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -174,7 +174,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-5 py-6 text-center text-slate-450">Aucune facture enregistrée.</td>
+                                <td colspan="6" class="px-5 py-6 text-center text-slate-500">Aucune facture enregistrée.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -210,7 +210,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-5 py-6 text-center text-slate-450">Aucun paiement encaissé.</td>
+                                <td colspan="5" class="px-5 py-6 text-center text-slate-500">Aucun paiement encaissé.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -283,7 +283,7 @@
                                 <td class="px-5 py-3.5 font-bold text-slate-900">{{ $t->subject }}</td>
                                 <td class="px-5 py-3.5">
                                     <div class="font-bold text-slate-800">{{ $t->creator_name }}</div>
-                                    <div class="text-[10px] text-slate-450 font-mono">{{ $t->creator_email }}</div>
+                                    <div class="text-[10px] text-slate-500 font-mono">{{ $t->creator_email }}</div>
                                 </td>
                                 <td class="px-5 py-3.5 text-center">
                                     <span class="px-1.5 py-0.5 rounded text-[9px] font-bold {{ $t->priority === 'critical' ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700' }}">
@@ -299,7 +299,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-5 py-6 text-center text-slate-450">Aucun ticket ouvert.</td>
+                                <td colspan="5" class="px-5 py-6 text-center text-slate-500">Aucun ticket ouvert.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -320,7 +320,7 @@
                         <div>
                             <span class="font-bold text-slate-800">{{ $l->action }}</span>
                             @if($l->details)
-                                <div class="text-[10px] text-slate-450 mt-1 bg-slate-50 p-2 rounded-lg border border-slate-200/40">{{ $l->details }}</div>
+                                <div class="text-[10px] text-slate-500 mt-1 bg-slate-50 p-2 rounded-lg border border-slate-200/40">{{ $l->details }}</div>
                             @endif
                         </div>
                     </div>
@@ -429,7 +429,7 @@
     @elseif($moduleName === 'templates')
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
-                <h3 class="font-bold text-slate-850 text-sm">Modèle Relance E-mail (Standard)</h3>
+                <h3 class="font-bold text-slate-800 text-sm">Modèle Relance E-mail (Standard)</h3>
                 <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-xl text-xs font-mono text-slate-600 leading-relaxed whitespace-pre-line">
                     Sujet: Votre assurance automobile arrive à expiration bientôt.
                     
@@ -439,7 +439,7 @@
             </div>
 
             <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
-                <h3 class="font-bold text-slate-850 text-sm">Modèle Relance WhatsApp (Standard)</h3>
+                <h3 class="font-bold text-slate-800 text-sm">Modèle Relance WhatsApp (Standard)</h3>
                 <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-xl text-xs font-mono text-slate-600 leading-relaxed whitespace-pre-line">
                     Bonjour &#123;&#123; $client->nom &#125;&#125;, votre contrat d'assurance automobile Insurio N° &#123;&#123; $contrat->numero_contrat &#125;&#125; arrive à échéance le &#123;&#123; $contrat->date_echeance &#125;&#125;. Contactez-nous pour le renouveler.
                 </div>
@@ -449,7 +449,7 @@
     <!-- 13. INFRA MONITORING MODULE -->
     @elseif($moduleName === 'monitoring')
         <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
-            <h3 class="font-bold text-slate-850 text-sm border-b border-slate-100 pb-2">Rapport de Performance Serveur</h3>
+            <h3 class="font-bold text-slate-800 text-sm border-b border-slate-100 pb-2">Rapport de Performance Serveur</h3>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs pt-2">
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/40">

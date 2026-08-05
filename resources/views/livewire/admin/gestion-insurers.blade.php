@@ -60,7 +60,7 @@
 
                 <!-- Actions -->
                 <div class="flex justify-end space-x-2 border-t border-slate-50 dark:border-slate-750 pt-4">
-                    <button wire:click="edit({{ $item->id }})" class="px-3 py-1.5 border border-slate-200 dark:border-slate-650 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-350 rounded-lg text-xs font-semibold">
+                    <button wire:click="edit({{ $item->id }})" class="px-3 py-1.5 border border-slate-200 dark:border-slate-650 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-semibold">
                         Modifier
                     </button>
                     <button wire:click="delete({{ $item->id }})" class="px-3 py-1.5 border border-transparent hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-600 dark:text-rose-450 rounded-lg text-xs font-semibold">
@@ -89,31 +89,31 @@
                 <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
                     <div class="grid grid-cols-2 gap-4">
                         <div class="col-span-2">
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Nom de la Compagnie</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Nom de la Compagnie</label>
                             <input type="text" wire:model="name" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Code</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Code</label>
                             <input type="text" wire:model="code" placeholder="ex: SANLAM" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Logo URL</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Logo URL</label>
                             <input type="text" wire:model="logo" placeholder="ex: /images/logos/sanlam.png" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Adresse</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Adresse</label>
                             <input type="text" wire:model="address" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Téléphone</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Téléphone</label>
                             <input type="text" wire:model="phone" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Nom du Contact</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Nom du Contact</label>
                             <input type="text" wire:model="contact" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Email de contact</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Email de contact</label>
                             <input type="email" wire:model="email" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
                         <div class="col-span-2 flex items-center space-x-2 pt-2">

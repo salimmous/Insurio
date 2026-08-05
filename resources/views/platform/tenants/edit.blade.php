@@ -103,9 +103,9 @@
                 </div>
 
                 <nav class="px-4 py-4 space-y-1">
-                    <a href="{{ route('platform.dashboard') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Console Centrale</a>
-                    <a href="{{ route('platform.tenants.create') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Nouvelle Agence</a>
-                    <a href="{{ route('platform.expenses.index') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-450 hover:bg-[#1E293B]/40 hover:text-white">Comptabilité / Charges</a>
+                    <a href="{{ route('platform.dashboard') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-500 hover:bg-[#1E293B]/40 hover:text-white">Console Centrale</a>
+                    <a href="{{ route('platform.tenants.create') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-500 hover:bg-[#1E293B]/40 hover:text-white">Nouvelle Agence</a>
+                    <a href="{{ route('platform.expenses.index') }}" class="flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl text-slate-500 hover:bg-[#1E293B]/40 hover:text-white">Comptabilité / Charges</a>
                 </nav>
             </aside>
 
@@ -119,7 +119,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
-                        <h2 class="font-bold text-slate-850 text-sm">Gestion de l'Abonnement Cabinet</h2>
+                        <h2 class="font-bold text-slate-800 text-sm">Gestion de l'Abonnement Cabinet</h2>
                     </div>
 
                     <div class="flex items-center gap-4">
@@ -276,10 +276,10 @@
                                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                     <!-- Left: Succursales List (2 cols) -->
                                     <div class="lg:col-span-2 space-y-4">
-                                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-450 border-b border-slate-50 pb-2">Liste des Succursales Actives</h3>
-                                        <div class="border border-slate-150 rounded-2xl overflow-hidden shadow-sm">
+                                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-50 pb-2">Liste des Succursales Actives</h3>
+                                        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                                             <table class="w-full text-left text-xs text-slate-600">
-                                                <thead class="bg-slate-50 border-b border-slate-150 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                                <thead class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                                                     <tr>
                                                         <th class="px-4 py-3">Code</th>
                                                         <th class="px-4 py-3">Nom Succursale</th>

@@ -185,7 +185,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="p-4 rounded-xl bg-slate-50 text-center text-xs text-slate-450 border border-slate-200/60">
+                    <div class="p-4 rounded-xl bg-slate-50 text-center text-xs text-slate-500 border border-slate-200/60">
                         Aucune échéance de contrat enregistrée pour cette date.
                     </div>
                 @endforelse

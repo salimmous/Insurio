@@ -132,7 +132,7 @@
                                 </td>
                                 <td class="px-5 py-4 font-mono font-bold text-slate-800">{{ number_format($exp->amount, 2) }} DH</td>
                                 <td class="px-5 py-4 font-mono text-slate-500">{{ $exp->date_charge->format('d/m/Y') }}</td>
-                                <td class="px-5 py-4 text-slate-450 max-w-[200px] truncate" title="{{ $exp->description }}">{{ $exp->description ?: 'Aucune description' }}</td>
+                                <td class="px-5 py-4 text-slate-500 max-w-[200px] truncate" title="{{ $exp->description }}">{{ $exp->description ?: 'Aucune description' }}</td>
                                 <td class="px-5 py-4 text-right space-x-2">
                                     <button wire:click="edit({{ $exp->id }})" class="text-indigo-650 hover:text-indigo-900 font-semibold">Modifier</button>
                                     <button onclick="confirm('Voulez-vous supprimer cette charge ?') || event.stopImmediatePropagation()" wire:click="delete({{ $exp->id }})" class="text-rose-600 hover:text-rose-900 font-semibold">Supprimer</button>
@@ -167,14 +167,14 @@
                         </div>
                         <form wire:submit.prevent="save" class="p-6 flex flex-col gap-4">
                             <div>
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-450 mb-1.5">Intitulé / Libellé de la charge</label>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Intitulé / Libellé de la charge</label>
                                 <input type="text" wire:model="title" placeholder="Ex: Loyer Local Principal Juillet" class="w-full bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 rounded-xl px-4 py-2.5 outline-none text-sm transition-all placeholder-slate-400">
                                 @error('title') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-450 mb-1.5">Catégorie</label>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Catégorie</label>
                                     <select wire:model="category" class="w-full bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 rounded-xl px-4 py-2.5 outline-none text-sm transition-all text-slate-700">
                                         <option value="loyer">Loyer</option>
                                         <option value="electricite">Électricité</option>

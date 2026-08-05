@@ -57,7 +57,7 @@
             <div class="bg-slate-950/40 border border-slate-800 rounded-2xl p-4 text-left text-xs space-y-3 font-mono">
                 <div class="flex justify-between border-b border-slate-800/60 pb-2">
                     <span class="text-slate-500">Identifiant Unique :</span>
-                    <span class="text-slate-350">{{ $tenant->id }}</span>
+                    <span class="text-slate-300">{{ $tenant->id }}</span>
                 </div>
                 <div class="flex justify-between border-b border-slate-800/60 pb-2">
                     <span class="text-slate-500">Statut d'abonnement :</span>
@@ -70,13 +70,13 @@
                 @if($tenant->subscription_end_date)
                     <div class="flex justify-between">
                         <span class="text-slate-500">Date d'échéance :</span>
-                        <span class="text-slate-350">{{ \Carbon\Carbon::parse($tenant->subscription_end_date)->format('d/m/Y') }}</span>
+                        <span class="text-slate-300">{{ \Carbon\Carbon::parse($tenant->subscription_end_date)->format('d/m/Y') }}</span>
                     </div>
                 @endif
             </div>
 
             <!-- Instructions / Actions -->
-            <p class="text-xs text-slate-450 leading-relaxed max-w-sm mx-auto">
+            <p class="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto">
                 Veuillez régulariser votre abonnement ou contacter votre administrateur système central pour restaurer l'accès à vos données.
             </p>
 

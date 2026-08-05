@@ -93,7 +93,7 @@
                     <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                     
                     <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-200">
-                        <div class="bg-slate-50 px-6 py-4 border-b border-slate-150">
+                        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
                             <h3 class="text-lg font-bold text-slate-800" id="modal-title">
                                 {{ $taskId ? 'Modifier la Tâche' : 'Créer une Nouvelle Tâche' }}
                             </h3>
@@ -173,7 +173,7 @@
                                 </div>
                             </div>
 
-                            <div class="bg-slate-50 px-6 py-4 flex justify-end gap-3 -mx-6 -mb-6 border-t border-slate-150">
+                            <div class="bg-slate-50 px-6 py-4 flex justify-end gap-3 -mx-6 -mb-6 border-t border-slate-200">
                                 <button type="button" wire:click="closeModal" class="inline-flex justify-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     Annuler
                                 </button>

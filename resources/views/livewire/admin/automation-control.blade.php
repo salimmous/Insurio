@@ -65,7 +65,7 @@
             <div class="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
                 <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                     <span class="font-bold text-slate-800 text-xs uppercase tracking-wider">Règles actives configurées</span>
-                    <span class="text-[10px] font-bold font-mono text-slate-450">Total: {{ count($rulesList) }}</span>
+                    <span class="text-[10px] font-bold font-mono text-slate-500">Total: {{ count($rulesList) }}</span>
                 </div>
 
                 <div class="divide-y divide-slate-150">
@@ -78,8 +78,8 @@
                                         {{ $rule->is_active ? 'ACTIVE' : 'INACTIVE' }}
                                     </span>
                                 </h3>
-                                <p class="text-xs text-slate-450 font-medium">Déclencheur: <span class="font-mono bg-slate-100 rounded px-1">{{ $rule->event }}</span></p>
-                                <p class="text-xs text-slate-450 font-medium">Condition: <span class="font-bold text-slate-700">Si échéance dans {{ $rule->conditions['days_before_expiry'] ?? '-' }} jours</span></p>
+                                <p class="text-xs text-slate-500 font-medium">Déclencheur: <span class="font-mono bg-slate-100 rounded px-1">{{ $rule->event }}</span></p>
+                                <p class="text-xs text-slate-500 font-medium">Condition: <span class="font-bold text-slate-700">Si échéance dans {{ $rule->conditions['days_before_expiry'] ?? '-' }} jours</span></p>
                                 
                                 <div class="flex flex-wrap gap-1.5 pt-1">
                                     @foreach($rule->actions as $action)

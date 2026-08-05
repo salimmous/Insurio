@@ -18,12 +18,12 @@
                 <!-- Modal Body -->
                 <div class="p-6 space-y-4">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-350 mb-1">Destinataire (N° de téléphone)</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Destinataire (N° de téléphone)</label>
                         <input type="text" wire:model="phoneNumber" 
                                class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-650 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-350 mb-1">Message</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Message</label>
                         <textarea wire:model="message" rows="6" 
                                   class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-650 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-sans"></textarea>
                     </div>
@@ -32,7 +32,7 @@
                 <!-- Modal Footer -->
                 <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700 flex justify-end space-x-3">
                     <button type="button" wire:click="$set('showModal', false)" 
-                            class="px-4 py-2 border border-slate-200 dark:border-slate-600 text-slate-750 dark:text-slate-300 rounded-xl text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">
+                            class="px-4 py-2 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">
                         Annuler
                     </button>
                     <button type="button" wire:click="send" 

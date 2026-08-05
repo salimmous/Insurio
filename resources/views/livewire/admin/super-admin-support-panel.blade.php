@@ -3,7 +3,7 @@
     <!-- Floating Platform Support Badge Trigger -->
     <div class="fixed bottom-5 right-5 z-50">
         <button wire:click="togglePanel" 
-                class="bg-slate-900 hover:bg-slate-850 text-white font-bold px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700/80 flex items-center gap-2.5 transition-all transform hover:scale-105 group text-xs">
+                class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700/80 flex items-center gap-2.5 transition-all transform hover:scale-105 group text-xs">
             <span class="relative flex h-2.5 w-2.5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 {{ $tenantStatus === 'Actif' ? 'bg-teal-400' : 'bg-rose-500' }}"></span>

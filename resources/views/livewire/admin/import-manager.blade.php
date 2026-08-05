@@ -26,7 +26,7 @@
                 <div class="space-y-4">
                     <!-- Type Selection -->
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-350 mb-1">Type de données</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Type de données</label>
                         <select wire:model.live="importType" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                             <option value="clients">Clients CRM</option>
                             <option value="contracts">Contrats d'Assurance</option>
@@ -97,18 +97,18 @@
 
             <div class="space-y-4">
                 @if($history->isEmpty())
-                    <p class="text-sm text-slate-450 dark:text-slate-400 text-center py-6">Aucun import dans l'historique.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 text-center py-6">Aucun import dans l'historique.</p>
                 @else
                     @foreach($history as $item)
                         <div class="p-3 border border-slate-100 dark:border-slate-700 rounded-lg hover:border-slate-200 dark:hover:border-slate-600 transition-all">
                             <div class="flex justify-between items-start mb-1">
-                                <span class="font-bold text-sm text-slate-850 dark:text-white truncate max-w-[150px]" title="{{ $item->file }}">{{ $item->file }}</span>
+                                <span class="font-bold text-sm text-slate-800 dark:text-white truncate max-w-[150px]" title="{{ $item->file }}">{{ $item->file }}</span>
                                 <span class="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded
                                     {{ $item->type === 'clients' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' }}">
                                     {{ $item->type }}
                                 </span>
                             </div>
-                            <div class="flex items-center justify-between text-xs text-slate-450 dark:text-slate-400 mt-2">
+                            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mt-2">
                                 <div>
                                     <span class="text-emerald-500 font-bold">{{ $item->success_rows }}</span> ok
                                     @if($item->failed_rows > 0)

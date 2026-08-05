@@ -95,7 +95,7 @@
                                     @forelse($contracts as $contract)
                                         <tr class="hover:bg-slate-50/50">
                                             <td class="px-4 py-4">
-                                                <span class="font-bold text-slate-850 block font-mono">{{ $contract->contract_number }}</span>
+                                                <span class="font-bold text-slate-800 block font-mono">{{ $contract->contract_number }}</span>
                                                 <span class="text-xs text-slate-400 block">{{ $contract->compagnie->nom ?? '-' }}</span>
                                             </td>
                                             <td class="px-4 py-4">
@@ -106,7 +106,7 @@
                                                 <div>Du {{ $contract->start_date->format('d/m/Y') }}</div>
                                                 <div>Au {{ $contract->end_date->format('d/m/Y') }}</div>
                                             </td>
-                                            <td class="px-4 py-4 font-mono font-semibold text-slate-850">
+                                            <td class="px-4 py-4 font-mono font-semibold text-slate-800">
                                                 {{ number_format($contract->premium_amount, 2) }} DH
                                             </td>
                                             <td class="px-4 py-4">
@@ -179,7 +179,7 @@
                                             </div>
                                         </div>
                                         <div class="flex gap-2">
-                                            <a href="{{ route('documents.preview', $doc->id) }}" target="_blank" class="text-slate-500 hover:text-slate-850 p-1" title="Prévisualiser">
+                                            <a href="{{ route('documents.preview', $doc->id) }}" target="_blank" class="text-slate-500 hover:text-slate-800 p-1" title="Prévisualiser">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                             </a>
                                             <button wire:click="downloadDocument({{ $doc->id }})" class="text-slate-500 hover:text-slate-800 transition-colors p-1" title="Télécharger">
@@ -203,19 +203,19 @@
                             <!-- Telemetry stats inside Client Profile -->
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                                    <span class="text-[9px] font-extrabold uppercase text-slate-450 tracking-wider">Montant Payé</span>
+                                    <span class="text-[9px] font-extrabold uppercase text-slate-500 tracking-wider">Montant Payé</span>
                                     <div class="text-lg font-black text-emerald-600 mt-1">
                                         {{ number_format($payments->where('payment_status', 'paid')->sum('amount'), 2) }} DH
                                     </div>
                                 </div>
                                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                                    <span class="text-[9px] font-extrabold uppercase text-slate-450 tracking-wider">Encours Client</span>
+                                    <span class="text-[9px] font-extrabold uppercase text-slate-500 tracking-wider">Encours Client</span>
                                     <div class="text-lg font-black text-rose-600 mt-1">
                                         {{ number_format($payments->whereNotIn('payment_status', ['paid', 'cancelled', 'written_off'])->sum('remaining_amount'), 2) }} DH
                                     </div>
                                 </div>
                                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                                    <span class="text-[9px] font-extrabold uppercase text-slate-450 tracking-wider">Nombre de Règlements</span>
+                                    <span class="text-[9px] font-extrabold uppercase text-slate-500 tracking-wider">Nombre de Règlements</span>
                                     <div class="text-lg font-black text-slate-800 mt-1">
                                         {{ $payments->count() }} Fiches
                                     </div>
@@ -460,7 +460,7 @@
                         <!-- Result display -->
                         @if($aiResult)
                             <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-3">
-                                <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450">RÉPONSE DU COPILOT</span>
+                                <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500">RÉPONSE DU COPILOT</span>
                                 <div class="text-xs text-slate-700 whitespace-pre-line leading-relaxed font-medium">
                                     {!! $aiResult !!}
                                 </div>

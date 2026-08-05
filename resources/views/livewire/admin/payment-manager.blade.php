@@ -27,7 +27,7 @@
     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
         <table class="w-full text-left border-collapse text-sm">
             <thead>
-                <tr class="bg-slate-50 dark:bg-slate-700/50 text-slate-550 dark:text-slate-350 border-b border-slate-100 dark:border-slate-700">
+                <tr class="bg-slate-50 dark:bg-slate-700/50 text-slate-550 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700">
                     <th class="px-6 py-4 font-semibold">Client</th>
                     <th class="px-6 py-4 font-semibold">N° Contrat</th>
                     <th class="px-6 py-4 font-semibold">Montant</th>
@@ -92,7 +92,7 @@
                 <!-- Modal Body -->
                 <div class="p-6 space-y-4">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Client</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Client</label>
                         <select wire:model.live="client_id" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                             <option value="">Sélectionner un Client</option>
                             @foreach($clients as $client)
@@ -102,7 +102,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Contrat</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Contrat</label>
                         <select wire:model="contract_id" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                             <option value="">Sélectionner un Contrat</option>
                             @foreach($contracts as $c)
@@ -113,12 +113,12 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Montant (DH)</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Montant (DH)</label>
                             <input type="number" step="0.01" wire:model="amount" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Méthode de paiement</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Méthode de paiement</label>
                             <select wire:model="payment_method" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                                 <option value="cash">Espèces</option>
                                 <option value="bank_transfer">Virement Bancaire</option>
@@ -127,7 +127,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Statut</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Statut</label>
                             <select wire:model="status" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                                 <option value="paid">Payé</option>
                                 <option value="partial">Partiel</option>
@@ -136,7 +136,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-750 dark:text-slate-300 mb-1">Référence / Numéro chèque</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Référence / Numéro chèque</label>
                             <input type="text" wire:model="reference" placeholder="ex: CHQ-879812" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-650 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                         </div>
                     </div>
