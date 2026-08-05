@@ -110,7 +110,6 @@
                     Command Center
                 </button>
             </div>
-        </div></div>
         </div>
 
         <!-- PORTFOLIO VIEW -->
