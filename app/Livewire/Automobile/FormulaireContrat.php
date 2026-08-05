@@ -81,7 +81,10 @@ class FormulaireContrat extends Component
     public $tps_pta = 0;
     public $accessoires = 0; // other accessories
 
-    protected $listeners = ['clientSelected' => 'handleClientSelected'];
+    protected $listeners = [
+        'clientSelected' => 'handleClientSelected',
+        'apporteurSelected' => 'handleApporteurSelected',
+    ];
 
     public function updatedMarque(): void
     {
@@ -162,16 +165,26 @@ class FormulaireContrat extends Component
         $this->souscripteur = $client->nom . ' ' . $client->prenom;
     }
 
-    public function updatedApporteurId($value)
+    public function handleApporteurSelected($apporteurId)
     {
-        if ($value) {
-            $apporteur = Apporteur::find($value);
+        $this->apporteur_id = $apporteurId;
+        if ($apporteurId) {
+            $apporteur = Apporteur::find($apporteurId);
             if ($apporteur) {
                 $this->nom_apporteur = $apporteur->nom . ' ' . $apporteur->prenom;
+                if ($apporteur->taux_commission && (float)$this->prime_rc > 0) {
+                    $this->commission_auto = round((float)$this->prime_rc * ((float)$apporteur->taux_commission / 100), 2);
+                }
             }
         } else {
-            $this->nom_apporteur = '';
+            $this->nom_apporteur = 'Aucun';
+            $this->commission_auto = 0;
         }
+    }
+
+    public function updatedApporteurId($value)
+    {
+        $this->handleApporteurSelected($value);
     }
 
     public function updatedDateEffet()

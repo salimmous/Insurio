@@ -116,12 +116,15 @@
 
                         <div>
                             <label class="block text-sm font-medium text-slate-500 mb-2">Apporteur</label>
-                            <select wire:model.live="apporteur_id" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                                <option value="">Aucun</option>
-                                @foreach($apporteurs as $apporteur)
-                                <option value="{{ $apporteur->id }}">{{ $apporteur->nom }} {{ $apporteur->prenom }}</option>
-                                @endforeach
-                            </select>
+                            <div class="flex gap-3">
+                                <input type="text" readonly wire:model="nom_apporteur" placeholder="Sélectionnez un apporteur (ou Aucun)..." 
+                                       class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 outline-none cursor-pointer"
+                                       wire:click="$dispatch('openVisionApporteur')">
+                                <button type="button" wire:click="$dispatch('openVisionApporteur')" 
+                                        class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-5 rounded-xl transition-all shadow-sm">
+                                    Rechercher
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -272,4 +275,6 @@
 
     <!-- Vision Client Modal Component -->
     @livewire('client.vision-client-modal')
+    <!-- Vision Apporteur Modal Component -->
+    @livewire('apporteur.vision-apporteur-modal')
 </div>
