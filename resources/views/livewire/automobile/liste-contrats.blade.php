@@ -52,6 +52,45 @@
         </div>
     </div>
 
+    <!-- Date Filter Bar -->
+    <div class="bg-white border border-slate-200/80 rounded-xl px-5 py-3 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Filtrer par Date :
+            </span>
+
+            <select wire:model.live="dateField" class="bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl px-3 py-1.5 text-xs text-slate-800 outline-none">
+                <option value="date_effet">Date d'effet</option>
+                <option value="date_echeance">Date d'échéance</option>
+                <option value="date_production">Date de production</option>
+            </select>
+
+            <div class="flex items-center gap-1.5">
+                <span class="text-xs text-slate-400 font-medium">Du:</span>
+                <input wire:model.live="dateFrom" type="date" class="bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl px-2.5 py-1 text-xs text-slate-800 outline-none">
+            </div>
+
+            <div class="flex items-center gap-1.5">
+                <span class="text-xs text-slate-400 font-medium">Au:</span>
+                <input wire:model.live="dateTo" type="date" class="bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl px-2.5 py-1 text-xs text-slate-800 outline-none">
+            </div>
+        </div>
+
+        <!-- Quick Date Range Preset Pills -->
+        <div class="flex flex-wrap items-center gap-1.5">
+            <button wire:click="setDateRangePreset('today')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all">Aujourd'hui</button>
+            <button wire:click="setDateRangePreset('this_month')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all">Ce mois</button>
+            <button wire:click="setDateRangePreset('this_quarter')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all">Ce trimestre</button>
+            <button wire:click="setDateRangePreset('this_year')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all">Cette année</button>
+            @if(!empty($dateFrom) || !empty($dateTo))
+            <button wire:click="setDateRangePreset('clear')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-600 transition-all">Effacer date</button>
+            @endif
+        </div>
+    </div>
+
     @if(!request()->routeIs('admin.renouvellements'))
     <!-- Production Payment Quick Filters -->
     <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex flex-wrap items-center gap-3">
@@ -203,6 +242,9 @@
                 <table class="w-full text-left text-xs text-slate-600">
                     <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200/80">
                         <tr>
+                            <th class="px-2.5 py-2.5 text-center whitespace-nowrap">
+                                <input type="checkbox" wire:model.live="selectAll" class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer">
+                            </th>
                             <th class="px-2.5 py-2.5 whitespace-nowrap">ID</th>
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Réf</th>
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Code client</th>
@@ -224,7 +266,10 @@
                         @forelse($contrats as $contrat)
                         <tr wire:key="contrat-row-{{ $contrat->id }}"
                             wire:click="selectContrat({{ $contrat->id }})" 
-                            class="hover:bg-slate-50 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
+                            class="hover:bg-slate-50 cursor-pointer transition-colors {{ $selectedContratId == $contrat->id || in_array((string)$contrat->id, $selectedContrats) ? 'bg-teal-50/60 border-l-2 border-l-teal-600 text-slate-900' : 'text-slate-700' }}">
+                            <td class="px-2.5 py-2 text-center whitespace-nowrap" wire:click.stop>
+                                <input type="checkbox" value="{{ $contrat->id }}" wire:model.live="selectedContrats" class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer">
+                            </td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-slate-400">{{ $contrat->id }}</td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-teal-600 font-bold">{{ $contrat->numero_contrat }}</td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-slate-500">CL-{{ str_pad($contrat->client_id, 6, '0', STR_PAD_LEFT) }}</td>
@@ -625,5 +670,59 @@
                 </div>
             </div>
         </div>
+    @endif
+
+    <!-- Floating Bulk Actions Toolbar -->
+    @if(count($selectedContrats) > 0)
+    <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 bg-slate-900 text-white rounded-2xl px-6 py-3.5 shadow-2xl border border-slate-700 flex flex-wrap items-center gap-4 transition-all duration-300">
+        <div class="flex items-center gap-2 pr-3 border-r border-slate-700">
+            <span class="flex h-3 w-3 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+            </span>
+            <span class="font-bold text-xs font-mono">{{ count($selectedContrats) }} contrat(s) sélectionné(s)</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            <!-- Statut Bulk Dropdown -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" type="button" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+                    <span>🔄 Changer Statut</span>
+                    <svg width="14" height="14" style="width:14px;height:14px;" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="open" @click.away="open = false" x-transition class="absolute bottom-full mb-2 left-0 w-44 bg-white rounded-xl shadow-xl border border-slate-200 py-1 text-slate-800 text-xs font-semibold z-50">
+                    <button wire:click="bulkUpdateStatut('actif')" @click="open = false" class="w-full text-left px-4 py-2 hover:bg-slate-50 text-emerald-600 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Actif
+                    </button>
+                    <button wire:click="bulkUpdateStatut('expire')" @click="open = false" class="w-full text-left px-4 py-2 hover:bg-slate-50 text-amber-600 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Expiré
+                    </button>
+                    <button wire:click="bulkUpdateStatut('resilie')" @click="open = false" class="w-full text-left px-4 py-2 hover:bg-slate-50 text-rose-600 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span> Résilié
+                    </button>
+                    <button wire:click="bulkUpdateStatut('annule')" @click="open = false" class="w-full text-left px-4 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-slate-500"></span> Annulé
+                    </button>
+                </div>
+            </div>
+
+            <!-- Email Relance Bulk -->
+            <button wire:click="bulkRelancerEmail" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+                <svg width="14" height="14" style="width:14px;height:14px;" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <span>Relancer (Masse)</span>
+            </button>
+
+            <!-- Export CSV Bulk -->
+            <button wire:click="bulkExportCsv" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+                <svg width="14" height="14" style="width:14px;height:14px;" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Exporter CSV</span>
+            </button>
+
+            <!-- Clear Selection -->
+            <button wire:click="clearSelection" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition-all cursor-pointer">
+                Désélectionner tout
+            </button>
+        </div>
+    </div>
     @endif
 </div>

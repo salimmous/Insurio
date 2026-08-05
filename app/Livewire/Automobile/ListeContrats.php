@@ -15,6 +15,15 @@ class ListeContrats extends Component
     public $filterCompagnie = '';
     public $filterStatut = '';
 
+    // Date Filtering
+    public $dateField = 'date_effet'; // date_effet, date_echeance, date_production
+    public $dateFrom = '';
+    public $dateTo = '';
+
+    // Bulk Selection
+    public $selectedContrats = [];
+    public $selectAll = false;
+
     // Active selected contract ID in the grid
     public $selectedContratId = null;
 
@@ -30,6 +39,9 @@ class ListeContrats extends Component
         'search' => ['except' => ''],
         'filterCompagnie' => ['except' => ''],
         'filterStatut' => ['except' => ''],
+        'dateField' => ['except' => 'date_effet'],
+        'dateFrom' => ['except' => ''],
+        'dateTo' => ['except' => ''],
     ];
 
     public function mount()
@@ -313,6 +325,192 @@ class ListeContrats extends Component
         return 'https://wa.me/' . $phone . '?text=' . urlencode($message);
     }
 
+    public function setDateRangePreset($preset)
+    {
+        switch ($preset) {
+            case 'today':
+                $this->dateFrom = now()->toDateString();
+                $this->dateTo = now()->toDateString();
+                break;
+            case 'this_month':
+                $this->dateFrom = now()->startOfMonth()->toDateString();
+                $this->dateTo = now()->endOfMonth()->toDateString();
+                break;
+            case 'this_quarter':
+                $this->dateFrom = now()->startOfQuarter()->toDateString();
+                $this->dateTo = now()->endOfQuarter()->toDateString();
+                break;
+            case 'this_year':
+                $this->dateFrom = now()->startOfYear()->toDateString();
+                $this->dateTo = now()->endOfYear()->toDateString();
+                break;
+            case 'clear':
+                $this->dateFrom = '';
+                $this->dateTo = '';
+                break;
+        }
+    }
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selectedContrats = $this->getFilteredContratIds();
+        } else {
+            $this->selectedContrats = [];
+        }
+    }
+
+    public function clearSelection()
+    {
+        $this->selectedContrats = [];
+        $this->selectAll = false;
+    }
+
+    protected function getFilteredContratIds()
+    {
+        $query = ContratAuto::query();
+
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('numero_contrat', 'like', '%' . $this->search . '%')
+                  ->orWhere('police', 'like', '%' . $this->search . '%')
+                  ->orWhere('matricule', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('client', function ($qc) {
+                      $qc->where('nom', 'like', '%' . $this->search . '%')
+                         ->orWhere('prenom', 'like', '%' . $this->search . '%');
+                  });
+            });
+        }
+
+        if (!empty($this->filterCompagnie)) {
+            $query->where('compagnie_id', $this->filterCompagnie);
+        }
+
+        if (!empty($this->filterStatut)) {
+            if ($this->filterStatut === 'expiring_1_day') {
+                $query->where('statut', 'actif')
+                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()]);
+            } elseif ($this->filterStatut === 'expiring_7_days') {
+                $query->where('statut', 'actif')
+                      ->whereBetween('date_echeance', [now()->addDays(2)->startOfDay(), now()->addDays(7)->endOfDay()]);
+            } elseif ($this->filterStatut === 'expiring_10_days') {
+                $query->where('statut', 'actif')
+                      ->whereBetween('date_echeance', [now()->addDays(8)->startOfDay(), now()->addDays(10)->endOfDay()]);
+            } elseif ($this->filterStatut === 'expiring_all') {
+                $query->where('statut', 'actif')
+                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()]);
+            } elseif ($this->filterStatut === 'reglement_solde') {
+                $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) >= contracts.prime_totale AND contracts.prime_totale > 0");
+            } elseif ($this->filterStatut === 'reglement_partiel') {
+                $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) > 0 AND (SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) < contracts.prime_totale");
+            } elseif ($this->filterStatut === 'reglement_non_paye') {
+                $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) <= 0");
+            } elseif ($this->filterStatut === 'reglement_impaye') {
+                $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) < contracts.prime_totale");
+            } else {
+                $query->where('statut', $this->filterStatut);
+            }
+        }
+
+        if (!empty($this->dateFrom) && !empty($this->dateTo)) {
+            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
+            $query->whereBetween($field, [$this->dateFrom, $this->dateTo]);
+        } elseif (!empty($this->dateFrom)) {
+            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
+            $query->where($field, '>=', $this->dateFrom);
+        } elseif (!empty($this->dateTo)) {
+            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
+            $query->where($field, '<=', $this->dateTo);
+        }
+
+        return $query->pluck('id')->map(fn($id) => (string)$id)->toArray();
+    }
+
+    public function bulkUpdateStatut($statut)
+    {
+        if (empty($this->selectedContrats)) {
+            $this->dispatch('swal:error', ['message' => 'Veuillez sélectionner au moins un contrat.']);
+            return;
+        }
+
+        $validStatuts = ['actif', 'expire', 'resilie', 'annule'];
+        if (!in_array($statut, $validStatuts)) {
+            return;
+        }
+
+        $count = ContratAuto::whereIn('id', $this->selectedContrats)->update(['statut' => $statut]);
+
+        $this->clearSelection();
+        $this->dispatch('swal:success', ['message' => "Statut mis à jour pour {$count} contrat(s) sélectionné(s)."]);
+    }
+
+    public function bulkRelancerEmail()
+    {
+        if (empty($this->selectedContrats)) {
+            $this->dispatch('swal:error', ['message' => 'Veuillez sélectionner au moins un contrat.']);
+            return;
+        }
+
+        $mailHost = \App\Models\Setting::get('mail_host');
+        if (empty($mailHost)) {
+            $this->dispatch('swal:error', ['message' => "Le serveur SMTP n'est pas configuré. Veuillez aller dans la configuration de l'agence pour l'activer."]);
+            return;
+        }
+
+        $contrats = ContratAuto::with('client')->whereIn('id', $this->selectedContrats)->get();
+        $sentCount = 0;
+
+        $tenantName = (function_exists('tenant') && tenant()) ? tenant('name') : 'Insurio';
+        $agencyName = \App\Models\Setting::get('agency_name', $tenantName);
+        $agencyPhone = \App\Models\Setting::get('agency_phone', '+212 5 22 00 00 00');
+
+        foreach ($contrats as $contrat) {
+            if ($contrat->client && !empty($contrat->client->email)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($contrat->client->email)
+                        ->send(new \App\Mail\RenewalReminderMail($contrat->client, $contrat, $agencyName, $agencyPhone));
+                    $sentCount++;
+                } catch (\Throwable $e) {
+                    // Ignore individual failure
+                }
+            }
+        }
+
+        $this->clearSelection();
+        $this->dispatch('swal:success', ['message' => "Relances envoyées par email à {$sentCount} client(s)."]);
+    }
+
+    public function bulkExportCsv()
+    {
+        if (empty($this->selectedContrats)) {
+            $this->dispatch('swal:error', ['message' => 'Veuillez sélectionner au moins un contrat.']);
+            return;
+        }
+
+        $contrats = ContratAuto::with(['client', 'compagnie', 'vehicule'])->whereIn('id', $this->selectedContrats)->get();
+
+        $csvData = "ID;N° Contrat;Police;Avenant;Attestation;Code Client;Client;Compagnie;Matricule;Date Effet;Date Echeance;Prime Totale;Statut\n";
+
+        foreach ($contrats as $c) {
+            $clientName = $c->client ? ($c->client->nom . ' ' . $c->client->prenom) : ($c->souscripteur ?? '-');
+            $codeClient = $c->client_id ? 'CL-' . str_pad($c->client_id, 6, '0', STR_PAD_LEFT) : '-';
+            $compagnie = $c->compagnie ? $c->compagnie->nom : '-';
+            $dateEffet = $c->date_effet ? $c->date_effet->format('d/m/Y') : '-';
+            $dateEcheance = $c->date_echeance ? $c->date_echeance->format('d/m/Y') : '-';
+
+            $csvData .= "{$c->id};{$c->numero_contrat};{$c->police};{$c->avenant};{$c->attestation};{$codeClient};{$clientName};{$compagnie};{$c->matricule};{$dateEffet};{$dateEcheance};{$c->prime_totale};{$c->statut}\n";
+        }
+
+        $this->clearSelection();
+
+        return response()->streamDownload(function () use ($csvData) {
+            echo "\xEF\xBB\xBF";
+            echo $csvData;
+        }, 'export_contrats_selection_' . date('Ymd_His') . '.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
     public function render()
     {
         $countExpiring1Day = ContratAuto::where('statut', 'actif')
@@ -372,6 +570,18 @@ class ListeContrats extends Component
             } else {
                 $query->where('statut', $this->filterStatut);
             }
+        }
+
+        // Filter by Date
+        if (!empty($this->dateFrom) && !empty($this->dateTo)) {
+            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
+            $query->whereBetween($field, [$this->dateFrom, $this->dateTo]);
+        } elseif (!empty($this->dateFrom)) {
+            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
+            $query->where($field, '>=', $this->dateFrom);
+        } elseif (!empty($this->dateTo)) {
+            $field = in_array($this->dateField, ['date_effet', 'date_echeance', 'date_production']) ? $this->dateField : 'date_effet';
+            $query->where($field, '<=', $this->dateTo);
         }
 
         // Priority sorting: put contracts expiring soonest right at the top
