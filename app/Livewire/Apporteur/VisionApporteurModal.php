@@ -27,10 +27,10 @@ class VisionApporteurModal extends Component
     public function selectApporteur($id, $nom = '', $prenom = '', $taux = 10.00)
     {
         $this->dispatch('apporteurSelected', [
-            'id' => $id,
+            'id' => is_numeric($id) ? (int)$id : null,
             'nom' => $nom,
             'prenom' => $prenom,
-            'taux' => $taux,
+            'taux' => (float)$taux,
         ]);
         $this->close();
     }
@@ -65,10 +65,21 @@ class VisionApporteurModal extends Component
                 ->get();
         }
 
+        $emails = $clients->pluck('email')->filter()->toArray();
+        $phones = $clients->pluck('phone')->filter()->toArray();
+
+        $appMap = !empty($emails) || !empty($phones)
+            ? Apporteur::whereIn('email', $emails)->orWhereIn('telephone', $phones)->get()->keyBy(function ($item) {
+                return $item->email ?: $item->telephone;
+            })
+            : collect();
+
         $combined = collect();
 
         foreach ($clients as $client) {
-            $appRec = Apporteur::where('email', $client->email)->orWhere('telephone', $client->phone)->first();
+            $key = $client->email ?: $client->telephone;
+            $appRec = $appMap->get($key);
+
             $combined->push((object) [
                 'id' => $appRec ? $appRec->id : $client->id,
                 'code' => $client->formatted_reference,
@@ -76,7 +87,7 @@ class VisionApporteurModal extends Component
                 'prenom' => $client->prenom,
                 'telephone' => $client->telephone,
                 'source' => 'Client',
-                'taux_commission' => $appRec ? $appRec->taux_commission : 10.00,
+                'taux_commission' => $appRec ? (float)$appRec->taux_commission : 10.00,
             ]);
         }
 
@@ -89,7 +100,7 @@ class VisionApporteurModal extends Component
                     'prenom' => $app->prenom,
                     'telephone' => $app->telephone,
                     'source' => 'Apporteur',
-                    'taux_commission' => $app->taux_commission ?? 10.00,
+                    'taux_commission' => (float)($app->taux_commission ?? 10.00),
                 ]);
             }
         }

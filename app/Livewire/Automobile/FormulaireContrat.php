@@ -138,10 +138,21 @@ class FormulaireContrat extends Component
                 ->get();
         }
 
+        $emails = $clients->pluck('email')->filter()->toArray();
+        $phones = $clients->pluck('phone')->filter()->toArray();
+
+        $appMap = !empty($emails) || !empty($phones)
+            ? Apporteur::whereIn('email', $emails)->orWhereIn('telephone', $phones)->get()->keyBy(function ($item) {
+                return $item->email ?: $item->telephone;
+            })
+            : collect();
+
         $results = collect();
 
         foreach ($clients as $client) {
-            $appRec = Apporteur::where('email', $client->email)->orWhere('telephone', $client->phone)->first();
+            $key = $client->email ?: $client->telephone;
+            $appRec = $appMap->get($key);
+
             $results->push((object) [
                 'id' => $appRec ? $appRec->id : $client->id,
                 'nom' => $client->nom,
@@ -149,7 +160,7 @@ class FormulaireContrat extends Component
                 'code' => $client->formatted_reference,
                 'telephone' => $client->telephone,
                 'source' => 'Client',
-                'taux_commission' => $appRec ? $appRec->taux_commission : 10.00,
+                'taux_commission' => $appRec ? (float)$appRec->taux_commission : 10.00,
             ]);
         }
 
@@ -162,7 +173,7 @@ class FormulaireContrat extends Component
                     'code' => $app->code_apporteur ?? ('APP-' . $app->id),
                     'telephone' => $app->telephone,
                     'source' => 'Apporteur',
-                    'taux_commission' => $app->taux_commission ?? 10.00,
+                    'taux_commission' => (float)($app->taux_commission ?? 10.00),
                 ]);
             }
         }
@@ -173,7 +184,7 @@ class FormulaireContrat extends Component
     public function selectApporteurFromSearch($id = null, $nom = null, $prenom = null, $taux = 10.00)
     {
         if ($id || $nom) {
-            $this->apporteur_id = $id;
+            $this->apporteur_id = is_numeric($id) ? (int)$id : null;
             $this->nom_apporteur = trim(($nom ?? '') . ' ' . ($prenom ?? ''));
             $this->searchApporteur = $this->nom_apporteur;
             if ((float)$this->prime_rc > 0 && $taux) {
