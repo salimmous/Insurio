@@ -189,30 +189,25 @@
                         <span>Calculs Partie AUTOMOBILE</span>
                     </h2>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Taxe Auto</label>
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Prime Nette</label>
+                            <input wire:model.live="prime_rc" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Taxe</label>
                             <input wire:model.live="taxe_auto" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Accessoires Compagnie</label>
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Acc</label>
                             <input wire:model.live="accessoire_auto_cie" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Droit de Timbre</label>
-                            <input wire:model.live="timbre" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Commission Auto</label>
-                            <input wire:model.live="commission_auto" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Taxe sur Commission (TPS)</label>
-                            <input wire:model.live="tps_auto" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Prime Total</label>
+                            <input wire:model.live="prime_totale" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono font-bold">
                         </div>
                     </div>
                 </div>

@@ -72,6 +72,7 @@ class FormulaireContrat extends Component
     public $timbre = 0;
     public $commission_auto = 0;
     public $tps_auto = 0;
+    public $prime_totale = 0;
 
     // Bloc PTA Calculations
     public $montant_pta = 0;
@@ -212,8 +213,12 @@ class FormulaireContrat extends Component
 
     public function getPrimeTotaleProperty()
     {
+        if ((float)$this->prime_totale > 0) {
+            return (float)$this->prime_totale;
+        }
         return $this->prime_nette +
                (float)$this->taxe_auto +
+               (float)$this->accessoire_auto_cie +
                (float)$this->timbre +
                (float)$this->montant_pta +
                (float)$this->montant_taxe_pta +
