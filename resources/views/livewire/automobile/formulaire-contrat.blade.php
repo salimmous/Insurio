@@ -17,14 +17,14 @@
 
         <form wire:submit.prevent="save" class="space-y-6">
             
-            <!-- SECTION 1: Identification & dates -->
+            <!-- SECTION 1: Identification & Dates du Contrat -->
             <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
                 <h2 class="text-lg font-semibold text-teal-600 border-b border-slate-100 pb-2 flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     1. Identification & Dates du Contrat
                 </h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-slate-500 mb-2">Produit d'Assurance</label>
                         <select wire:model.live="product_id" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-semibold">
@@ -40,20 +40,6 @@
                         <label class="block text-sm font-medium text-slate-500 mb-2">Référence Cabinet</label>
                         <input wire:model="numero_contrat" type="text" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
                         @error('numero_contrat') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-2">Terme</label>
-                        <div class="flex items-center gap-4 py-2">
-                            <label class="inline-flex items-center text-slate-700">
-                                <input type="radio" wire:model="terme" :value="true" class="text-teal-600 bg-slate-50 border-slate-200 focus:ring-teal-500">
-                                <span class="ms-2">Oui</span>
-                            </label>
-                            <label class="inline-flex items-center text-slate-700">
-                                <input type="radio" wire:model="terme" :value="false" class="text-teal-600 bg-slate-50 border-slate-200 focus:ring-teal-500">
-                                <span class="ms-2">Non</span>
-                            </label>
-                        </div>
                     </div>
 
                     <div>
@@ -74,34 +60,12 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-2">Avenant</label>
-                        <input wire:model="avenant" type="text" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-2">Type d'Affaire</label>
-                        <select wire:model="type_affaire" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                            <option value="AN">Affaire Nouvelle (AN)</option>
-                            <option value="RN">Renouvellement (RN)</option>
-                            <option value="RC">Remplacement (RC)</option>
-                            <option value="AV">Avenant (AV)</option>
-                        </select>
-                    </div>
-
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-slate-500 mb-2">Attestation</label>
                         <input wire:model="attestation" type="text" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-2">Quittance</label>
-                        <input wire:model="quittance" type="text" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-slate-500 mb-2">Date d'effet</label>
                         <input wire:model.live="date_effet" type="date" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
@@ -122,11 +86,6 @@
                         <label class="block text-sm font-medium text-slate-500 mb-2">Date Production</label>
                         <input wire:model="date_production" type="date" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-2">Date résiliation</label>
-                        <input wire:model="date_resiliation" type="date" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                    </div>
                 </div>
             </div>
 
@@ -134,7 +93,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
                 <!-- Client & Apporteur -->
-                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4 {{ in_array($branche_code, ['AUTO', 'MOTO']) ? '' : 'lg:col-span-2' }}">
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
                     <h2 class="text-lg font-semibold text-teal-600 border-b border-slate-100 pb-2 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         2. Client & Apporteur
@@ -155,40 +114,12 @@
                             @error('client_id') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-500 mb-2">Apporteur</label>
-                                <select wire:model.live="apporteur_id" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                                    <option value="">Aucun</option>
-                                    @foreach($apporteurs as $apporteur)
-                                    <option value="{{ $apporteur->id }}">{{ $apporteur->nom }} {{ $apporteur->prenom }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-slate-500 mb-2">Nom Apporteur</label>
-                                <input type="text" readonly wire:model="nom_apporteur" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-500 outline-none cursor-not-allowed">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-500 mb-2">Code Branche</label>
-                                <input wire:model="branche_code" type="text" placeholder="ex: 116" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                            </div>
-                            <div class="col-span-2">
-                                <label class="block text-sm font-medium text-slate-500 mb-2">Libellé Branche</label>
-                                <input wire:model="branche_libelle" type="text" placeholder="ex: VELO < OU = 50CC" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                            </div>
-                        </div>
-
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Branche Rattachée (Agence)</label>
-                            <select wire:model="branch_id" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                                <option value="">Sélectionner...</option>
-                                @foreach($branches as $branch)
-                                <option value="{{ $branch->id }}">{{ $branch->nom }}</option>
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Apporteur</label>
+                            <select wire:model.live="apporteur_id" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
+                                <option value="">Aucun</option>
+                                @foreach($apporteurs as $apporteur)
+                                <option value="{{ $apporteur->id }}">{{ $apporteur->nom }} {{ $apporteur->prenom }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -196,7 +127,6 @@
                 </div>
 
                 <!-- Véhicule -->
-                @if(in_array($branche_code, ['AUTO', 'MOTO']))
                 <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
                     <h2 class="text-lg font-semibold text-teal-600 border-b border-slate-100 pb-2 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h2m-6 0a1 1 0 001-1v-3a1 1 0 00-1-1H9m12 0h-3M12 9h4"/></svg>
@@ -214,11 +144,6 @@
                                 <option value="D">D - Transport personnel</option>
                                 <option value="E">E - Usage Spécial</option>
                             </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Matricule</label>
-                            <input wire:model="matricule" type="text" placeholder="12345-A-26" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
                         </div>
 
                         <div>
@@ -242,37 +167,6 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Année</label>
-                            <select wire:model="annee" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                                <option value="">— Année —</option>
-                                @for($y = date('Y'); $y >= 1985; $y--)
-                                    <option value="{{ $y }}">{{ $y }}</option>
-                                @endfor
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Motorisation</label>
-                            <select wire:model="motorisation" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                                <option value="">— Motorisation —</option>
-                                <option value="Diesel">Diesel</option>
-                                <option value="Essence">Essence</option>
-                                <option value="Hybride">Hybride</option>
-                                <option value="Hybride Rechargeable">Hybride Rechargeable (PHEV)</option>
-                                <option value="Electrique">Électrique</option>
-                                <option value="GPL">GPL</option>
-                                <option value="GNV">GNV (Gaz Naturel)</option>
-                                <option value="Bi-carburant">Bi-carburant (Essence/GPL)</option>
-                                <option value="Micro-hybride">Micro-hybride (MHEV)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Code CLASSE</label>
-                            <input wire:model="code_classe" type="text" placeholder="Classe tarifaire" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                        </div>
-
-                        <div>
                             <label class="block text-sm font-medium text-slate-500 mb-2">Sous CLASSE</label>
                             <div class="flex items-center gap-4 py-2">
                                 <label class="inline-flex items-center text-slate-700">
@@ -285,52 +179,8 @@
                                 </label>
                             </div>
                         </div>
-
-                        @if($branche_code === 'MOTO')
-                            <div>
-                                <label class="block text-sm font-medium text-slate-500 mb-2">Cylindrée (CC)</label>
-                                <select wire:model="puissance_fiscale" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-semibold">
-                                    <option value="">Sélectionner...</option>
-                                    <option value="50">Moins de 50 cc (Cyclomoteur)</option>
-                                    <option value="125">50 cc à 125 cc (Légère)</option>
-                                    <option value="250">Plus de 125 cc (Grosse cylindrée)</option>
-                                </select>
-                            </div>
-                        @else
-                            <div>
-                                <label class="block text-sm font-medium text-slate-500 mb-2">Puis. fiscale</label>
-                                <input wire:model="puissance_fiscale" type="number" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                            </div>
-                        @endif
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Nb place</label>
-                            <input wire:model="nb_places" type="number" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Carburant</label>
-                            <select wire:model="carburant" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                                <option value="">Sélectionner...</option>
-                                <option value="Diesel">Diesel</option>
-                                <option value="Essence">Essence</option>
-                                <option value="Hybride">Hybride</option>
-                                <option value="Electrique">Électrique</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Val. Véhicule</label>
-                            <input wire:model="valeur_vehicule" type="number" step="0.01" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">D.Mise Circul.</label>
-                            <input wire:model="date_mise_circulation" type="date" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
-                        </div>
                     </div>
                 </div>
-                @endif
             </div>
 
             <!-- SECTION 4: Bloc de Calculs & Taxes (Side-by-Side Auto vs PTA) -->
