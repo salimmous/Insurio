@@ -208,9 +208,9 @@ class FormulaireContrat extends Component
 
     public function mount($contratId = null)
     {
-        $this->date_effet = Carbon::now()->format('Y-m-d');
-        $this->date_production = Carbon::now()->format('Y-m-d');
-        $this->calculateDates();
+        if (url()->previous() && !str_contains(url()->previous(), 'modifier') && !str_contains(url()->previous(), 'creer')) {
+            session(['contract_form_return_url' => url()->previous()]);
+        }
 
         if ($contratId) {
             $this->contratId = $contratId;
@@ -227,13 +227,27 @@ class FormulaireContrat extends Component
                 $this->date_resiliation = \Carbon\Carbon::parse($contrat->date_resiliation)->format('Y-m-d');
             }
             if ($contrat->client) {
-                $this->souscripteur = $contrat->client->nom . ' ' . $contrat->client->prenom;
+                $this->souscripteur = trim($contrat->client->nom . ' ' . $contrat->client->prenom);
             }
             if ($contrat->apporteur) {
-                $this->nom_apporteur = $contrat->apporteur->nom . ' ' . $contrat->apporteur->prenom;
+                $this->nom_apporteur = trim($contrat->apporteur->nom . ' ' . $contrat->apporteur->prenom);
                 $this->searchApporteur = $this->nom_apporteur;
             }
+
+            // Calculate exact nbr_mois from loaded date_effet and date_echeance if present
+            if ($this->date_effet && $this->date_echeance) {
+                $start = \Carbon\Carbon::parse($this->date_effet);
+                $end = \Carbon\Carbon::parse($this->date_echeance);
+                $diff = (int)round($start->diffInDays($end) / 30);
+                if ($diff > 0) {
+                    $this->nbr_mois = $diff;
+                }
+            }
         } else {
+            $this->date_effet = Carbon::now()->format('Y-m-d');
+            $this->date_production = Carbon::now()->format('Y-m-d');
+            $this->calculateDates();
+
             // Default to AUTO product
             $defaultProduct = \App\Models\Product::where('code', 'AUTO')->first();
             if ($defaultProduct) {
@@ -484,16 +498,19 @@ class FormulaireContrat extends Component
             'prime_totale' => $this->prime_totale,
         ];
 
+        $returnUrl = session('contract_form_return_url', route('automobile.index'));
+        session()->forget('contract_form_return_url');
+
         if ($this->contratId) {
             $contrat = ContratAuto::findOrFail($this->contratId);
             $contrat->update($data);
-            session()->flash('message', 'Contrat mis à jour avec succès.');
+            session()->flash('message', 'Contrat N° ' . $contrat->numero_contrat . ' mis à jour avec succès.');
         } else {
-            ContratAuto::create($data);
-            session()->flash('message', 'Contrat créé avec succès.');
+            $contrat = ContratAuto::create($data);
+            session()->flash('message', 'Contrat N° ' . $contrat->numero_contrat . ' créé avec succès.');
         }
 
-        return redirect()->route('automobile.index');
+        return redirect()->to($returnUrl);
     }
 
     public function render()

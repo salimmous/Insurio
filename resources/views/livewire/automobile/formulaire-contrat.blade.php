@@ -79,7 +79,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-slate-500 mb-2">Date d'échéance</label>
-                        <input wire:model="date_echeance" type="date" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-500 outline-none cursor-not-allowed">
+                        <input wire:model.live="date_echeance" type="date" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
                     </div>
 
                     <div>
