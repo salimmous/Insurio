@@ -214,9 +214,26 @@ class FormulaireContrat extends Component
 
         if ($contratId) {
             $this->contratId = $contratId;
-            $contrat = ContratAuto::findOrFail($contratId);
-            $this->fill($contrat->toArray());
+            $contrat = ContratAuto::with(['client', 'apporteur', 'vehicule'])->findOrFail($contratId);
+            
+            // Explicitly set form properties to prevent accessor/toArray mapping issues
+            $this->numero_contrat = $contrat->numero_contrat;
+            $this->terme = (bool)$contrat->terme;
+            $this->compagnie_id = $contrat->compagnie_id;
+            $this->police = $contrat->police;
+            $this->avenant = $contrat->avenant;
+            $this->type_affaire = $contrat->type_affaire ?? 'AN';
+            $this->attestation = $contrat->attestation;
+            $this->quittance = $contrat->quittance;
+
+            $this->client_id = $contrat->client_id;
+            $this->apporteur_id = $contrat->apporteur_id;
+            $this->branch_id = $contrat->branch_id;
             $this->product_id = $contrat->product_id;
+            $this->branche_code = $contrat->branche_code;
+            $this->branche_libelle = $contrat->branche_libelle;
+
+            // Dates
             $this->date_effet = $contrat->date_effet ? \Carbon\Carbon::parse($contrat->date_effet)->format('Y-m-d') : '';
             $this->date_echeance = $contrat->date_echeance ? \Carbon\Carbon::parse($contrat->date_echeance)->format('Y-m-d') : '';
             $this->date_production = $contrat->date_production ? \Carbon\Carbon::parse($contrat->date_production)->format('Y-m-d') : '';
@@ -226,6 +243,44 @@ class FormulaireContrat extends Component
             if ($contrat->date_resiliation) {
                 $this->date_resiliation = \Carbon\Carbon::parse($contrat->date_resiliation)->format('Y-m-d');
             }
+
+            // Vehicule attributes
+            $vehicule = $contrat->vehicule;
+            $this->usage = $contrat->usage ?? ($vehicule->usage ?? '');
+            $this->code_classe = $contrat->code_classe ?? '';
+            $this->sous_classe = $contrat->sous_classe ?? 'Definitive';
+            $this->marque = $contrat->marque ?? ($vehicule->marque ?? '');
+            $this->modele = $contrat->modele ?? ($vehicule->modele ?? '');
+            $this->annee = $contrat->annee ?? ($vehicule->annee ?? null);
+            $this->motorisation = $contrat->motorisation ?? ($vehicule->motorisation ?? '');
+            $this->matricule = $contrat->matricule ?? ($vehicule->matricule ?? '');
+            $this->puissance_fiscale = $contrat->puissance_fiscale ?? ($vehicule->puissance_fiscale ?? null);
+            $this->nb_places = $contrat->nb_places ?? ($vehicule->nb_places ?? null);
+            $this->carburant = $contrat->carburant ?? ($vehicule->type_carburant ?? '');
+            $this->nbr_mois = (int)($contrat->nbr_mois ?? 12);
+            $this->valeur_vehicule = (float)($contrat->valeur_vehicule ?? 0);
+
+            // Financials
+            $this->prime_rc = (float)$contrat->prime_rc;
+            $this->def_rec = (float)$contrat->def_rec;
+            $this->tierce = (float)$contrat->tierce;
+            $this->collision = (float)$contrat->collision;
+            $this->vol = (float)$contrat->vol;
+            $this->incendie = (float)$contrat->incendie;
+            $this->bris_glace = (float)$contrat->bris_glace;
+            $this->individuel = (float)$contrat->individuel;
+            $this->taxe_auto = (float)$contrat->taxe_auto;
+            $this->accessoire_auto_cie = (float)$contrat->accessoire_auto_cie;
+            $this->timbre = (float)$contrat->timbre;
+            $this->commission_auto = (float)$contrat->commission_auto;
+            $this->tps_auto = (float)$contrat->tps_auto;
+            $this->montant_pta = (float)$contrat->montant_pta;
+            $this->montant_taxe_pta = (float)$contrat->montant_taxe_pta;
+            $this->commission_pta = (float)$contrat->commission_pta;
+            $this->tps_pta = (float)$contrat->tps_pta;
+            $this->accessoires = (float)$contrat->accessoires;
+            $this->prime_totale = (float)$contrat->prime_totale;
+
             if ($contrat->client) {
                 $this->souscripteur = trim($contrat->client->nom . ' ' . $contrat->client->prenom);
             }
@@ -410,14 +465,17 @@ class FormulaireContrat extends Component
 
     public function save()
     {
+        if (empty($this->numero_contrat)) {
+            $this->numero_contrat = 'REF-' . date('Y') . '-' . str_pad($this->contratId ?? rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        }
+
         $rules = [
-            'numero_contrat' => 'required|unique:contracts,numero_contrat,' . $this->contratId,
-            'compagnie_id' => 'required|exists:compagnies,id',
+            'numero_contrat' => 'required',
+            'compagnie_id' => 'required',
             'police' => 'required',
-            'client_id' => 'required|exists:clients,id',
+            'client_id' => 'required',
             'date_effet' => 'required|date',
-            'date_echeance' => 'required|date|after:date_effet',
-            'prime_rc' => 'required|numeric|min:0',
+            'date_echeance' => 'required|date',
         ];
 
         $this->validate($rules);
