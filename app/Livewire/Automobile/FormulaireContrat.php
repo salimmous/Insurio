@@ -112,6 +112,41 @@ class FormulaireContrat extends Component
         return $vehicules[$this->marque]['modeles'] ?? [];
     }
 
+    public $searchApporteur = '';
+
+    public function getApporteursSearchResultsProperty()
+    {
+        if (trim($this->searchApporteur) === '') {
+            return Apporteur::latest()->limit(8)->get();
+        }
+        return Apporteur::where('nom', 'like', '%' . $this->searchApporteur . '%')
+            ->orWhere('prenom', 'like', '%' . $this->searchApporteur . '%')
+            ->orWhere('email', 'like', '%' . $this->searchApporteur . '%')
+            ->orWhere('code_apporteur', 'like', '%' . $this->searchApporteur . '%')
+            ->limit(10)
+            ->get();
+    }
+
+    public function selectApporteurFromSearch($apporteurId = null)
+    {
+        if ($apporteurId) {
+            $apporteur = Apporteur::find($apporteurId);
+            if ($apporteur) {
+                $this->apporteur_id = $apporteur->id;
+                $this->nom_apporteur = $apporteur->nom . ' ' . $apporteur->prenom;
+                $this->searchApporteur = $this->nom_apporteur;
+                if ($apporteur->taux_commission && (float)$this->prime_rc > 0) {
+                    $this->commission_auto = round((float)$this->prime_rc * ((float)$apporteur->taux_commission / 100), 2);
+                }
+                return;
+            }
+        }
+        $this->apporteur_id = null;
+        $this->nom_apporteur = '';
+        $this->searchApporteur = '';
+        $this->commission_auto = 0;
+    }
+
     public function mount($contratId = null)
     {
         $this->date_effet = Carbon::now()->format('Y-m-d');
@@ -137,6 +172,7 @@ class FormulaireContrat extends Component
             }
             if ($contrat->apporteur) {
                 $this->nom_apporteur = $contrat->apporteur->nom . ' ' . $contrat->apporteur->prenom;
+                $this->searchApporteur = $this->nom_apporteur;
             }
         } else {
             // Default to AUTO product
