@@ -20,7 +20,7 @@
 
             <!-- Search input + Clear option -->
             <div class="my-4 flex gap-3">
-                <input wire:model.live="search" type="text" placeholder="Rechercher par nom, prénom, email ou code..." 
+                <input wire:model.live.debounce.200ms="search" type="text" placeholder="Rechercher par nom, prénom, email, téléphone ou code..." 
                        class="flex-1 bg-gray-50 border border-gray-300 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-gray-800 placeholder-gray-400 outline-none transition-all focus:ring-1 focus:ring-indigo-500 shadow-sm text-sm">
                 <button wire:click="clearApporteur" type="button" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-xl transition-all">
                     Aucun Apporteur
@@ -32,7 +32,7 @@
                 <table class="w-full text-left text-sm text-gray-700">
                     <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-semibold">
                         <tr>
-                            <th class="px-4 py-3">Code</th>
+                            <th class="px-4 py-3">Code / Ref</th>
                             <th class="px-4 py-3">Nom & Prénom</th>
                             <th class="px-4 py-3">Téléphone</th>
                             <th class="px-4 py-3">Taux Commission</th>
@@ -40,19 +40,24 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        @forelse($apporteurs as $apporteur)
+                        @forelse($apporteurs as $app)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-4 py-3 font-mono text-xs font-semibold text-indigo-600">
-                                {{ $apporteur->code_apporteur ?? 'APP-'.$apporteur->id }}
+                                {{ $app->code }}
                             </td>
-                            <td class="px-4 py-3 font-semibold text-gray-900">{{ $apporteur->nom }} {{ $apporteur->prenom }}</td>
-                            <td class="px-4 py-3 text-xs text-gray-500 font-mono">{{ $apporteur->telephone ?? '-' }}</td>
+                            <td class="px-4 py-3 font-semibold text-gray-900 flex items-center gap-2">
+                                <span>{{ $app->nom }} {{ $app->prenom }}</span>
+                                <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold {{ $app->source === 'Client' ? 'bg-sky-100 text-sky-800' : 'bg-purple-100 text-purple-800' }}">
+                                    {{ $app->source }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-xs text-gray-500 font-mono">{{ $app->telephone ?? '-' }}</td>
                             <td class="px-4 py-3 text-xs font-bold text-emerald-600 font-mono">
-                                {{ number_format($apporteur->taux_commission ?? 0, 2) }}%
+                                {{ number_format($app->taux_commission ?? 10, 2) }}%
                             </td>
                             <td class="px-4 py-3 text-right">
-                                <button wire:click="selectApporteur({{ $apporteur->id }})" 
-                                        class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition duration-150 shadow-sm">
+                                <button wire:click="selectApporteur({{ $app->id }}, '{{ addslashes($app->nom) }}', '{{ addslashes($app->prenom) }}', {{ $app->taux_commission }})" 
+                                        class="inline-flex items-center justify-center px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg transition duration-150 shadow-sm">
                                     Sélectionner
                                 </button>
                             </td>
@@ -60,7 +65,7 @@
                         @empty
                         <tr>
                             <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">
-                                Aucun apporteur trouvé.
+                                Aucun apporteur ou client trouvé.
                             </td>
                         </tr>
                         @endforelse

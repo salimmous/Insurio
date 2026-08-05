@@ -114,56 +114,16 @@
                             @error('client_id') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Apporteur Inline Search Dropdown -->
-                        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                        <div>
                             <label class="block text-sm font-medium text-slate-500 mb-2">Apporteur</label>
-                            <div class="relative">
-                                <input type="text" 
-                                       wire:model.live.debounce.200ms="searchApporteur" 
-                                       @focus="open = true"
-                                       @input="open = true"
-                                       placeholder="🔍 Tapez pour rechercher apporteur..." 
-                                       class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl pl-4 pr-10 py-2.5 text-slate-800 outline-none transition-all text-sm font-medium shadow-sm">
-                                
-                                @if($apporteur_id)
-                                <button type="button" wire:click="selectApporteurFromSearch(null)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition-colors p-1" title="Effacer l'apporteur">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <div class="flex gap-3">
+                                <input type="text" readonly wire:model="nom_apporteur" placeholder="Sélectionnez un apporteur..." 
+                                       class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 outline-none cursor-pointer"
+                                       wire:click="$dispatch('openVisionApporteur')">
+                                <button type="button" wire:click="$dispatch('openVisionApporteur')" 
+                                        class="bg-teal-600 hover:bg-teal-500 text-white font-medium px-5 rounded-xl transition-all shadow-sm">
+                                    Rechercher
                                 </button>
-                                @else
-                                <div class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                                </div>
-                                @endif
-                            </div>
-
-                            <!-- Live Results Dropdown -->
-                            <div x-show="open" 
-                                 x-transition
-                                 class="absolute z-30 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto divide-y divide-slate-100">
-                                
-                                <div wire:click="selectApporteurFromSearch(null)" @click="open = false" class="p-2.5 hover:bg-slate-50 cursor-pointer flex justify-between items-center text-xs font-semibold text-slate-500">
-                                    <span>🚫 Aucun (Sans apporteur)</span>
-                                </div>
-
-                                @forelse($this->apporteursSearchResults as $app)
-                                <div wire:click="selectApporteurFromSearch({{ $app->id }}, '{{ addslashes($app->nom) }}', '{{ addslashes($app->prenom) }}', {{ $app->taux_commission }})" @click="open = false" 
-                                     class="p-2.5 hover:bg-indigo-50/80 cursor-pointer flex items-center justify-between transition-colors">
-                                    <div>
-                                        <div class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
-                                            <span>{{ $app->nom }} {{ $app->prenom }}</span>
-                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold {{ $app->source === 'Client' ? 'bg-sky-100 text-sky-800' : 'bg-purple-100 text-purple-800' }}">
-                                                {{ $app->source }}
-                                            </span>
-                                        </div>
-                                        <div class="text-[10px] text-slate-400 font-mono">{{ $app->code }} {{ $app->telephone ? '• '.$app->telephone : '' }}</div>
-                                    </div>
-                                    <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-[11px] font-mono">
-                                        {{ number_format($app->taux_commission ?? 10, 1) }}%
-                                    </span>
-                                </div>
-                                @empty
-                                <div class="p-3 text-xs text-slate-400 text-center">Aucun apporteur trouvé pour "{{ $searchApporteur }}"</div>
-                                @endforelse
                             </div>
                         </div>
                     </div>
