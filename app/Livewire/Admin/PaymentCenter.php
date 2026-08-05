@@ -509,8 +509,43 @@ class PaymentCenter extends Component
         });
     }
 
+    public function syncRealCashBalance()
+    {
+        $caisse = CashRegister::first();
+        if (!$caisse) {
+            $caisse = CashRegister::create([
+                'name' => 'Caisse Principale Agence',
+                'opening_balance' => 0.00,
+                'current_balance' => 0.00,
+                'expected_balance' => 0.00,
+                'physical_balance' => 0.00,
+                'is_open' => true,
+            ]);
+        }
+
+        $opening = (float)$caisse->opening_balance;
+        $totalCashIn = (float)FinancialLedger::where('payment_method', 'cash')->where('status', 'completed')->where('entry_type', 'credit')->sum('amount');
+        $totalCashOut = (float)FinancialLedger::where('payment_method', 'cash')->where('status', 'completed')->where('entry_type', 'debit')->sum('amount');
+        $realBalance = $opening + $totalCashIn - $totalCashOut;
+
+        $physical = (float)$caisse->physical_balance;
+        if ($physical <= 0) {
+            $physical = $realBalance;
+        }
+        $variance = $physical - $realBalance;
+
+        $caisse->update([
+            'current_balance' => $realBalance,
+            'expected_balance' => $realBalance,
+            'physical_balance' => $physical,
+            'variance_amount' => $variance,
+        ]);
+    }
+
     public function render()
     {
+        $this->syncRealCashBalance();
+
         // Compute Financial Treasury Metrics
         $todayRevenue = FinancialLedger::whereDate('entry_date', now())->where('entry_type', 'credit')->sum('amount');
         $todayExpenses = FinancialLedger::whereDate('entry_date', now())->where('entry_type', 'debit')->sum('amount');
