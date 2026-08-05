@@ -6,9 +6,9 @@
             <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
                 @if(auth()->user()->hasRole('agency-admin') || auth()->user()->hasRole('comptable'))
                     <!-- Branch Filter Dropdown -->
-                    <div class="min-w-[200px]">
-                        <label class="block text-[9px] font-bold text-slate-500 tracking-wider mb-1 uppercase">Filtrer par Succursale</label>
-                        <select wire:model.live="selectedBranch" class="w-full bg-slate-50 border border-slate-200 focus:bg-white rounded-xl px-3 py-1.5 text-xs font-semibold outline-none transition-all text-slate-700">
+                    <div class="min-w-[220px]">
+                        <label class="block text-[11px] font-extrabold tracking-wider mb-1 uppercase" style="color: #334155 !important;">Filtrer par Succursale</label>
+                        <select wire:model.live="selectedBranch" class="w-full bg-slate-50 border border-slate-300 focus:bg-white rounded-xl px-3 py-2 text-xs font-bold outline-none transition-all" style="color: #0f172a !important; background-color: #f8fafc !important;">
                             <option value="">Toutes les succursales</option>
                             @foreach($branchList as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->nom }} ({{ $branch->ville }})</option>
@@ -17,8 +17,8 @@
                     </div>
                 @else
                     <div>
-                        <span class="text-[9px] font-bold text-slate-500 tracking-wider block uppercase">Succursale Active</span>
-                        <span class="text-xs font-bold text-slate-700">
+                        <span class="text-[11px] font-extrabold tracking-wider block uppercase" style="color: #334155 !important;">Succursale Active</span>
+                        <span class="text-xs font-bold" style="color: #0f172a !important;">
                             {{ $branchList->firstWhere('id', $selectedBranch)->nom ?? 'Siège Central' }}
                         </span>
                     </div>
@@ -27,18 +27,18 @@
                 <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
 
                 <div>
-                    <span class="text-[9px] font-bold text-slate-500 tracking-wider block uppercase">Période Active</span>
-                    <div class="flex items-center gap-1.5 mt-0.5">
-                        <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-extrabold rounded-md border border-indigo-200 uppercase">Tous les contrats</span>
+                    <span class="text-[11px] font-extrabold tracking-wider block uppercase" style="color: #334155 !important;">Période Active</span>
+                    <div class="flex items-center gap-1.5 mt-1">
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-[11px] font-extrabold rounded-lg border border-indigo-200 uppercase" style="color: #4338ca !important; background-color: #eef2ff !important; border-color: #c7d2fe !important;">Tous les contrats</span>
                     </div>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
-                <button wire:click="refreshDashboard" class="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-sm">
-                    <span>🔄</span> Actualiser
+                <button wire:click="refreshDashboard" class="font-extrabold px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-sm" style="color: #0f172a !important; background-color: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; cursor: pointer;">
+                    <span>🔄</span> <span style="color: #0f172a !important; font-weight: 800;">Actualiser</span>
                 </button>
-                <div class="text-[10px] text-slate-500 font-mono font-bold">
+                <div class="text-[11px] font-mono font-bold" style="color: #334155 !important;">
                     Rafraîchi à: {{ now()->format('H:i:s') }}
                 </div>
             </div>
