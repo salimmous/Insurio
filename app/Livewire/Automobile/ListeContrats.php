@@ -15,6 +15,9 @@ class ListeContrats extends Component
     public $filterCompagnie = '';
     public $filterStatut = '';
 
+    // Route state persistence across Livewire AJAX requests
+    public $isRenouvellements = false;
+
     // Date Filtering
     public $dateField = 'date_effet'; // date_effet, date_echeance, date_production
     public $dateFrom = '';
@@ -46,7 +49,9 @@ class ListeContrats extends Component
 
     public function mount()
     {
-        if (request()->routeIs('admin.renouvellements') || request()->has('renouvellements')) {
+        if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || request()->has('renouvellements')) {
+            $this->isRenouvellements = true;
+            $this->dateField = 'date_echeance';
             if (empty($this->filterStatut)) {
                 $this->filterStatut = 'expiring_10_days';
             }
@@ -386,19 +391,27 @@ class ListeContrats extends Component
             $query->where('compagnie_id', $this->filterCompagnie);
         }
 
+        $hasCustomDate = (!empty($this->dateFrom) || !empty($this->dateTo));
+
         if (!empty($this->filterStatut)) {
-            if ($this->filterStatut === 'expiring_1_day') {
-                $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()]);
-            } elseif ($this->filterStatut === 'expiring_7_days') {
-                $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->addDays(2)->startOfDay(), now()->addDays(7)->endOfDay()]);
-            } elseif ($this->filterStatut === 'expiring_10_days') {
-                $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->addDays(8)->startOfDay(), now()->addDays(10)->endOfDay()]);
-            } elseif ($this->filterStatut === 'expiring_all') {
-                $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()]);
+            if (str_starts_with($this->filterStatut, 'expiring_')) {
+                if (!$hasCustomDate) {
+                    if ($this->filterStatut === 'expiring_1_day') {
+                        $query->where('statut', 'actif')
+                              ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()]);
+                    } elseif ($this->filterStatut === 'expiring_7_days') {
+                        $query->where('statut', 'actif')
+                              ->whereBetween('date_echeance', [now()->addDays(2)->startOfDay(), now()->addDays(7)->endOfDay()]);
+                    } elseif ($this->filterStatut === 'expiring_10_days') {
+                        $query->where('statut', 'actif')
+                              ->whereBetween('date_echeance', [now()->addDays(8)->startOfDay(), now()->addDays(10)->endOfDay()]);
+                    } elseif ($this->filterStatut === 'expiring_all') {
+                        $query->where('statut', 'actif')
+                              ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()]);
+                    }
+                } else {
+                    $query->where('statut', 'actif');
+                }
             } elseif ($this->filterStatut === 'reglement_solde') {
                 $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) >= contracts.prime_totale AND contracts.prime_totale > 0");
             } elseif ($this->filterStatut === 'reglement_partiel') {
@@ -537,19 +550,27 @@ class ListeContrats extends Component
             $query->where('compagnie_id', $this->filterCompagnie);
         }
 
+        $hasCustomDate = (!empty($this->dateFrom) || !empty($this->dateTo));
+
         if (!empty($this->filterStatut)) {
-            if ($this->filterStatut === 'expiring_1_day') {
-                $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()]);
-            } elseif ($this->filterStatut === 'expiring_7_days') {
-                $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->addDays(2)->startOfDay(), now()->addDays(7)->endOfDay()]);
-            } elseif ($this->filterStatut === 'expiring_10_days') {
-                $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->addDays(8)->startOfDay(), now()->addDays(10)->endOfDay()]);
-            } elseif ($this->filterStatut === 'expiring_all') {
-                $query->where('statut', 'actif')
-                      ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()]);
+            if (str_starts_with($this->filterStatut, 'expiring_')) {
+                if (!$hasCustomDate) {
+                    if ($this->filterStatut === 'expiring_1_day') {
+                        $query->where('statut', 'actif')
+                              ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(1)->endOfDay()]);
+                    } elseif ($this->filterStatut === 'expiring_7_days') {
+                        $query->where('statut', 'actif')
+                              ->whereBetween('date_echeance', [now()->addDays(2)->startOfDay(), now()->addDays(7)->endOfDay()]);
+                    } elseif ($this->filterStatut === 'expiring_10_days') {
+                        $query->where('statut', 'actif')
+                              ->whereBetween('date_echeance', [now()->addDays(8)->startOfDay(), now()->addDays(10)->endOfDay()]);
+                    } elseif ($this->filterStatut === 'expiring_all') {
+                        $query->where('statut', 'actif')
+                              ->whereBetween('date_echeance', [now()->startOfDay(), now()->addDays(10)->endOfDay()]);
+                    }
+                } else {
+                    $query->where('statut', 'actif');
+                }
             } elseif ($this->filterStatut === 'reglement_solde') {
                 $query->whereRaw("(SELECT COALESCE(SUM(montant), 0) FROM reglements WHERE reglements.contrat_id = contracts.id) >= contracts.prime_totale AND contracts.prime_totale > 0");
             } elseif ($this->filterStatut === 'reglement_partiel') {

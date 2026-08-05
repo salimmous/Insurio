@@ -3,7 +3,7 @@
     <!-- Top header & filters -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white border border-slate-200/80 rounded-xl px-5 py-3 shadow-sm gap-3">
         <div>
-            @if(request()->routeIs('admin.renouvellements'))
+            @if($isRenouvellements)
                 <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600">Échéances & Relances</span>
                 <h1 class="text-xl font-bold text-slate-900 mt-0.5">Gestion des Renouvellements Assurance</h1>
             @else
@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    @if(!request()->routeIs('admin.renouvellements'))
+    @if(!$isRenouvellements)
     <!-- Production Payment Quick Filters -->
     <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex flex-wrap items-center gap-3">
         <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mr-1">Filtrer par Règlement :</span>
@@ -116,7 +116,7 @@
     </div>
     @endif
 
-    @if(request()->routeIs('admin.renouvellements'))
+    @if($isRenouvellements)
     <!-- Renewal Navigation Tabs ("kola 7aja bohdha") -->
     <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
