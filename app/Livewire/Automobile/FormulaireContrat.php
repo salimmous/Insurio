@@ -214,13 +214,14 @@ class FormulaireContrat extends Component
 
         if ($contratId) {
             $this->contratId = $contratId;
-            $contrat = ContratAuto::with(['client', 'apporteur', 'vehicule'])->findOrFail($contratId);
+            $contrat = ContratAuto::withoutGlobalScopes()->with(['client', 'apporteur', 'vehicule'])->find($contratId)
+                ?? ContratAuto::with(['client', 'apporteur', 'vehicule'])->findOrFail($contratId);
             
             // Explicitly set form properties to prevent accessor/toArray mapping issues
-            $this->numero_contrat = $contrat->numero_contrat;
+            $this->numero_contrat = $contrat->numero_contrat ?? $contrat->contract_number;
             $this->terme = (bool)$contrat->terme;
-            $this->compagnie_id = $contrat->compagnie_id;
-            $this->police = $contrat->police;
+            $this->compagnie_id = $contrat->compagnie_id ?? $contrat->insurance_company_id;
+            $this->police = $contrat->police ?? $contrat->policy_number;
             $this->avenant = $contrat->avenant;
             $this->type_affaire = $contrat->type_affaire ?? 'AN';
             $this->attestation = $contrat->attestation;
@@ -228,15 +229,19 @@ class FormulaireContrat extends Component
 
             $this->client_id = $contrat->client_id;
             $this->apporteur_id = $contrat->apporteur_id;
-            $this->branch_id = $contrat->branch_id;
-            $this->product_id = $contrat->product_id;
+            $this->branch_id = $contrat->branch_id ?? $contrat->succursale_id;
+            $this->product_id = $contrat->product_id ?? $contrat->insurance_type_id;
             $this->branche_code = $contrat->branche_code;
             $this->branche_libelle = $contrat->branche_libelle;
 
             // Dates
-            $this->date_effet = $contrat->date_effet ? \Carbon\Carbon::parse($contrat->date_effet)->format('Y-m-d') : '';
-            $this->date_echeance = $contrat->date_echeance ? \Carbon\Carbon::parse($contrat->date_echeance)->format('Y-m-d') : '';
-            $this->date_production = $contrat->date_production ? \Carbon\Carbon::parse($contrat->date_production)->format('Y-m-d') : '';
+            $dateEffet = $contrat->date_effet ?? $contrat->start_date;
+            $dateEcheance = $contrat->date_echeance ?? $contrat->end_date;
+            $dateProd = $contrat->date_production;
+
+            $this->date_effet = $dateEffet ? \Carbon\Carbon::parse($dateEffet)->format('Y-m-d') : '';
+            $this->date_echeance = $dateEcheance ? \Carbon\Carbon::parse($dateEcheance)->format('Y-m-d') : '';
+            $this->date_production = $dateProd ? \Carbon\Carbon::parse($dateProd)->format('Y-m-d') : '';
             if ($contrat->date_mise_circulation) {
                 $this->date_mise_circulation = \Carbon\Carbon::parse($contrat->date_mise_circulation)->format('Y-m-d');
             }
@@ -244,21 +249,23 @@ class FormulaireContrat extends Component
                 $this->date_resiliation = \Carbon\Carbon::parse($contrat->date_resiliation)->format('Y-m-d');
             }
 
-            // Vehicule attributes
+            // Vehicule attributes (check direct contract, polymorphic detail, and linked vehicule)
+            $detail = ($contrat->details_id && $contrat->details_type && class_exists($contrat->details_type)) ? $contrat->details_type::find($contrat->details_id) : null;
             $vehicule = $contrat->vehicule;
-            $this->usage = $contrat->usage ?? ($vehicule->usage ?? '');
-            $this->code_classe = $contrat->code_classe ?? '';
-            $this->sous_classe = $contrat->sous_classe ?? 'Definitive';
-            $this->marque = $contrat->marque ?? ($vehicule->marque ?? '');
-            $this->modele = $contrat->modele ?? ($vehicule->modele ?? '');
-            $this->annee = $contrat->annee ?? ($vehicule->annee ?? null);
-            $this->motorisation = $contrat->motorisation ?? ($vehicule->motorisation ?? '');
-            $this->matricule = $contrat->matricule ?? ($vehicule->matricule ?? '');
-            $this->puissance_fiscale = $contrat->puissance_fiscale ?? ($vehicule->puissance_fiscale ?? null);
-            $this->nb_places = $contrat->nb_places ?? ($vehicule->nb_places ?? null);
-            $this->carburant = $contrat->carburant ?? ($vehicule->type_carburant ?? '');
-            $this->nbr_mois = (int)($contrat->nbr_mois ?? 12);
-            $this->valeur_vehicule = (float)($contrat->valeur_vehicule ?? 0);
+
+            $this->usage = $contrat->usage ?? ($detail->usage ?? ($vehicule->usage ?? ''));
+            $this->code_classe = $contrat->code_classe ?? ($detail->code_classe ?? '');
+            $this->sous_classe = $contrat->sous_classe ?? ($detail->sous_classe ?? 'Definitive');
+            $this->marque = $contrat->marque ?? ($detail->marque ?? ($vehicule->marque ?? ''));
+            $this->modele = $contrat->modele ?? ($detail->modele ?? ($vehicule->modele ?? ''));
+            $this->annee = $contrat->annee ?? ($detail->annee ?? ($vehicule->annee ?? null));
+            $this->motorisation = $contrat->motorisation ?? ($detail->motorisation ?? ($vehicule->motorisation ?? ''));
+            $this->matricule = $contrat->matricule ?? ($detail->matricule ?? ($vehicule->matricule ?? ''));
+            $this->puissance_fiscale = $contrat->puissance_fiscale ?? ($detail->puissance_fiscale ?? ($vehicule->puissance_fiscale ?? null));
+            $this->nb_places = $contrat->nb_places ?? ($detail->nb_places ?? ($vehicule->nb_places ?? null));
+            $this->carburant = $contrat->carburant ?? ($detail->carburant ?? ($vehicule->type_carburant ?? ''));
+            $this->nbr_mois = (int)($contrat->nbr_mois ?? ($detail->nbr_mois ?? 12));
+            $this->valeur_vehicule = (float)($contrat->valeur_vehicule ?? ($detail->valeur_vehicule ?? 0));
 
             // Financials
             $this->prime_rc = (float)$contrat->prime_rc;
@@ -279,7 +286,7 @@ class FormulaireContrat extends Component
             $this->commission_pta = (float)$contrat->commission_pta;
             $this->tps_pta = (float)$contrat->tps_pta;
             $this->accessoires = (float)$contrat->accessoires;
-            $this->prime_totale = (float)$contrat->prime_totale;
+            $this->prime_totale = (float)($contrat->prime_totale ?? $contrat->premium_amount ?? 0);
 
             if ($contrat->client) {
                 $this->souscripteur = trim($contrat->client->nom . ' ' . $contrat->client->prenom);
@@ -620,10 +627,11 @@ class FormulaireContrat extends Component
         ];
 
         if ($this->contratId) {
-            $contrat = ContratAuto::findOrFail($this->contratId);
+            $contrat = ContratAuto::withoutGlobalScopes()->find($this->contratId)
+                ?? ContratAuto::findOrFail($this->contratId);
 
-            // Update AutoContractDetail directly if it exists
-            if ($contrat->details_id && $contrat->details_type) {
+            // Update AutoContractDetail directly if it exists, or create one
+            if ($contrat->details_id && $contrat->details_type && class_exists($contrat->details_type)) {
                 $detailClass = $contrat->details_type;
                 $detail = $detailClass::find($contrat->details_id);
                 if ($detail) {
@@ -631,14 +639,37 @@ class FormulaireContrat extends Component
                     $coreData['vehicule_id'] = $detail->vehicule_id ?? $vehicule->id;
                 }
             } else {
-                // No details row yet - create one
                 $detail = \App\Models\AutoContractDetail::create($autoDetailData);
                 $coreData['details_id'] = $detail->id;
                 $coreData['details_type'] = \App\Models\AutoContractDetail::class;
                 $coreData['vehicule_id'] = $detail->vehicule_id ?? $vehicule->id;
             }
 
-            $contrat->update($coreData);
+            // Combine coreData, autoDetailData, and new schema columns for 100% update coverage
+            $fullUpdateData = array_merge($coreData, $autoDetailData, [
+                'contract_number' => $this->numero_contrat,
+                'insurance_company_id' => $this->compagnie_id,
+                'policy_number' => $this->police,
+                'start_date' => Carbon::parse($this->date_effet),
+                'end_date' => Carbon::parse($this->date_echeance),
+                'premium_amount' => $this->prime_totale,
+                'insurance_type_id' => $this->product_id,
+                'succursale_id' => $this->branch_id,
+            ]);
+
+            $contrat->update($fullUpdateData);
+
+            // Also sync the linked Vehicule model if present
+            if ($vehicule && $vehicule->id) {
+                $vehicule->update([
+                    'marque' => $this->marque ?: $vehicule->marque,
+                    'modele' => $this->modele ?: $vehicule->modele,
+                    'matricule' => $this->matricule ?: $vehicule->matricule,
+                    'puissance_fiscale' => $this->puissance_fiscale ?: $vehicule->puissance_fiscale,
+                    'type_carburant' => $this->carburant ?: $vehicule->type_carburant,
+                ]);
+            }
+
             session()->flash('message', 'Contrat N° ' . $contrat->numero_contrat . ' mis à jour avec succès.');
         } else {
             // For creation, pass all fields and let booted() handle separation
