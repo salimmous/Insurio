@@ -225,45 +225,104 @@
 
     <!-- TAB 2: CENTRE DE CHÈQUES MAROCAINS -->
     @elseif($activeTab === 'cheques')
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
-            <div class="flex justify-between items-center border-b pb-4">
-                <h3 class="font-black text-lg text-slate-900">Gestion du Portefeuille de Chèques Marocains</h3>
-                <span class="text-xs text-slate-500">Suivi Attijariwafa, BCP, BMCE, CIH, SGMB, CDM</span>
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs space-y-0">
+            <div class="p-6 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50">
+                <div>
+                    <h3 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Gestion du Portefeuille de Chèques Marocains</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Suivi rigoureux des chèques en portefeuille, déposés et encaissés (Attijariwafa, BCP, BMCE, CIH, SGMB, CDM).</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs font-mono font-bold">
+                    <span class="px-3 py-1.5 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl">
+                        {{ $pendingChequesCount }} chèques en attente
+                    </span>
+                    <span class="px-3 py-1.5 bg-indigo-900 text-white rounded-xl shadow-xs">
+                        Total: {{ number_format($pendingChequesSum, 2) }} DH
+                    </span>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                @forelse($cheques as $chq)
-                    <div class="p-5 border border-slate-200 rounded-2xl bg-slate-50 space-y-4 shadow-2xs">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="font-mono font-bold text-indigo-600 block text-sm">N° {{ $chq->cheque_number }}</span>
-                                <span class="text-xs font-bold text-slate-800 block">{{ $chq->bank_name }}</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $chq->status === 'collected' ? 'bg-emerald-100 text-emerald-800' : ($chq->status === 'returned' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800') }}">
-                                {{ $chq->status }}
-                            </span>
-                        </div>
-
-                        <div class="text-xs space-y-1 text-slate-600">
-                            <div><span class="font-bold">Émetteur:</span> {{ $chq->issuer }}</div>
-                            <div><span class="font-bold">Échéance:</span> {{ $chq->due_date ? $chq->due_date->format('d/m/Y') : '-' }}</div>
-                            <div class="font-mono text-base font-black text-slate-900 pt-1">{{ number_format($chq->amount, 2) }} DH</div>
-                        </div>
-
-                        <div class="pt-2 border-t border-slate-200 flex justify-between gap-2">
-                            @if($chq->status === 'received' || $chq->status === 'pending')
-                                <button wire:click="updateChequeStatus({{ $chq->id }}, 'deposited')" class="w-full bg-blue-600 text-white py-1.5 rounded-lg text-[10px] font-bold">Déposer en Banque 🏛️</button>
-                            @elseif($chq->status === 'deposited')
-                                <button wire:click="updateChequeStatus({{ $chq->id }}, 'collected')" class="w-full bg-emerald-600 text-white py-1.5 rounded-lg text-[10px] font-bold">Marquer Encaissé ✅</button>
-                                <button wire:click="updateChequeStatus({{ $chq->id }}, 'returned')" class="w-full bg-rose-600 text-white py-1.5 rounded-lg text-[10px] font-bold">Marquer Impayé ❌</button>
-                            @endif
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-3 text-center py-12 text-slate-400 text-xs">
-                        Aucun chèque enregisté en portefeuille.
-                    </div>
-                @endforelse
+            <!-- Table Rows Layout -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-xs">
+                    <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-left">
+                        <tr>
+                            <th class="px-6 py-3.5">N° Chèque & Banque</th>
+                            <th class="px-6 py-3.5">Émetteur / Client</th>
+                            <th class="px-6 py-3.5">Date d'Échéance</th>
+                            <th class="px-6 py-3.5">Montant</th>
+                            <th class="px-6 py-3.5">Statut</th>
+                            <th class="px-6 py-3.5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-slate-800 font-medium">
+                        @forelse($cheques as $chq)
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="font-mono font-black text-indigo-600 text-sm block">N° {{ $chq->cheque_number }}</span>
+                                    <span class="text-xs font-bold text-slate-700 block">{{ $chq->bank_name }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="font-bold text-slate-900">{{ $chq->issuer }}</div>
+                                    @if($chq->client)
+                                        <span class="text-[10px] text-slate-400 font-mono">CIN: {{ $chq->client->cin ?? '-' }}</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-mono text-slate-700">
+                                    {{ $chq->due_date ? $chq->due_date->format('d/m/Y') : '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-mono font-black text-sm text-slate-900">
+                                    {{ number_format($chq->amount, 2) }} DH
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($chq->status === 'collected')
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                            ✅ Encaissé
+                                        </span>
+                                    @elseif($chq->status === 'deposited')
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                            🏛️ Déposé
+                                        </span>
+                                    @elseif($chq->status === 'returned')
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                            ❌ Impayé / Rejeté
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                            ⏳ En Portefeuille
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right font-mono">
+                                    <div class="flex items-center justify-end gap-2">
+                                        @if($chq->status === 'received' || $chq->status === 'pending')
+                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'deposited')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs">
+                                                Déposer 🏛️
+                                            </button>
+                                        @elseif($chq->status === 'deposited')
+                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'collected')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs">
+                                                Encaissé ✅
+                                            </button>
+                                            <button wire:click="updateChequeStatus({{ $chq->id }}, 'returned')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-xs">
+                                                Impayé ❌
+                                            </button>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-12 text-center text-slate-400 text-xs">
+                                    Aucun chèque enregistré en portefeuille.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 
