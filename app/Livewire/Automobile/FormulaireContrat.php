@@ -179,7 +179,7 @@ class FormulaireContrat extends Component
         }
 
         return $results;
-    }
+    }    public $auto_synced_client = true;
 
     public function selectApporteurFromSearch($id = null, $nom = null, $prenom = null, $taux = 10.00)
     {
@@ -187,6 +187,13 @@ class FormulaireContrat extends Component
             $this->apporteur_id = is_numeric($id) ? (int)$id : null;
             $this->nom_apporteur = trim(($nom ?? '') . ' ' . ($prenom ?? ''));
             $this->searchApporteur = $this->nom_apporteur;
+
+            if ($this->apporteur_id && (empty($this->client_id) || $this->auto_synced_client)) {
+                $this->client_id = $this->apporteur_id;
+                $this->souscripteur = $this->nom_apporteur;
+                $this->auto_synced_client = true;
+            }
+
             if ((float)$this->prime_rc > 0 && $taux) {
                 $this->commission_auto = round((float)$this->prime_rc * ((float)$taux / 100), 2);
             }
@@ -251,40 +258,57 @@ class FormulaireContrat extends Component
         $this->client_id = $clientId;
         $client = Client::findOrFail($clientId);
         $this->souscripteur = $client->nom . ' ' . $client->prenom;
+        $this->auto_synced_client = false; // Manual selection overrode auto sync
     }
 
     public function handleApporteurSelected($payload = null)
     {
         if (is_array($payload)) {
-            $apporteurId = $payload['id'] ?? null;
-            $nom = $payload['nom'] ?? '';
-            $prenom = $payload['prenom'] ?? '';
-            $taux = $payload['taux'] ?? 10.00;
+            $apporteurId = is_numeric($payload['id'] ?? null) ? (int)$payload['id'] : null;
+            $nom = is_string($payload['nom'] ?? '') ? $payload['nom'] : '';
+            $prenom = is_string($payload['prenom'] ?? '') ? $payload['prenom'] : '';
+            $taux = is_numeric($payload['taux'] ?? 10) ? (float)$payload['taux'] : 10.00;
 
             $this->apporteur_id = $apporteurId;
             $this->nom_apporteur = trim($nom . ' ' . $prenom);
             $this->searchApporteur = $this->nom_apporteur;
+
+            if ($this->apporteur_id && (empty($this->client_id) || $this->auto_synced_client)) {
+                $this->client_id = $this->apporteur_id;
+                $this->souscripteur = $this->nom_apporteur;
+                $this->auto_synced_client = true;
+            }
+
             if ((float)$this->prime_rc > 0 && $taux) {
                 $this->commission_auto = round((float)$this->prime_rc * ((float)$taux / 100), 2);
             }
             return;
         }
 
-        $this->apporteur_id = $payload;
-        if ($payload) {
-            $apporteur = Apporteur::find($payload);
+        if (is_numeric($payload)) {
+            $this->apporteur_id = (int)$payload;
+            $apporteur = Apporteur::find((int)$payload);
             if ($apporteur) {
                 $this->nom_apporteur = $apporteur->nom . ' ' . $apporteur->prenom;
                 $this->searchApporteur = $this->nom_apporteur;
+
+                if (empty($this->client_id) || $this->auto_synced_client) {
+                    $this->client_id = (int)$payload;
+                    $this->souscripteur = $this->nom_apporteur;
+                    $this->auto_synced_client = true;
+                }
+
                 if ($apporteur->taux_commission && (float)$this->prime_rc > 0) {
                     $this->commission_auto = round((float)$this->prime_rc * ((float)$apporteur->taux_commission / 100), 2);
                 }
+                return;
             }
-        } else {
-            $this->nom_apporteur = '';
-            $this->searchApporteur = '';
-            $this->commission_auto = 0;
         }
+
+        $this->apporteur_id = null;
+        $this->nom_apporteur = '';
+        $this->searchApporteur = '';
+        $this->commission_auto = 0;
     }
 
     public function updatedApporteurId($value)

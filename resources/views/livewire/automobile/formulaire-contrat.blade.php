@@ -101,6 +101,19 @@
                     
                     <div class="space-y-4">
                         <div>
+                            <label class="block text-sm font-medium text-slate-500 mb-2">Apporteur</label>
+                            <div class="flex gap-3">
+                                <input type="text" readonly wire:model="nom_apporteur" placeholder="Sélectionnez un apporteur..." 
+                                       class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 outline-none cursor-pointer"
+                                       wire:click="$dispatch('openVisionApporteur')">
+                                <button type="button" wire:click="$dispatch('openVisionApporteur')" 
+                                        class="bg-teal-600 hover:bg-teal-500 text-white font-medium px-5 rounded-xl transition-all shadow-sm">
+                                    Rechercher
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
                             <label class="block text-sm font-medium text-slate-500 mb-2">Client (Souscripteur)</label>
                             <div class="flex gap-3">
                                 <input type="text" readonly wire:model="souscripteur" placeholder="Sélectionnez un client..." 
@@ -112,19 +125,6 @@
                                 </button>
                             </div>
                             @error('client_id') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Apporteur</label>
-                            <div class="flex gap-3">
-                                <input type="text" readonly wire:model="nom_apporteur" placeholder="Sélectionnez un apporteur..." 
-                                       class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 outline-none cursor-pointer"
-                                       wire:click="$dispatch('openVisionApporteur')">
-                                <button type="button" wire:click="$dispatch('openVisionApporteur')" 
-                                        class="bg-teal-600 hover:bg-teal-500 text-white font-medium px-5 rounded-xl transition-all shadow-sm">
-                                    Rechercher
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
