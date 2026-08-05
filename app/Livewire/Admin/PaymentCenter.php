@@ -59,27 +59,17 @@ class PaymentCenter extends Component
     public $cheque_due_date = '';
     public $cheque_front_scan;
 
-    // Cash Register Operation Modal
-    public $showCashOpModal = false;
-    public $cash_op_type = 'deposit'; // deposit, withdrawal, physical_count
-    public $cash_amount = 0.00;
-    public $cash_notes = '';
-    public $physical_count_amount = 0.00;
-
-    // Cheque Status Update Modal
-    public $selectedChequeId = null;
-    public $newChequeStatus = 'deposited';
-    public $showChequeStatusModal = false;
-
-    // Double Validation Modal
-    public $selectedApprovalId = null;
-    public $approval_action = 'approve';
-    public $approval_notes = '';
-    public $showApprovalModal = false;
+    // Cash Register Movement Modal (Entrées / Sorties d'Espèces)
+    public $showCashMovementModal = false;
+    public $cash_movement_type = 'debit'; // 'debit' = Sortie (-), 'credit' = Entrée (+)
+    public $cash_movement_amount = '';
+    public $cash_movement_category = 'depense_agence';
+    public $cash_movement_notes = '';
+    public $cash_movement_date = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'activeTab' => ['except' => 'ledger'],
+        'activeTab' => ['except' => 'caisses'],
         'filterEntryType' => ['except' => ''],
         'filterMethod' => ['except' => ''],
     ];
@@ -375,6 +365,148 @@ class PaymentCenter extends Component
 
             $this->dispatch('swal:success', ['message' => 'Comptage physique de caisse enregistré. Écart: ' . number_format($variance, 2) . ' DH']);
         }
+    }
+
+    public function openCashMovementModal($type = 'debit')
+    {
+        $this->cash_movement_type = $type;
+        $this->cash_movement_amount = '';
+        $this->cash_movement_category = $type === 'debit' ? 'depense_caisse' : 'encaissement_caisse';
+        $this->cash_movement_notes = '';
+        $this->cash_movement_date = now()->format('Y-m-d\TH:i');
+        $this->client_id = '';
+        $this->showCashMovementModal = true;
+    }
+
+    public function closeCashMovementModal()
+    {
+        $this->showCashMovementModal = false;
+        $this->cash_movement_amount = '';
+        $this->cash_movement_notes = '';
+    }
+
+    public function recordCashMovement()
+    {
+        $this->validate([
+            'cash_movement_amount' => 'required|numeric|min:0.01',
+            'cash_movement_notes' => 'required|string|min:3',
+        ]);
+
+        DB::transaction(function () {
+            $amount = floatval($this->cash_movement_amount);
+            $entryType = $this->cash_movement_type; // 'credit' = Entrée (+), 'debit' = Sortie (-)
+            $caisse = CashRegister::first();
+
+            if (!$caisse) {
+                $caisse = CashRegister::create([
+                    'name' => 'Caisse Principale Agence',
+                    'opening_balance' => 0.00,
+                    'current_balance' => 0.00,
+                    'expected_balance' => 0.00,
+                    'physical_balance' => 0.00,
+                    'is_open' => true,
+                ]);
+            }
+
+            $entryDate = $this->cash_movement_date ? Carbon::parse($this->cash_movement_date) : now();
+
+            // Create Financial Ledger Record for Cash Movement
+            $ledger = FinancialLedger::create([
+                'category' => $this->cash_movement_category ?: ($entryType === 'debit' ? 'depense_caisse' : 'encaissement_caisse'),
+                'entry_type' => $entryType,
+                'amount' => $amount,
+                'currency' => 'DH',
+                'payment_method' => 'cash',
+                'status' => 'completed',
+                'notes' => $this->cash_movement_notes,
+                'entry_date' => $entryDate,
+                'user_id' => auth()->id() ?? 1,
+                'client_id' => $this->client_id ?: null,
+                'cash_register_id' => $caisse->id,
+            ]);
+
+            // Update Caisse current balance
+            if ($entryType === 'credit') {
+                $caisse->increment('current_balance', $amount);
+                $caisse->increment('expected_balance', $amount);
+            } else {
+                $caisse->decrement('current_balance', $amount);
+                $caisse->decrement('expected_balance', $amount);
+            }
+
+            // Log Audit Trail
+            FinancialAuditLog::create([
+                'ledger_id' => $ledger->id,
+                'user_id' => auth()->id() ?? 1,
+                'action' => $entryType === 'debit' ? 'cash_withdrawal' : 'cash_deposit',
+                'new_values' => [
+                    'amount' => $amount,
+                    'type' => $entryType,
+                    'notes' => $this->cash_movement_notes,
+                    'new_balance' => $caisse->fresh()->current_balance,
+                ],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'reason' => 'Mouvement d\'espèces enregistré manuellement en caisse',
+            ]);
+        });
+
+        $this->closeCashMovementModal();
+        $this->dispatch('swal:success', ['message' => 'Mouvement de caisse enregistré avec succès.']);
+    }
+
+    public function getCashJournalProperty()
+    {
+        $caisse = CashRegister::first();
+        $openingBalance = $caisse ? (float)$caisse->opening_balance : 0.00;
+
+        // Fetch all completed cash transactions in chronological order to compute exact running balance
+        $cashTxs = FinancialLedger::with(['user', 'client', 'contract'])
+            ->where('payment_method', 'cash')
+            ->where('status', 'completed')
+            ->orderBy('entry_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $running = $openingBalance;
+        $processed = collect();
+
+        foreach ($cashTxs as $tx) {
+            $amt = (float)$tx->amount;
+            if ($tx->entry_type === 'credit') {
+                $running += $amt;
+            } else {
+                $running -= $amt;
+            }
+
+            $txObj = clone $tx;
+            $txObj->running_balance = $running;
+            $processed->push($txObj);
+        }
+
+        // Group by date (Y-m-d), latest date first
+        $grouped = $processed->groupBy(function ($tx) {
+            return $tx->entry_date ? $tx->entry_date->format('Y-m-d') : now()->format('Y-m-d');
+        })->sortKeysDesc();
+
+        return $grouped->map(function ($dayTxs, $dateStr) {
+            $totalIn = $dayTxs->where('entry_type', 'credit')->sum('amount');
+            $totalOut = $dayTxs->where('entry_type', 'debit')->sum('amount');
+            $lastTx = $dayTxs->last();
+            $endBalance = $lastTx ? $lastTx->running_balance : 0.00;
+
+            return [
+                'date' => $dateStr,
+                'formatted_date' => Carbon::parse($dateStr)->isoFormat('dddd D MMMM YYYY'),
+                'is_today' => $dateStr === now()->format('Y-m-d'),
+                'is_yesterday' => $dateStr === now()->subDay()->format('Y-m-d'),
+                'total_in' => $totalIn,
+                'total_out' => $totalOut,
+                'net_change' => $totalIn - $totalOut,
+                'end_balance' => $endBalance,
+                'transactions' => $dayTxs->reverse(),
+            ];
+        });
     }
 
     public function render()

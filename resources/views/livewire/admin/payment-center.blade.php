@@ -230,30 +230,172 @@
 
     <!-- TAB 3: CAISSES & COFFRES -->
     @elseif($activeTab === 'caisses')
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
-            <h3 class="font-black text-lg text-slate-900 border-b pb-4">Caisses d'Agence & Comptage Physique</h3>
-            @foreach($cashRegisters as $reg)
-                <div class="p-6 border border-slate-200 rounded-2xl bg-slate-50 grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+        <div class="space-y-6">
+            <!-- Header Caisse & Action Buttons -->
+            <div class="bg-slate-900 rounded-2xl p-6 text-white shadow-xl space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-6">
                     <div>
-                        <span class="font-black text-slate-900 text-base block">{{ $reg->name }}</span>
-                        <span class="text-xs text-emerald-600 font-bold">● Caisse Ouverte</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">💰</span>
+                            <h3 class="font-black text-xl text-white tracking-tight">Caisse Principale Agence</h3>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                SUIVI EN TEMPS RÉEL
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">Traçabilité complète de chaque entrée et sortie d'espèces avec solde progressif cumulé.</p>
                     </div>
-                    <div>
-                        <span class="text-xs text-slate-500 block">Solde Théorique</span>
-                        <span class="text-xl font-black font-mono text-slate-900">{{ number_format($reg->current_balance, 2) }} DH</span>
-                    </div>
-                    <div>
-                        <span class="text-xs text-slate-500 block">Dernier Comptage Physique</span>
-                        <span class="text-xl font-black font-mono text-indigo-600">{{ number_format($reg->physical_balance, 2) }} DH</span>
-                    </div>
-                    <div>
-                        <span class="text-xs text-slate-500 block">Écart de Caisse</span>
-                        <span class="text-xl font-black font-mono {{ $reg->variance_amount < 0 ? 'text-rose-600' : 'text-emerald-600' }}">
-                            {{ number_format($reg->variance_amount, 2) }} DH
-                        </span>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button wire:click="openCashMovementModal('credit')" class="inline-flex items-center justify-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-lg transition">
+                            🟢 + Entrée Espèces
+                        </button>
+                        <button wire:click="openCashMovementModal('debit')" class="inline-flex items-center justify-center px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold text-xs shadow-lg transition">
+                            🔴 - Sortie / Retrait Espèces
+                        </button>
                     </div>
                 </div>
-            @endforeach
+
+                <!-- Caisse KPI Summary Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    @foreach($cashRegisters as $reg)
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Solde Actuel en Caisse</span>
+                            <span class="text-2xl font-black font-mono text-emerald-400">{{ number_format($reg->current_balance, 2) }} DH</span>
+                            <span class="text-[10px] text-slate-400 block font-mono">Théorique: {{ number_format($reg->expected_balance, 2) }} DH</span>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Dernier Comptage Physique</span>
+                            <span class="text-2xl font-black font-mono text-indigo-300">{{ number_format($reg->physical_balance, 2) }} DH</span>
+                            <span class="text-[10px] text-slate-400 block font-mono">Physique vérifié</span>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Écart de Caisse</span>
+                            <span class="text-2xl font-black font-mono {{ $reg->variance_amount < 0 ? 'text-rose-400' : 'text-emerald-400' }}">
+                                {{ number_format($reg->variance_amount, 2) }} DH
+                            </span>
+                            <span class="text-[10px] text-slate-400 block">Différence théorique / physique</span>
+                        </div>
+                    @endforeach
+
+                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 flex flex-col justify-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Pointage Physique</span>
+                        <div class="flex gap-2">
+                            <input type="number" step="0.01" wire:model="physical_count_amount" placeholder="Montant physique..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono">
+                            <button wire:click="recordPhysicalCashCount" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold shrink-0">Valider</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JOURNAL DE CAISSE QUOTIDIEN (FIL D'ACTUALITÉ DÉTAILLÉ PAR JOUR) -->
+            <div class="space-y-6">
+                <div class="flex justify-between items-center px-1">
+                    <h4 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                        <span>📖 Journal Quotidien Détaillé de Caisse</span>
+                        <span class="text-xs font-normal text-slate-500">(Calcul et suivi du solde après chaque mouvement)</span>
+                    </h4>
+                </div>
+
+                @forelse($this->cashJournal as $day)
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-0">
+                        <!-- Day Banner Header -->
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                            <div class="flex items-center gap-3">
+                                <span class="font-black text-sm text-slate-900 capitalize flex items-center gap-2">
+                                    📅 {{ $day['formatted_date'] }}
+                                </span>
+                                @if($day['is_today'])
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                        Aujourd'hui
+                                    </span>
+                                @elseif($day['is_yesterday'])
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">
+                                        Hier
+                                    </span>
+                                @endif
+                            </div>
+
+                            <!-- Day Totals Summary Pills -->
+                            <div class="flex flex-wrap items-center gap-3 text-xs font-mono font-bold">
+                                <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl">
+                                    Total Entrées (+): +{{ number_format($day['total_in'], 2) }} DH
+                                </span>
+                                <span class="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl">
+                                    Total Sorties (-): -{{ number_format($day['total_out'], 2) }} DH
+                                </span>
+                                <span class="px-3 py-1 bg-indigo-900 text-white rounded-xl shadow-xs">
+                                    Solde Fin de Journée: {{ number_format($day['end_balance'], 2) }} DH
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Day Movements Table -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-xs">
+                                <thead class="bg-slate-100/70 text-slate-500 font-bold uppercase tracking-wider text-left">
+                                    <tr>
+                                        <th class="px-6 py-3">Heure</th>
+                                        <th class="px-6 py-3">Type</th>
+                                        <th class="px-6 py-3">Motif & Description / Client</th>
+                                        <th class="px-6 py-3">N° Reçu</th>
+                                        <th class="px-6 py-3">Opérateur</th>
+                                        <th class="px-6 py-3">Montant Mouvement</th>
+                                        <th class="px-6 py-3 text-right bg-slate-200/50">Solde Caisse Après Opération</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 text-slate-800 font-medium">
+                                    @foreach($day['transactions'] as $tx)
+                                        <tr class="hover:bg-slate-50/80 transition">
+                                            <td class="px-6 py-3.5 font-mono text-slate-500">
+                                                {{ $tx->entry_date ? $tx->entry_date->format('H:i') : '-' }}
+                                            </td>
+                                            <td class="px-6 py-3.5 whitespace-nowrap">
+                                                @if($tx->entry_type === 'credit')
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                        <span>🟢</span> Entrée Espèces (+)
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                                        <span>🔴</span> Sortie / Retrait (-)
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-3.5">
+                                                <span class="font-bold text-slate-900 block">{{ $tx->notes ?: 'Mouvement de caisse' }}</span>
+                                                @if($tx->client)
+                                                    <span class="text-[11px] text-indigo-600 font-semibold block">Client: {{ $tx->client->first_name }} {{ $tx->client->last_name }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-3.5 font-mono text-[11px] text-slate-500">
+                                                {{ $tx->receipt_number ?: $tx->transaction_id }}
+                                            </td>
+                                            <td class="px-6 py-3.5 text-slate-600">
+                                                {{ $tx->user->name ?? 'Agent' }}
+                                            </td>
+                                            <td class="px-6 py-3.5 font-mono font-black text-sm whitespace-nowrap">
+                                                @if($tx->entry_type === 'credit')
+                                                    <span class="text-emerald-600">+{{ number_format($tx->amount, 2) }} DH</span>
+                                                @else
+                                                    <span class="text-rose-600">-{{ number_format($tx->amount, 2) }} DH</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-3.5 text-right font-mono font-black text-sm text-slate-900 bg-slate-50/80 whitespace-nowrap border-l border-slate-200">
+                                                <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200">
+                                                    💼 {{ number_format($tx->running_balance, 2) }} DH
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @empty
+                    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-400 text-xs">
+                        Aucun mouvement d'espèces enregistré dans le journal de caisse.
+                    </div>
+                @endforelse
+            </div>
         </div>
 
     <!-- TAB 4: COMPTES BANCAIRES & RIB -->
@@ -400,6 +542,85 @@
                     <div class="flex justify-end gap-3 pt-4 border-t">
                         <button type="button" wire:click="closeCreateModal" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 font-bold">Annuler</button>
                         <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-md">Enregistrer au Grand Livre</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
+    <!-- CASH MOVEMENT MODAL (ENTRÉES / SORTIES ESPÈCES) -->
+    @if($showCashMovementModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
+                <div class="flex justify-between items-center border-b pb-4">
+                    <div>
+                        <h3 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                            <span>💸</span>
+                            <span>Enregistrer un Mouvement de Caisse</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Entrée ou retrait direct d'espèces avec mise à jour du solde de caisse.</p>
+                    </div>
+                    <button wire:click="closeCashMovementModal" class="text-slate-400 hover:text-slate-600 font-bold text-lg">✕</button>
+                </div>
+
+                <form wire:submit.prevent="recordCashMovement" class="space-y-4 text-xs font-semibold">
+                    <!-- Movement Type Selector -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">Type d'Opération de Caisse *</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" wire:click="$set('cash_movement_type', 'debit')" 
+                                    class="py-3 px-4 rounded-xl border font-bold flex items-center justify-center gap-2 transition {{ $cash_movement_type === 'debit' ? 'bg-rose-50 border-rose-500 text-rose-700 shadow-xs' : 'border-slate-200 text-slate-600 hover:bg-slate-50' }}">
+                                <span>🔴</span>
+                                <span>Sortie / Retrait (-)</span>
+                            </button>
+                            <button type="button" wire:click="$set('cash_movement_type', 'credit')" 
+                                    class="py-3 px-4 rounded-xl border font-bold flex items-center justify-center gap-2 transition {{ $cash_movement_type === 'credit' ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-xs' : 'border-slate-200 text-slate-600 hover:bg-slate-50' }}">
+                                <span>🟢</span>
+                                <span>Entrée Espèces (+)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Montant -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Montant en DH *</label>
+                        <div class="relative">
+                            <input type="number" step="0.01" wire:model="cash_movement_amount" placeholder="ex: 300.00" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 font-mono text-base font-bold pr-12 text-slate-900">
+                            <span class="absolute right-3 top-3 font-mono font-bold text-slate-400">DH</span>
+                        </div>
+                        @error('cash_movement_amount') <span class="text-rose-600 text-[11px] font-bold mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Date & Heure -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Date & Heure du Mouvement</label>
+                        <input type="datetime-local" wire:model="cash_movement_date" class="w-full border border-slate-300 rounded-xl p-2.5 font-mono text-xs">
+                    </div>
+
+                    <!-- Motif & Description -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Motif / Description Détaillée *</label>
+                        <textarea wire:model="cash_movement_notes" rows="2" placeholder="ex: Retrait 300 DH de la caisse pour achat fournitures d'agence..." class="w-full border border-slate-300 rounded-xl p-2.5 text-xs"></textarea>
+                        @error('cash_movement_notes') <span class="text-rose-600 text-[11px] font-bold mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Client Optionnel -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Client Associé (Optionnel)</label>
+                        <select wire:model="client_id" class="w-full border border-slate-300 rounded-xl p-2.5">
+                            <option value="">-- Aucun Client (Opération d'Agence) --</option>
+                            @foreach($clients as $cl)
+                                <option value="{{ $cl->id }}">{{ $cl->formatted_reference }} - {{ $cl->first_name }} {{ $cl->last_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Submit Actions -->
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <button type="button" wire:click="closeCashMovementModal" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 font-bold">Annuler</button>
+                        <button type="submit" class="px-6 py-2 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 shadow-md">
+                            Enregistrer le Mouvement
+                        </button>
                     </div>
                 </form>
             </div>
