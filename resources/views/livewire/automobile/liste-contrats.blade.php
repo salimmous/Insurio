@@ -36,10 +36,10 @@
                 Filtrer par Date :
             </span>
 
-            <select wire:model.live="dateField" class="bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl px-3 py-1.5 text-xs text-slate-800 outline-none">
-                <option value="date_effet">Date d'effet</option>
-                <option value="date_echeance">Date d'échéance</option>
-                <option value="date_production">Date de production</option>
+            <select wire:model.live="dateField" class="bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 outline-none">
+                <option value="date_echeance">Date d'échéance (Expiration)</option>
+                <option value="date_effet">Date d'effet (Début)</option>
+                <option value="date_production">Date de production (Saisie)</option>
             </select>
 
             <div class="flex items-center gap-1.5">

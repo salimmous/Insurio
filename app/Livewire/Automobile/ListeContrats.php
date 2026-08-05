@@ -593,14 +593,28 @@ class ListeContrats extends Component
         ])->layout('layouts.app');
     }
 
+    public function updatedDateFrom()
+    {
+        if (in_array($this->filterStatut, ['reglement_non_paye', 'reglement_solde', 'reglement_partiel', 'reglement_impaye'])) {
+            $this->filterStatut = '';
+        }
+    }
+
+    public function updatedDateTo()
+    {
+        if (in_array($this->filterStatut, ['reglement_non_paye', 'reglement_solde', 'reglement_partiel', 'reglement_impaye'])) {
+            $this->filterStatut = '';
+        }
+    }
+
     protected function applyDateFilter($query)
     {
         if (empty($this->dateFrom) && empty($this->dateTo)) {
             return;
         }
 
-        $dateFrom = $this->dateFrom;
-        $dateTo = $this->dateTo;
+        $dateFrom = !empty($this->dateFrom) ? $this->dateFrom . ' 00:00:00' : null;
+        $dateTo = !empty($this->dateTo) ? $this->dateTo . ' 23:59:59' : null;
 
         $primaryCol = match ($this->dateField) {
             'date_effet' => 'start_date',
@@ -618,22 +632,22 @@ class ListeContrats extends Component
 
         $query->where(function ($q) use ($primaryCol, $fallbackCol, $dateFrom, $dateTo) {
             $q->where(function ($sub) use ($primaryCol, $dateFrom, $dateTo) {
-                if (!empty($dateFrom) && !empty($dateTo)) {
+                if ($dateFrom && $dateTo) {
                     $sub->whereBetween($primaryCol, [$dateFrom, $dateTo]);
-                } elseif (!empty($dateFrom)) {
+                } elseif ($dateFrom) {
                     $sub->where($primaryCol, '>=', $dateFrom);
-                } elseif (!empty($dateTo)) {
+                } elseif ($dateTo) {
                     $sub->where($primaryCol, '<=', $dateTo);
                 }
             });
 
             if (\Illuminate\Support\Facades\Schema::hasColumn('contracts', $fallbackCol)) {
                 $q->orWhere(function ($sub) use ($fallbackCol, $dateFrom, $dateTo) {
-                    if (!empty($dateFrom) && !empty($dateTo)) {
+                    if ($dateFrom && $dateTo) {
                         $sub->whereBetween($fallbackCol, [$dateFrom, $dateTo]);
-                    } elseif (!empty($dateFrom)) {
+                    } elseif ($dateFrom) {
                         $sub->where($fallbackCol, '>=', $dateFrom);
-                    } elseif (!empty($dateTo)) {
+                    } elseif ($dateTo) {
                         $sub->where($fallbackCol, '<=', $dateTo);
                     }
                 });
