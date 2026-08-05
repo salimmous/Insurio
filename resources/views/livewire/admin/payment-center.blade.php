@@ -26,7 +26,11 @@
                 <span class="text-2xl font-black text-emerald-600">+{{ number_format($todayRevenue, 2) }} DH</span>
                 <span class="text-[10px] text-slate-400 block">Dépenses: {{ number_format($todayExpenses, 2) }} DH</span>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">💵</div>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
         </div>
 
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
@@ -35,7 +39,11 @@
                 <span class="text-2xl font-black text-slate-900">{{ number_format($cashBalance, 2) }} DH</span>
                 <span class="text-[10px] text-slate-400 block">Caisse Principale Ouverte</span>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">🏦</div>
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            </div>
         </div>
 
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
@@ -44,7 +52,11 @@
                 <span class="text-2xl font-black text-blue-600">{{ number_format($bankBalance, 2) }} DH</span>
                 <span class="text-[10px] text-slate-400 block">Attijariwafa, BCP, BMCE</span>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">🏛️</div>
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m3 0h1m-4-8l-2-2m0 0l-2 2m2-2v4m4-6l-2-2m0 0l-2 2m2-2v4" />
+                </svg>
+            </div>
         </div>
 
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
@@ -53,35 +65,62 @@
                 <span class="text-2xl font-black text-amber-600">{{ number_format($pendingChequesSum, 2) }} DH</span>
                 <span class="text-[10px] text-slate-400 block">{{ $pendingChequesCount }} chèques à déposer</span>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">📜</div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
         </div>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="flex border-b border-slate-200 text-xs font-bold gap-6 overflow-x-auto pb-2">
-        <button wire:click="$set('activeTab', 'ledger')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'ledger' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
-            <span>📖 Grand Livre Comptable</span>
+        <button wire:click="$set('activeTab', 'ledger')" class="pb-2 transition flex items-center gap-2 whitespace-nowrap {{ $activeTab === 'ledger' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <svg class="w-4 h-4 shrink-0 {{ $activeTab === 'ledger' ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <span>Grand Livre Comptable</span>
         </button>
-        <button wire:click="$set('activeTab', 'cheques')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'cheques' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
-            <span>📜 Chèques Marocains</span>
+
+        <button wire:click="$set('activeTab', 'cheques')" class="pb-2 transition flex items-center gap-2 whitespace-nowrap {{ $activeTab === 'cheques' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <svg class="w-4 h-4 shrink-0 {{ $activeTab === 'cheques' ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Chèques Marocains</span>
             @if($pendingChequesCount > 0)
                 <span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-mono">{{ $pendingChequesCount }}</span>
             @endif
         </button>
-        <button wire:click="$set('activeTab', 'caisses')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'caisses' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
-            <span>💰 Caisses & Coffres</span>
+
+        <button wire:click="$set('activeTab', 'caisses')" class="pb-2 transition flex items-center gap-2 whitespace-nowrap {{ $activeTab === 'caisses' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <svg class="w-4 h-4 shrink-0 {{ $activeTab === 'caisses' ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>Caisses & Coffres</span>
         </button>
-        <button wire:click="$set('activeTab', 'banks')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'banks' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
-            <span>🏛️ Comptes Bancaires & RIB</span>
+
+        <button wire:click="$set('activeTab', 'banks')" class="pb-2 transition flex items-center gap-2 whitespace-nowrap {{ $activeTab === 'banks' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <svg class="w-4 h-4 shrink-0 {{ $activeTab === 'banks' ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m3 0h1m-4-8l-2-2m0 0l-2 2m2-2v4m4-6l-2-2m0 0l-2 2m2-2v4" />
+            </svg>
+            <span>Comptes Bancaires & RIB</span>
         </button>
-        <button wire:click="$set('activeTab', 'approvals')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'approvals' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
-            <span>🛡️ Double Validation</span>
+
+        <button wire:click="$set('activeTab', 'approvals')" class="pb-2 transition flex items-center gap-2 whitespace-nowrap {{ $activeTab === 'approvals' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <svg class="w-4 h-4 shrink-0 {{ $activeTab === 'approvals' ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>Double Validation</span>
             @if($pendingApprovalsCount > 0)
                 <span class="bg-rose-100 text-rose-800 text-[10px] px-2 py-0.5 rounded-full font-mono animate-pulse">{{ $pendingApprovalsCount }}</span>
             @endif
         </button>
-        <button wire:click="$set('activeTab', 'audit')" class="pb-2 transition flex items-center gap-2 {{ $activeTab === 'audit' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
-            <span>🕵️ Logs d'Audit Inaltérables</span>
+
+        <button wire:click="$set('activeTab', 'audit')" class="pb-2 transition flex items-center gap-2 whitespace-nowrap {{ $activeTab === 'audit' ? 'border-b-2 border-indigo-600 text-indigo-600 font-extrabold' : 'text-slate-500 hover:text-slate-900' }}">
+            <svg class="w-4 h-4 shrink-0 {{ $activeTab === 'audit' ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            <span>Logs d'Audit Inaltérables</span>
         </button>
     </div>
 
