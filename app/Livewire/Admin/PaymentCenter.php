@@ -34,6 +34,7 @@ class PaymentCenter extends Component
     public $filterMethod = '';
     public $filterCategory = '';
     public $filterBranch = '';
+    public $filterDatePreset = 'all'; // all, today, yesterday, this_week, this_month, custom
     public $filterDateStart = '';
     public $filterDateEnd = '';
 
@@ -112,6 +113,25 @@ class PaymentCenter extends Component
 
     public function updatingSearch()
     {
+        $this->resetPage();
+    }
+
+    public function updatedFilterDatePreset() { $this->resetPage(); }
+    public function updatedFilterEntryType() { $this->resetPage(); }
+    public function updatedFilterMethod() { $this->resetPage(); }
+    public function updatedFilterCategory() { $this->resetPage(); }
+    public function updatedFilterDateStart() { $this->resetPage(); }
+    public function updatedFilterDateEnd() { $this->resetPage(); }
+
+    public function resetFilters()
+    {
+        $this->search = '';
+        $this->filterEntryType = '';
+        $this->filterMethod = '';
+        $this->filterCategory = '';
+        $this->filterDatePreset = 'all';
+        $this->filterDateStart = '';
+        $this->filterDateEnd = '';
         $this->resetPage();
     }
 
