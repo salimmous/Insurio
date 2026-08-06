@@ -86,6 +86,44 @@ class PaymentCenter extends Component
     public function syncProductionToLedger()
     {
         try {
+            // 1. Sync every Reglement to FinancialLedger if not present
+            $reglements = \App\Models\Reglement::with('contrat')->get();
+            foreach ($reglements as $reglement) {
+                $method = match(strtolower($reglement->mode_reglement ?? 'especes')) {
+                    'especes' => 'cash',
+                    'cheque' => 'cheque',
+                    'virement' => 'transfer',
+                    'carte' => 'card',
+                    default => 'cash',
+                };
+
+                $dateStr = $reglement->date_reglement ? Carbon::parse($reglement->date_reglement)->format('Y-m-d') : null;
+
+                $exists = \App\Models\FinancialLedger::where('amount', $reglement->montant)
+                    ->where('contract_id', $reglement->contrat_id)
+                    ->when($dateStr, function($q) use ($dateStr) {
+                        $q->whereDate('entry_date', $dateStr);
+                    })
+                    ->exists();
+
+                if (!$exists) {
+                    \App\Models\FinancialLedger::create([
+                        'entry_date' => $reglement->date_reglement ?? now(),
+                        'category' => 'encaissement_prime',
+                        'entry_type' => 'credit',
+                        'amount' => $reglement->montant,
+                        'currency' => 'DH',
+                        'payment_method' => $method,
+                        'status' => 'completed',
+                        'notes' => 'Règlement contrat #' . ($reglement->contrat?->numero_contrat ?? ''),
+                        'user_id' => auth()->id() ?? 1,
+                        'client_id' => $reglement->contrat?->client_id,
+                        'contract_id' => $reglement->contrat_id,
+                    ]);
+                }
+            }
+
+            // 2. Sync any contract with prime_totale > 0 that has no reglement
             $contracts = \App\Models\ContratAuto::withoutGlobalScopes()->get();
             foreach ($contracts as $contrat) {
                 if (!$contrat->prime_totale || $contrat->prime_totale <= 0) {
@@ -93,43 +131,20 @@ class PaymentCenter extends Component
                 }
 
                 $hasLedger = \App\Models\FinancialLedger::where('contract_id', $contrat->id)->exists();
-                if (!$hasLedger) {
-                    $reglement = \App\Models\Reglement::where('contrat_id', $contrat->id)->first();
-                    if (!$reglement) {
-                        \App\Models\Reglement::create([
-                            'contrat_id' => $contrat->id,
-                            'montant' => $contrat->prime_totale,
-                            'date_reglement' => $contrat->date_production ?? $contrat->date_effet ?? now(),
-                            'mode_reglement' => 'especes',
-                            'reference_paiement' => 'PROD-' . ($contrat->numero_contrat ?? $contrat->id),
-                        ]);
-                    } else {
-                        $paymentMethod = match(strtolower($reglement->mode_reglement ?? 'especes')) {
-                            'especes' => 'cash',
-                            'cheque' => 'cheque',
-                            'virement' => 'transfer',
-                            'carte' => 'card',
-                            default => 'cash',
-                        };
+                $hasReglement = \App\Models\Reglement::where('contrat_id', $contrat->id)->exists();
 
-                        \App\Models\FinancialLedger::create([
-                            'entry_date' => $reglement->date_reglement ?? now(),
-                            'category' => 'encaissement_prime',
-                            'entry_type' => 'credit',
-                            'amount' => $reglement->montant,
-                            'currency' => 'DH',
-                            'payment_method' => $paymentMethod,
-                            'status' => 'completed',
-                            'notes' => 'Règlement contrat #' . ($contrat->numero_contrat ?? ''),
-                            'user_id' => auth()->id() ?? 1,
-                            'client_id' => $contrat->client_id,
-                            'contract_id' => $contrat->id,
-                        ]);
-                    }
+                if (!$hasLedger && !$hasReglement) {
+                    \App\Models\Reglement::create([
+                        'contrat_id' => $contrat->id,
+                        'montant' => $contrat->prime_totale,
+                        'date_reglement' => $contrat->date_production ?? $contrat->date_effet ?? now(),
+                        'mode_reglement' => 'especes',
+                        'reference_paiement' => 'PROD-' . ($contrat->numero_contrat ?? $contrat->id),
+                    ]);
                 }
             }
         } catch (\Throwable $e) {
-            // Ignore
+            \Illuminate\Support\Facades\Log::error('syncProductionToLedger failed: ' . $e->getMessage());
         }
     }
 

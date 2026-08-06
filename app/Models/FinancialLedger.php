@@ -52,13 +52,29 @@ class FinancialLedger extends Model
                 $ledger->uuid = (string) Str::uuid();
             }
             if (empty($ledger->transaction_id)) {
-                $nextId = (static::max('id') ?? 0) + 1;
-                $ledger->transaction_id = 'TRX-' . date('Y') . '-' . str_pad($nextId, 6, '0', STR_PAD_LEFT);
+                $nextId = (static::withTrashed()->max('id') ?? 0) + 1;
+                do {
+                    $candidate = 'TRX-' . date('Y') . '-' . str_pad($nextId, 6, '0', STR_PAD_LEFT);
+                    $exists = static::withTrashed()->where('transaction_id', $candidate)->exists();
+                    if ($exists) {
+                        $nextId++;
+                    }
+                } while ($exists);
+                $ledger->transaction_id = $candidate;
             }
+
             if (empty($ledger->receipt_number)) {
-                $nextId = (static::max('id') ?? 0) + 1;
-                $ledger->receipt_number = 'REC-' . date('Ymd') . '-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+                $nextId = (static::withTrashed()->max('id') ?? 0) + 1;
+                do {
+                    $candidate = 'REC-' . date('Ymd') . '-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+                    $exists = static::withTrashed()->where('receipt_number', $candidate)->exists();
+                    if ($exists) {
+                        $nextId++;
+                    }
+                } while ($exists);
+                $ledger->receipt_number = $candidate;
             }
+
             if (empty($ledger->qr_code_hash)) {
                 $ledger->qr_code_hash = md5($ledger->transaction_id . '|' . $ledger->amount . '|' . config('app.key'));
             }
