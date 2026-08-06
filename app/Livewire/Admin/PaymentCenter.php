@@ -653,8 +653,8 @@ class PaymentCenter extends Component
         // Global Balances
         $cashBalance = CashRegister::sum('current_balance');
         $bankBalance = BankAccount::sum('current_balance');
-        $pendingChequesSum = Cheque::whereIn('status', ['received', 'pending', 'deposited', 'under_collection'])->sum('amount');
-        $pendingChequesCount = Cheque::whereIn('status', ['received', 'pending', 'deposited', 'under_collection'])->count();
+        $pendingChequesSum = (float)Cheque::whereIn('status', ['received', 'pending', 'en_attente', 'created'])->sum('amount');
+        $pendingChequesCount = Cheque::whereIn('status', ['received', 'pending', 'en_attente', 'created'])->count();
 
         return view('livewire.admin.payment-center', [
             'filterDate' => $this->filterDate,
@@ -672,7 +672,7 @@ class PaymentCenter extends Component
             'bankBalance' => $bankBalance,
             'pendingChequesSum' => $pendingChequesSum,
             'pendingChequesCount' => $pendingChequesCount,
-            'cheques' => Cheque::with('client')->latest('due_date')->get(),
+            'cheques' => Cheque::with('client')->whereIn('status', ['received', 'pending', 'en_attente', 'created'])->latest('due_date')->get(),
             'clients' => Client::orderBy('last_name')->take(50)->get(),
         ])->layout('layouts.app');
     }
