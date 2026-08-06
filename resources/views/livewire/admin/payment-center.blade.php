@@ -88,10 +88,18 @@
                 <p class="text-[11px] text-slate-500">Filtrage dynamique par jour, type d'opération et mode de paiement.</p>
             </div>
 
-            <button wire:click="resetFilters" class="text-xs font-bold text-slate-500 hover:text-indigo-600 transition flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                <span>Réinitialiser les Filtres</span>
-            </button>
+            <div class="flex items-center gap-2">
+                <button wire:click="$set('filterDatePreset', 'today')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition {{ $filterDatePreset === 'today' && empty($filterDate) ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    Aujourd'hui (Vue du Jour)
+                </button>
+                <button wire:click="$set('filterDatePreset', 'all')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition {{ $filterDatePreset === 'all' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    Tous les filtres (Historique)
+                </button>
+                <button wire:click="resetFilters" class="text-xs font-bold text-slate-500 hover:text-indigo-600 transition flex items-center gap-1 ml-2">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>Réinitialiser</span>
+                </button>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
