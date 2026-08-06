@@ -43,8 +43,8 @@ class PaymentCenter extends Component
     public $showCreateModal = false;
     public $client_id = '';
     public $contract_id = '';
-    public $category = 'encaissement_prime';
-    public $entry_type = 'credit'; // credit = Recette (+), debit = Dépense (-)
+    public $category = 'charge';
+    public $entry_type = 'debit'; // Locked to debit (-) for manual expenses/outputs
     public $amount = 0.00;
     public $paid_amount = 0.00;
     public $reconcile_payment_id = null;
@@ -154,8 +154,8 @@ class PaymentCenter extends Component
     {
         $this->client_id = '';
         $this->contract_id = '';
-        $this->category = 'encaissement_prime';
-        $this->entry_type = 'credit';
+        $this->category = 'charge';
+        $this->entry_type = 'debit';
         $this->amount = 0.00;
         $this->payment_method = 'cash';
         $this->notes = '';

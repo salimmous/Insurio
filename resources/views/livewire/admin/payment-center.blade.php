@@ -12,9 +12,9 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <button wire:click="openCreateModal" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition gap-2">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                <span>Nouvelle Entrée au Grand Livre</span>
+            <button wire:click="openCreateModal" class="inline-flex items-center justify-center px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs shadow-md transition gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
+                <span>- Enregistrer une Dépense / Sortie</span>
             </button>
         </div>
     </div>
@@ -276,18 +276,22 @@
         <div class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 overflow-y-auto">
             <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
                 <div class="flex justify-between items-center border-b pb-3">
-                    <h3 class="text-lg font-black text-slate-900">Nouvelle Opération au Grand Livre</h3>
+                    <h3 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                        <span>Enregistrer une Dépense / Sortie (-)</span>
+                    </h3>
                     <button wire:click="closeCreateModal" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
                 </div>
 
                 <form wire:submit.prevent="createLedgerEntry" class="space-y-4 text-xs font-medium">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Sens de l'Opération *</label>
-                            <select wire:model.live="entry_type" class="w-full border border-slate-300 rounded-xl p-2.5 font-bold">
-                                <option value="credit">Crédit (+ Recette Agence)</option>
-                                <option value="debit">Débit (- Dépense / Remboursement)</option>
-                            </select>
+                            <label class="block font-bold text-slate-700 mb-1">Sens de l'Opération</label>
+                            <input type="hidden" wire:model="entry_type" value="debit">
+                            <div class="px-3 py-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 font-bold text-xs flex items-center gap-2">
+                                <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
+                                <span>Débit (- Dépense / Sortie / Remboursement)</span>
+                            </div>
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Montant (DH) *</label>
