@@ -93,7 +93,7 @@
             </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
             <!-- Recherche Globale -->
             <div class="md:col-span-1">
                 <label class="block font-bold text-slate-700 mb-1">Recherche Globale</label>
@@ -103,16 +103,29 @@
                 </div>
             </div>
 
-            <!-- Filtre par Jour / Date -->
+            <!-- Calendrier Direct (Choisir un Jour) -->
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Filtrer par Période / Jour</label>
-                <select wire:model.live="filterDatePreset" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold bg-white">
+                <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                    <span>📅 Calendrier (Choisir un Jour)</span>
+                    @if($filterDate)
+                        <button wire:click="$set('filterDate', '')" class="text-[10px] text-indigo-600 font-bold hover:underline">Effacer date</button>
+                    @endif
+                </label>
+                <div class="relative">
+                    <input type="date" wire:model.live="filterDate" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 bg-white shadow-xs focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Filtre par Période Pré-définie -->
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Ou Période Pré-définie</label>
+                <select wire:model.live="filterDatePreset" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold bg-white shadow-xs">
                     <option value="all">📅 Toutes les dates</option>
                     <option value="today">📅 Aujourd'hui</option>
                     <option value="yesterday">📅 Hier</option>
                     <option value="this_week">📅 Cette semaine</option>
                     <option value="this_month">📅 Ce mois-ci</option>
-                    <option value="custom">📅 Période personnalisée...</option>
+                    <option value="custom">📅 Période personnalisée (Intervalle)...</option>
                 </select>
             </div>
 

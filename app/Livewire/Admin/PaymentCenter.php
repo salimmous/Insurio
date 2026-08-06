@@ -35,6 +35,7 @@ class PaymentCenter extends Component
     public $filterCategory = '';
     public $filterBranch = '';
     public $filterDatePreset = 'all'; // all, today, yesterday, this_week, this_month, custom
+    public $filterDate = '';
     public $filterDateStart = '';
     public $filterDateEnd = '';
 
@@ -116,7 +117,8 @@ class PaymentCenter extends Component
         $this->resetPage();
     }
 
-    public function updatedFilterDatePreset() { $this->resetPage(); }
+    public function updatedFilterDatePreset() { $this->filterDate = ''; $this->resetPage(); }
+    public function updatedFilterDate() { $this->filterDatePreset = 'all'; $this->resetPage(); }
     public function updatedFilterEntryType() { $this->resetPage(); }
     public function updatedFilterMethod() { $this->resetPage(); }
     public function updatedFilterCategory() { $this->resetPage(); }
@@ -130,6 +132,7 @@ class PaymentCenter extends Component
         $this->filterMethod = '';
         $this->filterCategory = '';
         $this->filterDatePreset = 'all';
+        $this->filterDate = '';
         $this->filterDateStart = '';
         $this->filterDateEnd = '';
         $this->resetPage();
@@ -596,8 +599,10 @@ class PaymentCenter extends Component
             $ledgerQuery->where('category', $this->filterCategory);
         }
 
-        // Date Filter Presets
-        if ($this->filterDatePreset === 'today') {
+        // Date Filter (Direct Calendar Pick or Presets)
+        if (!empty($this->filterDate)) {
+            $ledgerQuery->whereDate('entry_date', $this->filterDate);
+        } elseif ($this->filterDatePreset === 'today') {
             $ledgerQuery->whereDate('entry_date', now()->format('Y-m-d'));
         } elseif ($this->filterDatePreset === 'yesterday') {
             $ledgerQuery->whereDate('entry_date', now()->subDay()->format('Y-m-d'));
