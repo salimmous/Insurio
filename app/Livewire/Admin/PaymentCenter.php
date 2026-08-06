@@ -716,11 +716,21 @@ class PaymentCenter extends Component
         $todayRevenue = (float)FinancialLedger::whereDate('entry_date', now())->where('entry_type', 'credit')->sum('amount');
         $todayExpenses = (float)FinancialLedger::whereDate('entry_date', now())->where('entry_type', 'debit')->sum('amount');
 
-        // Global Balances
+        // Global Balances & Cheque Status Breakdown
         $cashBalance = CashRegister::sum('current_balance');
         $bankBalance = BankAccount::sum('current_balance');
-        $pendingChequesSum = (float)Cheque::whereNotIn('status', ['collected', 'validated', 'returned', 'rejected', 'cancelled', 'archived'])->sum('amount');
-        $pendingChequesCount = Cheque::whereNotIn('status', ['collected', 'validated', 'returned', 'rejected', 'cancelled', 'archived'])->count();
+
+        $chequesEnAttenteSum = (float)Cheque::whereIn('status', ['received', 'pending'])->sum('amount');
+        $chequesEnAttenteCount = Cheque::whereIn('status', ['received', 'pending'])->count();
+
+        $chequesVersesSum = (float)Cheque::whereIn('status', ['deposited', 'remis', 'versé', 'verse'])->sum('amount');
+        $chequesVersesCount = Cheque::whereIn('status', ['deposited', 'remis', 'versé', 'verse'])->count();
+
+        $chequesEncaissesSum = (float)Cheque::whereIn('status', ['collected', 'validated', 'encaissé', 'encaisse'])->sum('amount');
+        $chequesEncaissesCount = Cheque::whereIn('status', ['collected', 'validated', 'encaissé', 'encaisse'])->count();
+
+        $pendingChequesSum = $chequesEnAttenteSum + $chequesVersesSum;
+        $pendingChequesCount = $chequesEnAttenteCount + $chequesVersesCount;
 
         return view('livewire.admin.payment-center', [
             'filterDate' => $this->filterDate,
@@ -738,6 +748,12 @@ class PaymentCenter extends Component
             'bankBalance' => $bankBalance,
             'pendingChequesSum' => $pendingChequesSum,
             'pendingChequesCount' => $pendingChequesCount,
+            'chequesEnAttenteSum' => $chequesEnAttenteSum,
+            'chequesEnAttenteCount' => $chequesEnAttenteCount,
+            'chequesVersesSum' => $chequesVersesSum,
+            'chequesVersesCount' => $chequesVersesCount,
+            'chequesEncaissesSum' => $chequesEncaissesSum,
+            'chequesEncaissesCount' => $chequesEncaissesCount,
             'cheques' => Cheque::with('client')->whereNotIn('status', ['collected', 'validated', 'returned', 'rejected', 'cancelled', 'archived'])->latest('due_date')->get(),
             'clients' => Client::orderBy('last_name')->take(50)->get(),
         ])->layout('layouts.app');

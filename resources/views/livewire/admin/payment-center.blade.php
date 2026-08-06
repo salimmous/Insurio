@@ -20,8 +20,8 @@
     </div>
 
     <!-- High-Density Financial KPI Banner -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
             <div class="space-y-1">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                     @if(!empty($filterDate))
@@ -35,41 +35,54 @@
                     @elseif($filterDatePreset === 'this_month')
                         Recettes du Mois
                     @else
-                        Total Recettes (Filtre Actif)
+                        Total Recettes (Cumul)
                     @endif
                 </span>
-                <span class="text-2xl font-black text-emerald-600">+{{ number_format($totalRecettes, 2) }} DH</span>
+                <span class="text-xl font-black text-emerald-600">+{{ number_format($totalRecettes, 2) }} DH</span>
                 <span class="text-[10px] text-slate-400 block">Dépenses: {{ number_format($totalDepenses, 2) }} DH</span>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
             <div class="space-y-1">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Solde Caisses Agence</span>
-                <span class="text-2xl font-black text-slate-900">{{ number_format($cashBalance, 2) }} DH</span>
-                <span class="text-[10px] text-slate-400 block">Caisse Principale Ouverte</span>
+                <span class="text-xl font-black text-slate-900">{{ number_format($cashBalance, 2) }} DH</span>
+                <span class="text-[10px] text-slate-400 block">Espèces physiques en mains</span>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
             </div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
             <div class="space-y-1">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Chèques en Portefeuille</span>
-                <span class="text-2xl font-black text-amber-600">{{ number_format($pendingChequesSum, 2) }} DH</span>
-                <span class="text-[10px] text-slate-400 block">{{ $pendingChequesCount }} chèques à déposer</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Chèques en Attente</span>
+                <span class="text-xl font-black text-amber-600">{{ number_format($chequesEnAttenteSum, 2) }} DH</span>
+                <span class="text-[10px] text-slate-400 block">{{ $chequesEnAttenteCount }} chèque(s) à verser</span>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Chèques Versés / Déposés</span>
+                <span class="text-xl font-black text-blue-600">{{ number_format($chequesVersesSum, 2) }} DH</span>
+                <span class="text-[10px] text-slate-400 block">{{ $chequesVersesCount }} chèque(s) en banque</span>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
                 </svg>
             </div>
         </div>
