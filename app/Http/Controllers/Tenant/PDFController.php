@@ -269,6 +269,28 @@ class PDFController extends Controller
         return $pdf->stream('bordereau_remise_cheques_' . date('Y-m-d') . '.pdf');
     }
 
+    public function generateReceiptPdf(int $id)
+    {
+        $ledger = \App\Models\FinancialLedger::with(['client', 'contract', 'user'])->findOrFail($id);
+
+        $agencyName = Setting::get('agency_name', tenant('name') ?? 'Insurio Assurance');
+        $agencyLogo = tenant('logo_path') ? storage_path('app/public/' . tenant('logo_path')) : Setting::get('agency_logo', '');
+        $agencyAddress = Setting::get('agency_address', 'Casablanca, Maroc');
+        $agencyPhone = Setting::get('agency_phone', '+212 5 22 00 00 00');
+        $agencyEmail = Setting::get('agency_email', 'contact@insurio.com');
+
+        $pdf = Pdf::loadView('pdf.receipt', [
+            'ledger' => $ledger,
+            'agencyName' => $agencyName,
+            'agencyLogo' => $agencyLogo,
+            'agencyAddress' => $agencyAddress,
+            'agencyPhone' => $agencyPhone,
+            'agencyEmail' => $agencyEmail,
+        ]);
+
+        return $pdf->stream('recu_' . ($ledger->receipt_number ?? $ledger->transaction_id) . '.pdf');
+    }
+
     private function getTitle(string $type): string
     {
         return match ($type) {

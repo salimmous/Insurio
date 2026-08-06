@@ -108,6 +108,7 @@ Route::middleware($tenantMiddleware)->group(function () {
         Route::get('/admin/compagnies', \App\Livewire\Admin\GestionInsurers::class)->name('admin.compagnies')->middleware('can:contracts.view');
         Route::get('/admin/payments', \App\Livewire\Admin\PaymentManager::class)->name('admin.payments')->middleware('can:payments.manage');
         Route::get('/admin/payments-center', \App\Livewire\Admin\PaymentCenter::class)->name('admin.payments.center')->middleware('can:clients.view');
+        Route::get('/admin/payments-center/{id}/receipt', [\App\Http\Controllers\Tenant\PDFController::class, 'generateReceiptPdf'])->name('admin.payments.receipt')->middleware('can:clients.view');
         Route::get('/admin/cheques', \App\Livewire\Admin\GestionCheques::class)->name('admin.cheques')->middleware('can:clients.view');
         Route::get('/admin/cheques/pdf', [\App\Http\Controllers\Tenant\PDFController::class, 'generateChequesPdf'])->name('admin.cheques.pdf')->middleware('can:clients.view');
         Route::get('/admin/payments-center/{id}', \App\Livewire\Admin\PaymentWorkspace::class)->name('admin.payments.workspace')->middleware('can:clients.view');
