@@ -79,6 +79,7 @@ if (app()->environment('testing')) {
         Route::view('admin/dossiers', 'dashboard')->name('admin.dossiers');
         Route::view('admin/compagnies', 'dashboard')->name('admin.compagnies');
         Route::view('admin/payments-center', 'dashboard')->name('admin.payments.center');
+        Route::get('/admin/payments-center/{id}/receipt', [\App\Http\Controllers\Tenant\PDFController::class, 'generateReceiptPdf'])->name('admin.payments.receipt');
         Route::view('admin/charges', 'dashboard')->name('admin.charges');
         Route::view('admin/tasks', 'dashboard')->name('admin.tasks');
         Route::view('admin/activity-timeline', 'dashboard')->name('admin.activity-timeline');
