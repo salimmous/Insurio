@@ -641,6 +641,10 @@ class PaymentCenter extends Component
             ];
         });
 
+        // Today's summary
+        $todayRevenue = (float)FinancialLedger::whereDate('entry_date', now())->where('entry_type', 'credit')->sum('amount');
+        $todayExpenses = (float)FinancialLedger::whereDate('entry_date', now())->where('entry_type', 'debit')->sum('amount');
+
         // Global Balances
         $cashBalance = CashRegister::sum('current_balance');
         $bankBalance = BankAccount::sum('current_balance');
@@ -648,6 +652,8 @@ class PaymentCenter extends Component
         $pendingChequesCount = Cheque::whereIn('status', ['received', 'pending', 'deposited', 'under_collection'])->count();
 
         return view('livewire.admin.payment-center', [
+            'todayRevenue' => $todayRevenue,
+            'todayExpenses' => $todayExpenses,
             'groupedJournal' => $groupedJournal,
             'totalRecettes' => $totalRecettes,
             'totalDepenses' => $totalDepenses,
