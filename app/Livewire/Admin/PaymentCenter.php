@@ -657,6 +657,11 @@ class PaymentCenter extends Component
         $pendingChequesCount = Cheque::whereIn('status', ['received', 'pending', 'deposited', 'under_collection'])->count();
 
         return view('livewire.admin.payment-center', [
+            'filterDate' => $this->filterDate,
+            'filterDatePreset' => $this->filterDatePreset,
+            'filterEntryType' => $this->filterEntryType,
+            'filterMethod' => $this->filterMethod,
+            'filterCategory' => $this->filterCategory,
             'todayRevenue' => $todayRevenue,
             'todayExpenses' => $todayExpenses,
             'groupedJournal' => $groupedJournal,

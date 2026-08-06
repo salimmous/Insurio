@@ -107,7 +107,7 @@
             <div>
                 <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
                     <span>📅 Calendrier (Choisir un Jour)</span>
-                    @if($filterDate)
+                    @if(!empty($this->filterDate))
                         <button wire:click="$set('filterDate', '')" class="text-[10px] text-indigo-600 font-bold hover:underline">Effacer date</button>
                     @endif
                 </label>
