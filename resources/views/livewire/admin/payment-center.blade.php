@@ -20,7 +20,7 @@
     </div>
 
     <!-- High-Density Financial KPI Banner -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
             <div class="space-y-1">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Recettes du Jour</span>
@@ -43,19 +43,6 @@
             <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            </div>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
-            <div class="space-y-1">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Comptes Bancaires</span>
-                <span class="text-2xl font-black text-blue-600">{{ number_format($bankBalance, 2) }} DH</span>
-                <span class="text-[10px] text-slate-400 block">Attijariwafa, BCP, BMCE</span>
-            </div>
-            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m3 0h1m-4-8l-2-2m0 0l-2 2m2-2v4m4-6l-2-2m0 0l-2 2m2-2v4" />
                 </svg>
             </div>
         </div>
