@@ -23,9 +23,23 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
             <div class="space-y-1">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Recettes du Jour</span>
-                <span class="text-2xl font-black text-emerald-600">+{{ number_format($todayRevenue, 2) }} DH</span>
-                <span class="text-[10px] text-slate-400 block">Dépenses: {{ number_format($todayExpenses, 2) }} DH</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                    @if(!empty($filterDate))
+                        Recettes du {{ \Carbon\Carbon::parse($filterDate)->format('d/m/Y') }}
+                    @elseif($filterDatePreset === 'today')
+                        Recettes du Jour
+                    @elseif($filterDatePreset === 'yesterday')
+                        Recettes d'Hier
+                    @elseif($filterDatePreset === 'this_week')
+                        Recettes Semaine
+                    @elseif($filterDatePreset === 'this_month')
+                        Recettes du Mois
+                    @else
+                        Total Recettes (Filtre Actif)
+                    @endif
+                </span>
+                <span class="text-2xl font-black text-emerald-600">+{{ number_format($totalRecettes, 2) }} DH</span>
+                <span class="text-[10px] text-slate-400 block">Dépenses: {{ number_format($totalDepenses, 2) }} DH</span>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -270,8 +284,10 @@
                 </div>
             </div>
         @empty
-            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-400 text-xs">
-                Aucune opération enregistrée dans le Grand Livre pour les filtres sélectionnés.
+            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-500 text-xs font-medium space-y-2">
+                <svg class="w-8 h-8 text-slate-300 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <div class="font-bold text-slate-800 text-sm">Aucune opération enregistrée pour la période sélectionnée</div>
+                <p class="text-slate-400">Pour consulter l'historique des jours précédents, sélectionnez <button wire:click="$set('filterDatePreset', 'all')" class="text-indigo-600 font-bold hover:underline">Toutes les dates</button> dans les filtres ci-dessus.</p>
             </div>
         @endforelse
     <!-- Modal Form: New General Ledger Entry -->
