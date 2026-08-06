@@ -460,7 +460,6 @@ class PaymentCenter extends Component
         $caisse = CashRegister::first();
         $openingBalance = $caisse ? (float)$caisse->opening_balance : 0.00;
 
-        // Fetch all completed cash transactions in chronological order to compute exact running balance
         $cashTxs = FinancialLedger::with(['user', 'client', 'contract'])
             ->where('payment_method', 'cash')
             ->where('status', 'completed')
@@ -484,7 +483,6 @@ class PaymentCenter extends Component
             $processed->push($txObj);
         }
 
-        // Group by date (Y-m-d), latest date first
         $grouped = $processed->groupBy(function ($tx) {
             return $tx->entry_date ? $tx->entry_date->format('Y-m-d') : now()->format('Y-m-d');
         })->sortKeysDesc();
@@ -546,19 +544,10 @@ class PaymentCenter extends Component
     {
         $this->syncRealCashBalance();
 
-        // Compute Financial Treasury Metrics
-        $todayRevenue = FinancialLedger::whereDate('entry_date', now())->where('entry_type', 'credit')->sum('amount');
-        $todayExpenses = FinancialLedger::whereDate('entry_date', now())->where('entry_type', 'debit')->sum('amount');
-        $cashBalance = CashRegister::sum('current_balance');
-        $bankBalance = BankAccount::sum('current_balance');
-        $pendingChequesSum = Cheque::whereIn('status', ['received', 'pending', 'deposited', 'under_collection'])->sum('amount');
-        $pendingChequesCount = Cheque::whereIn('status', ['received', 'pending', 'deposited', 'under_collection'])->count();
-        $returnedChequesCount = Cheque::whereIn('status', ['returned', 'rejected'])->count();
-        $pendingApprovalsCount = PaymentApproval::where('status', '!=', 'approved')->count();
-
-        // General Ledger Query
+        // Base Query
         $ledgerQuery = FinancialLedger::with(['user', 'client', 'contract', 'cheque']);
 
+        // Search Filter
         if (!empty($this->search)) {
             $ledgerQuery->where(function ($q) {
                 $q->where('transaction_id', 'like', '%' . $this->search . '%')
@@ -572,30 +561,83 @@ class PaymentCenter extends Component
             });
         }
 
+        // Operation Type Filter (credit = Encaissements +, debit = Décaissements -)
         if (!empty($this->filterEntryType)) {
             $ledgerQuery->where('entry_type', $this->filterEntryType);
         }
 
+        // Payment Method Filter
         if (!empty($this->filterMethod)) {
             $ledgerQuery->where('payment_method', $this->filterMethod);
         }
 
+        // Category Filter
+        if (!empty($this->filterCategory)) {
+            $ledgerQuery->where('category', $this->filterCategory);
+        }
+
+        // Date Filter Presets
+        if ($this->filterDatePreset === 'today') {
+            $ledgerQuery->whereDate('entry_date', now()->format('Y-m-d'));
+        } elseif ($this->filterDatePreset === 'yesterday') {
+            $ledgerQuery->whereDate('entry_date', now()->subDay()->format('Y-m-d'));
+        } elseif ($this->filterDatePreset === 'this_week') {
+            $ledgerQuery->whereBetween('entry_date', [now()->startOfWeek(), now()->endOfWeek()]);
+        } elseif ($this->filterDatePreset === 'this_month') {
+            $ledgerQuery->whereBetween('entry_date', [now()->startOfMonth(), now()->endOfMonth()]);
+        } elseif ($this->filterDatePreset === 'custom') {
+            if (!empty($this->filterDateStart)) {
+                $ledgerQuery->whereDate('entry_date', '>=', $this->filterDateStart);
+            }
+            if (!empty($this->filterDateEnd)) {
+                $ledgerQuery->whereDate('entry_date', '<=', $this->filterDateEnd);
+            }
+        }
+
+        // Totals for active filtered view
+        $totalRecettes = (float)(clone $ledgerQuery)->where('entry_type', 'credit')->sum('amount');
+        $totalDepenses = (float)(clone $ledgerQuery)->where('entry_type', 'debit')->sum('amount');
+        $soldeNet = $totalRecettes - $totalDepenses;
+
+        // Fetch ledgers ordered by date
+        $allLedgers = $ledgerQuery->orderBy('entry_date', 'desc')->get();
+
+        // Group transactions by Day
+        $groupedJournal = $allLedgers->groupBy(function ($item) {
+            return $item->entry_date ? Carbon::parse($item->entry_date)->format('Y-m-d') : 'sans_date';
+        })->map(function ($dayItems, $dateStr) {
+            $totalIn = $dayItems->where('entry_type', 'credit')->sum('amount');
+            $totalOut = $dayItems->where('entry_type', 'debit')->sum('amount');
+
+            return [
+                'date_key' => $dateStr,
+                'formatted_date' => $dateStr !== 'sans_date' ? Carbon::parse($dateStr)->isoFormat('dddd D MMMM YYYY') : 'Date Non Spécifiée',
+                'is_today' => $dateStr === now()->format('Y-m-d'),
+                'is_yesterday' => $dateStr === now()->subDay()->format('Y-m-d'),
+                'total_in' => $totalIn,
+                'total_out' => $totalOut,
+                'net_day' => $totalIn - $totalOut,
+                'transactions' => $dayItems,
+            ];
+        });
+
+        // Global Balances
+        $cashBalance = CashRegister::sum('current_balance');
+        $bankBalance = BankAccount::sum('current_balance');
+        $pendingChequesSum = Cheque::whereIn('status', ['received', 'pending', 'deposited', 'under_collection'])->sum('amount');
+        $pendingChequesCount = Cheque::whereIn('status', ['received', 'pending', 'deposited', 'under_collection'])->count();
+
         return view('livewire.admin.payment-center', [
-            'ledgers' => $ledgerQuery->latest('entry_date')->paginate(15),
-            'cheques' => Cheque::with('client')->latest('due_date')->get(),
-            'bankAccounts' => BankAccount::all(),
-            'cashRegisters' => CashRegister::all(),
-            'approvals' => PaymentApproval::with(['ledger.client', 'requester'])->where('status', '!=', 'approved')->get(),
-            'auditLogs' => FinancialAuditLog::with('user')->latest()->take(20)->get(),
-            'clients' => Client::orderBy('last_name')->take(50)->get(),
-            'todayRevenue' => $todayRevenue,
-            'todayExpenses' => $todayExpenses,
+            'groupedJournal' => $groupedJournal,
+            'totalRecettes' => $totalRecettes,
+            'totalDepenses' => $totalDepenses,
+            'soldeNet' => $soldeNet,
             'cashBalance' => $cashBalance,
             'bankBalance' => $bankBalance,
             'pendingChequesSum' => $pendingChequesSum,
             'pendingChequesCount' => $pendingChequesCount,
-            'returnedChequesCount' => $returnedChequesCount,
-            'pendingApprovalsCount' => $pendingApprovalsCount,
+            'cheques' => Cheque::with('client')->latest('due_date')->get(),
+            'clients' => Client::orderBy('last_name')->take(50)->get(),
         ])->layout('layouts.app');
     }
 }
