@@ -34,7 +34,7 @@ class PaymentCenter extends Component
     public $filterMethod = '';
     public $filterCategory = '';
     public $filterBranch = '';
-    public $filterDatePreset = 'today'; // default to today
+    public $filterDatePreset = 'all'; // default to all (Historique complet)
     public $filterDate = '';
     public $filterDateStart = '';
     public $filterDateEnd = '';
@@ -80,6 +80,57 @@ class PaymentCenter extends Component
     {
         $this->cheque_due_date = now()->format('Y-m-d');
         $this->ensureInitialBankAndCashSetup();
+        $this->syncProductionToLedger();
+    }
+
+    public function syncProductionToLedger()
+    {
+        try {
+            $contracts = \App\Models\ContratAuto::withoutGlobalScopes()->get();
+            foreach ($contracts as $contrat) {
+                if (!$contrat->prime_totale || $contrat->prime_totale <= 0) {
+                    continue;
+                }
+
+                $hasLedger = \App\Models\FinancialLedger::where('contract_id', $contrat->id)->exists();
+                if (!$hasLedger) {
+                    $reglement = \App\Models\Reglement::where('contrat_id', $contrat->id)->first();
+                    if (!$reglement) {
+                        \App\Models\Reglement::create([
+                            'contrat_id' => $contrat->id,
+                            'montant' => $contrat->prime_totale,
+                            'date_reglement' => $contrat->date_production ?? $contrat->date_effet ?? now(),
+                            'mode_reglement' => 'especes',
+                            'reference_paiement' => 'PROD-' . ($contrat->numero_contrat ?? $contrat->id),
+                        ]);
+                    } else {
+                        $paymentMethod = match(strtolower($reglement->mode_reglement ?? 'especes')) {
+                            'especes' => 'cash',
+                            'cheque' => 'cheque',
+                            'virement' => 'transfer',
+                            'carte' => 'card',
+                            default => 'cash',
+                        };
+
+                        \App\Models\FinancialLedger::create([
+                            'entry_date' => $reglement->date_reglement ?? now(),
+                            'category' => 'encaissement_prime',
+                            'entry_type' => 'credit',
+                            'amount' => $reglement->montant,
+                            'currency' => 'DH',
+                            'payment_method' => $paymentMethod,
+                            'status' => 'completed',
+                            'notes' => 'Règlement contrat #' . ($contrat->numero_contrat ?? ''),
+                            'user_id' => auth()->id() ?? 1,
+                            'client_id' => $contrat->client_id,
+                            'contract_id' => $contrat->id,
+                        ]);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ignore
+        }
     }
 
     public function ensureInitialBankAndCashSetup()
@@ -131,7 +182,7 @@ class PaymentCenter extends Component
         $this->filterEntryType = '';
         $this->filterMethod = '';
         $this->filterCategory = '';
-        $this->filterDatePreset = 'today';
+        $this->filterDatePreset = 'all';
         $this->filterDate = '';
         $this->filterDateStart = '';
         $this->filterDateEnd = '';
