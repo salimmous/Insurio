@@ -34,7 +34,7 @@ class PaymentCenter extends Component
     public $filterMethod = '';
     public $filterCategory = '';
     public $filterBranch = '';
-    public $filterDatePreset = 'all'; // all, today, yesterday, this_week, this_month, custom
+    public $filterDatePreset = 'today'; // default to today
     public $filterDate = '';
     public $filterDateStart = '';
     public $filterDateEnd = '';
@@ -131,7 +131,7 @@ class PaymentCenter extends Component
         $this->filterEntryType = '';
         $this->filterMethod = '';
         $this->filterCategory = '';
-        $this->filterDatePreset = 'all';
+        $this->filterDatePreset = 'today';
         $this->filterDate = '';
         $this->filterDateStart = '';
         $this->filterDateEnd = '';

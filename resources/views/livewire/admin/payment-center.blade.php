@@ -107,8 +107,8 @@
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Ou Période Pré-définie</label>
                 <select wire:model.live="filterDatePreset" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold bg-white shadow-xs">
-                    <option value="all">📅 Toutes les dates</option>
-                    <option value="today">📅 Aujourd'hui</option>
+                    <option value="today">📅 Aujourd'hui (Par Défaut)</option>
+                    <option value="all">📅 Toutes les dates (Historique complet)</option>
                     <option value="yesterday">📅 Hier</option>
                     <option value="this_week">📅 Cette semaine</option>
                     <option value="this_month">📅 Ce mois-ci</option>
