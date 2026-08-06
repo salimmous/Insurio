@@ -284,10 +284,6 @@
                 Aucune opération enregistrée dans le Grand Livre pour les filtres sélectionnés.
             </div>
         @endforelse
-    </div>
-
-    </div>
-
     <!-- Modal Form: New General Ledger Entry -->
     @if($showCreateModal)
         <div class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 overflow-y-auto">
