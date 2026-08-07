@@ -285,11 +285,11 @@ class ListeContrats extends Component
     public function deleteReglement($id)
     {
         $reglement = \App\Models\Reglement::findOrFail($id);
-        $createdTime = $reglement->created_at ?? $reglement->date_reglement;
-        $isOlderThan24h = $createdTime ? $createdTime->lt(now()->subDay()) : false;
+        $createdTime = $reglement->created_at ? \Carbon\Carbon::parse($reglement->created_at) : ($reglement->date_reglement ? \Carbon\Carbon::parse($reglement->date_reglement) : null);
+        $isPastDay = $createdTime ? !$createdTime->isToday() : false;
 
-        if ($isOlderThan24h) {
-            $this->dispatch('swal:error', ['message' => 'Impossible de supprimer un règlement datant de plus de 24 heures.']);
+        if ($isPastDay) {
+            $this->dispatch('swal:error', ['message' => 'Impossible de supprimer un règlement d\'une date antérieure (Seuls les règlements enregistrés aujourd\'hui sont modifiables).']);
             return;
         }
 
