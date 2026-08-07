@@ -343,8 +343,8 @@ class ListeContrats extends Component
         });
 
         // 6. Refresh modal state for current contract so paid totals, remaining balance & history reload live
-        if ($contratId && method_exists($this, 'selectContrat')) {
-            $this->selectContrat($contratId);
+        if ($contratId) {
+            $this->openReglementsModal($contratId);
         }
 
         $this->dispatch('swal:success', ['message' => 'Règlement supprimé et solde caisse/dashboard recalculés avec succès.']);
