@@ -15,7 +15,7 @@
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>Solde Caisse: <strong class="font-mono text-slate-900 font-black">{{ number_format(\App\Models\CashRegister::sum('current_balance'), 2) }} DH</strong></span>
             </div>
-            <button wire:click="openCreateModal" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center gap-2 hover:-translate-y-0.5">
+            <button wire:click="openCreateModal" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-5 py-2.5 rounded-xl text-xs transition-all shadow-md border border-emerald-700 flex items-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98]">
                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                 <span>Nouvelle Charge</span>
             </button>
@@ -300,7 +300,7 @@
 
                     <div class="flex justify-end gap-3 pt-4 border-t">
                         <button type="button" wire:click="$set('showModal', false)" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 font-bold">Annuler</button>
-                        <button type="submit" class="px-6 py-2 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-xl font-bold shadow-md hover:from-emerald-700 hover:to-teal-800">Valider & Comptabiliser</button>
+                        <button type="submit" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black shadow-md border border-emerald-700 text-xs transition cursor-pointer">Valider & Comptabiliser</button>
                     </div>
                 </form>
             </div>
