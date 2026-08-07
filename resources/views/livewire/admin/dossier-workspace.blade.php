@@ -12,7 +12,7 @@
                         <h1 class="text-xl font-bold text-gray-900">{{ $dossier->dossier_number }}</h1>
                         <span class="px-2.5 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-700 rounded-full uppercase tracking-wider">{{ $dossier->type }}</span>
                     </div>
-                    <p class="text-xs text-gray-500 font-medium mt-1">Client: <span class="font-bold text-gray-800">{{ $dossier->client->nom_complet }}</span> | Créé le {{ $dossier->creation_date->format('d/m/Y') }}</p>
+                    <p class="text-xs text-gray-500 font-medium mt-1">Client: <span class="font-bold text-gray-800">{{ $dossier->client?->nom_complet ?? 'N/A' }}</span> | Créé le {{ $dossier->creation_date ? $dossier->creation_date->format('d/m/Y') : now()->format('d/m/Y') }}</p>
                 </div>
             </div>
             
@@ -653,26 +653,26 @@
                     <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-450 border-b pb-2">Résumé Client</h3>
                     <div class="flex items-center gap-3">
                         <div class="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-gray-600 text-sm">
-                            {{ substr($dossier->client->nom_complet, 0, 1) }}
+                            {{ substr($dossier->client?->nom_complet ?? 'C', 0, 1) }}
                         </div>
                         <div class="overflow-hidden">
-                            <h4 class="text-sm font-bold text-gray-800 truncate">{{ $dossier->client->nom_complet }}</h4>
-                            <span class="px-2 py-0.5 text-[8px] font-bold bg-slate-150 text-slate-700 rounded uppercase">{{ $dossier->client->client_type }}</span>
+                            <h4 class="text-sm font-bold text-gray-800 truncate">{{ $dossier->client?->nom_complet ?? 'Client non spécifié' }}</h4>
+                            <span class="px-2 py-0.5 text-[8px] font-bold bg-slate-150 text-slate-700 rounded uppercase">{{ $dossier->client?->client_type ?? 'PARTICULIER' }}</span>
                         </div>
                     </div>
                     
                     <div class="space-y-2 text-xs font-medium text-gray-600">
                         <div class="flex justify-between">
                             <span>Téléphone:</span>
-                            <span class="font-bold text-gray-850">{{ $dossier->client->phone ?? 'N/A' }}</span>
+                            <span class="font-bold text-gray-850">{{ $dossier->client?->phone ?? 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span>National ID:</span>
-                            <span class="font-bold text-gray-850">{{ $dossier->client->national_id ?? $dossier->client->cin ?? 'N/A' }}</span>
+                            <span class="font-bold text-gray-850">{{ $dossier->client?->national_id ?? $dossier->client?->cin ?? 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span>Solde Impayé:</span>
-                            <span class="font-bold text-rose-600">{{ $dossier->client->solde_impaye ?? 0 }} DH</span>
+                            <span class="font-bold text-rose-600">{{ $dossier->client?->solde_impaye ?? 0 }} DH</span>
                         </div>
                     </div>
                 </div>
