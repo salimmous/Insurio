@@ -9,15 +9,19 @@ return new class extends Migration
     public function up(): void
     {
         if (Schema::hasTable('employes')) {
-            // Delete demo employees except Moustanir Salim / user_id 1
+            $user = DB::table('users')->where('id', 1)->orWhere('email', 'salim.moustanir@gmail.com')->first();
+            if (!$user) {
+                return;
+            }
+
             DB::table('employes')
                 ->where('email', '!=', 'salim.moustanir@gmail.com')
-                ->where('user_id', '!=', 1)
+                ->where('user_id', '!=', $user->id)
                 ->delete();
 
             $exists = DB::table('employes')
                 ->where('email', 'salim.moustanir@gmail.com')
-                ->orWhere('user_id', 1)
+                ->orWhere('user_id', $user->id)
                 ->first();
 
             $succursale = DB::table('succursales')->first();
@@ -25,7 +29,7 @@ return new class extends Migration
 
             if (!$exists) {
                 DB::table('employes')->insert([
-                    'user_id' => 1,
+                    'user_id' => $user->id,
                     'matricule_employe' => 'EMP-001',
                     'nom' => 'Moustanir',
                     'prenom' => 'Salim',
@@ -43,7 +47,7 @@ return new class extends Migration
                 DB::table('employes')
                     ->where('id', $exists->id)
                     ->update([
-                        'user_id' => 1,
+                        'user_id' => $user->id,
                         'nom' => 'Moustanir',
                         'prenom' => 'Salim',
                         'email' => 'salim.moustanir@gmail.com',

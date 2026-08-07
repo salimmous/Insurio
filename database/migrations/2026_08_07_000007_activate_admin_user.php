@@ -9,13 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         if (Schema::hasTable('users')) {
-            DB::table('users')->where('id', 1)->update([
-                'first_login' => false,
-                'activated_at' => now(),
-                'status' => 'active',
-            ]);
+            $user = DB::table('users')->where('id', 1)->orWhere('email', 'salim.moustanir@gmail.com')->first();
+            if (!$user) {
+                return;
+            }
 
-            DB::table('users')->where('email', 'salim.moustanir@gmail.com')->update([
+            DB::table('users')->where('id', $user->id)->update([
                 'first_login' => false,
                 'activated_at' => now(),
                 'status' => 'active',
