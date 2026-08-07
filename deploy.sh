@@ -13,10 +13,10 @@ echo "🚀 Starting Automatic Deployment..."
 
 # Sync local folder directly to the server folder (including bin/)
 echo "📥 Syncing local files directly to the server..."
-rsync -avz --exclude '.git' --exclude 'vendor' --exclude 'node_modules' --exclude '.env' --exclude 'storage/logs' --exclude 'bootstrap/cache/*.php' ./ sc7mosa1422@sc7mosa1422.universe.wf:~/sc7mosa1422.universe.wf/
+rsync -avz -e "ssh -o StrictHostKeyChecking=no" --exclude '.git' --exclude 'vendor' --exclude 'node_modules' --exclude '.env' --exclude 'storage/logs' --exclude 'bootstrap/cache/*.php' ./ sc7mosa1422:~/sc7mosa1422.universe.wf/
 
 echo "🔄 Running server optimizations..."
-ssh sc7mosa1422@sc7mosa1422.universe.wf << 'EOF'
+ssh -o StrictHostKeyChecking=no sc7mosa1422 << 'EOF'
   # Make the custom PHP wrapper executable
   chmod +x ~/sc7mosa1422.universe.wf/bin/php
   
