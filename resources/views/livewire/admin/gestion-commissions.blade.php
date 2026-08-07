@@ -169,8 +169,8 @@
                     <div class="p-4 flex flex-col gap-2 hover:bg-gray-50">
                         <div class="flex justify-between items-start">
                             <div>
-                                <span class="font-bold text-gray-800">{{ $com->employe->nom_complet }}</span>
-                                <span class="text-xs text-gray-400 font-mono block">[{{ $com->periode }}] - Contrat #{{ $com->contrat->numero_contrat }}</span>
+                                <span class="font-bold text-gray-800">{{ $com->employe?->nom_complet ?? 'N/A' }}</span>
+                                <span class="text-xs text-gray-400 font-mono block">[{{ $com->periode }}] - Contrat #{{ $com->contrat?->numero_contrat ?? $com->contrat?->contract_number ?? 'N/A' }}</span>
                             </div>
                             @if($com->statut === 'calculee')
                                 <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-yellow-100 text-yellow-800">Calculée</span>
