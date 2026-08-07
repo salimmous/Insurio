@@ -60,7 +60,7 @@ class GestionEmployes extends Component
             'cin' => 'nullable|string|max:50',
             'telephone' => 'nullable|string|max:50',
             'succursale_id' => 'required|exists:succursales,id',
-            'poste' => 'required|string|in:Administrateur,Responsable succursale,Agent commercial,Comptable,Consultation',
+            'poste' => 'required|string',
             'taux_commission_defaut' => 'required|numeric|min:0|max:100',
         ];
 
