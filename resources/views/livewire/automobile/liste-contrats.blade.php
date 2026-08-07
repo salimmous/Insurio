@@ -416,16 +416,16 @@
                                                 <td class="px-4 py-3 text-slate-500">{{ $reg->reference_paiement ?? '-' }}</td>
                                                 <td class="px-4 py-3 text-right font-sans">
                                                     @php
-                                                        $createdTime = $reg->created_at ?? $reg->date_reglement;
-                                                        $isOlderThan24h = $createdTime ? $createdTime->lt(now()->subDay()) : false;
+                                                        $createdTime = $reg->created_at ? \Carbon\Carbon::parse($reg->created_at) : ($reg->date_reglement ? \Carbon\Carbon::parse($reg->date_reglement) : null);
+                                                        $isPastDay = $createdTime ? !$createdTime->isToday() : false;
                                                     @endphp
-                                                    @if(!$isOlderThan24h)
+                                                    @if(!$isPastDay)
                                                         <button onclick="confirm('Supprimer ce règlement ?') || event.stopImmediatePropagation()" wire:click="deleteReglement({{ $reg->id }})" class="text-rose-500 hover:text-rose-700 font-semibold transition-colors">
                                                             Supprimer
                                                         </button>
                                                     @else
-                                                        <span class="text-slate-400 text-xs font-sans" title="Verrouillé: règlement datant de plus de 24h">
-                                                            🔒 Non modifiable (>24h)
+                                                        <span class="text-slate-400 text-xs font-sans" title="Verrouillé: règlement d'une date antérieure (Journée clôturée)">
+                                                            🔒 Non modifiable (Date passée)
                                                         </span>
                                                     @endif
                                                 </td>
