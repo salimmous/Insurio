@@ -238,24 +238,45 @@
                                             </svg>
                                             <span>Rejeter</span>
                                         </button>
+
+                                        <!-- WhatsApp Relance Button -->
+                                        @php
+                                            $rawPhone = $contrat->client->telephone ?? ($contrat->client->phone ?? '');
+                                            $phoneNum = preg_replace('/[^0-9]/', '', $rawPhone);
+                                            if (str_starts_with($phoneNum, '0')) {
+                                                $phoneNum = '212' . substr($phoneNum, 1);
+                                            }
+                                            $wsMsg = rawurlencode("Bonjour " . $contrat->souscripteur . ", votre contrat d'assurance auto N° " . $contrat->numero_contrat . " (Véhicule: " . ($contrat->matricule ?? 'Auto') . ") arrive à échéance le " . $contrat->date_echeance->format('d/m/Y') . ". Prime à régler: " . number_format($contrat->prime_totale, 2) . " DH. Merci de nous contacter pour le renouvellement.");
+                                            $wsUrl = !empty($phoneNum) ? "https://wa.me/{$phoneNum}?text={$wsMsg}" : "https://api.whatsapp.com/send?text={$wsMsg}";
+                                        @endphp
+                                        <a href="{{ $wsUrl }}" 
+                                           target="_blank"
+                                           title="Relancer le client via WhatsApp" 
+                                           wire:click.stop
+                                           class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-bold shadow-sm transition-all">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" class="w-3.5 h-3.5">
+                                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                                            </svg>
+                                            <span>WhatsApp</span>
+                                        </a>
+                                    @else
+                                        <!-- Teal + Règlement Button -->
+                                        <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[11px] font-bold shadow-sm transition-colors mr-0.5">
+                                            + Règlement
+                                        </button>
+
+                                        <!-- Quittance PDF Button -->
+                                        <a href="{{ route('automobile.pdf', ['contratId' => $contrat->id, 'type' => 'quittance']) }}" 
+                                           target="_blank"
+                                           title="Télécharger Quittance PDF"
+                                           wire:click.stop
+                                           class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 rounded-lg text-[11px] font-bold shadow-2xs transition-all">
+                                            <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                            </svg>
+                                            Quittance
+                                        </a>
                                     @endif
-
-                                    <!-- Teal + Règlement Button -->
-                                    <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[11px] font-bold shadow-sm transition-colors mr-0.5">
-                                        + Règlement
-                                    </button>
-
-                                    <!-- Quittance PDF Button -->
-                                    <a href="{{ route('automobile.pdf', ['contratId' => $contrat->id, 'type' => 'quittance']) }}" 
-                                       target="_blank"
-                                       title="Télécharger Quittance PDF"
-                                       wire:click.stop
-                                       class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 rounded-lg text-[11px] font-bold shadow-2xs transition-all">
-                                        <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                        </svg>
-                                        Quittance
-                                    </a>
 
                                     <!-- Modifier -->
                                     <a href="{{ route('automobile.edit', $contrat->id) }}" 
@@ -333,18 +354,33 @@
                                     <button wire:click.stop="rejeterRenouvellement({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold">
                                         ✗ Rejeter
                                     </button>
+                                    @php
+                                        $rawPhone = $contrat->client->telephone ?? ($contrat->client->phone ?? '');
+                                        $phoneNum = preg_replace('/[^0-9]/', '', $rawPhone);
+                                        if (str_starts_with($phoneNum, '0')) {
+                                            $phoneNum = '212' . substr($phoneNum, 1);
+                                        }
+                                        $wsMsg = rawurlencode("Bonjour " . $contrat->souscripteur . ", votre contrat d'assurance auto N° " . $contrat->numero_contrat . " (Véhicule: " . ($contrat->matricule ?? 'Auto') . ") arrive à échéance le " . $contrat->date_echeance->format('d/m/Y') . ". Prime à régler: " . number_format($contrat->prime_totale, 2) . " DH. Merci de nous contacter pour le renouvellement.");
+                                        $wsUrl = !empty($phoneNum) ? "https://wa.me/{$phoneNum}?text={$wsMsg}" : "https://api.whatsapp.com/send?text={$wsMsg}";
+                                    @endphp
+                                    <a href="{{ $wsUrl }}" target="_blank" wire:click.stop title="WhatsApp" class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">
+                                        <span>WhatsApp</span>
+                                    </a>
+                                @else
+                                    <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1 bg-teal-600 text-white rounded-lg text-xs font-bold shadow-sm">
+                                        + Règlement
+                                    </button>
                                 @endif
-                                <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1 bg-teal-600 text-white rounded-lg text-xs font-bold shadow-sm">
-                                    + Règlement
-                                </button>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <a href="{{ route('automobile.pdf', ['contratId' => $contrat->id, 'type' => 'quittance']) }}" target="_blank" wire:click.stop title="Quittance PDF" class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold shadow-2xs">
-                                    <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                    </svg>
-                                    Quittance
-                                </a>
+                                @if(!$isRenouvellements)
+                                    <a href="{{ route('automobile.pdf', ['contratId' => $contrat->id, 'type' => 'quittance']) }}" target="_blank" wire:click.stop title="Quittance PDF" class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold shadow-2xs">
+                                        <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                        </svg>
+                                        Quittance
+                                    </a>
+                                @endif
                                 <a href="{{ route('automobile.edit', $contrat->id) }}" wire:click.stop title="Modifier" class="p-1.5 rounded-lg text-blue-700 bg-blue-50 border border-blue-200">
                                     <svg width="16" height="16" style="width:16px;height:16px;min-width:16px;min-height:16px;" class="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                                 </a>
