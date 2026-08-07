@@ -59,9 +59,8 @@ ssh sc7mosa1422@sc7mosa1422.universe.wf << 'EOF'
   echo "🔧 Updating paths & invalidating OPcache in ~/public_html/index.php..."
   sed -i 's|\.\./storage/framework/maintenance\.php|../sc7mosa1422.universe.wf/storage/framework/maintenance.php|g' ~/public_html/index.php
   sed -i 's|\.\./vendor/autoload\.php|../sc7mosa1422.universe.wf/vendor/autoload.php|g' ~/public_html/index.php
-  sed -i 's|\.\./bootstrap/app\.php|../sc7mosa1422.universe.wf/bootstrap/app.php|g' ~/public_html/index.php
+  rm -rf ~/sc7mosa1422.universe.wf/storage/framework/views/*.php 2>/dev/null || true
   touch ~/public_html/index.php
-  touch ~/sc7mosa1422.universe.wf/storage/framework/views/* 2>/dev/null || true
 EOF
 
 echo "✨ Deployment finished successfully!"
