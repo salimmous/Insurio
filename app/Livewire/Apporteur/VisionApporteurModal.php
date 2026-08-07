@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Apporteur;
 use App\Models\Client;
 
+use App\Models\Setting;
+
 class VisionApporteurModal extends Component
 {
     public $search = '';
@@ -24,7 +26,7 @@ class VisionApporteurModal extends Component
         $this->isOpen = false;
     }
 
-    public function selectApporteur($id, $nom = '', $prenom = '', $taux = 10.00, $clientId = null)
+    public function selectApporteur($id, $nom = '', $prenom = '', $taux = 0.00, $clientId = null)
     {
         $this->dispatch('apporteurSelected', [
             'id' => is_numeric($id) ? (int)$id : null,
@@ -76,6 +78,7 @@ class VisionApporteurModal extends Component
             : collect();
 
         $combined = collect();
+        $defaultRate = (float) Setting::get('default_apporteur_commission_rate', 0.00);
 
         foreach ($clients as $client) {
             $key = $client->email ?: $client->telephone;
@@ -88,8 +91,8 @@ class VisionApporteurModal extends Component
                 'nom' => $client->nom,
                 'prenom' => $client->prenom,
                 'telephone' => $client->telephone,
-                'source' => 'Client',
-                'taux_commission' => $appRec ? (float)$appRec->taux_commission : 10.00,
+                'source' => $appRec ? 'Apporteur' : 'Client',
+                'taux_commission' => ($appRec && $appRec->taux_commission !== null) ? (float)$appRec->taux_commission : $defaultRate,
             ]);
         }
 
@@ -103,7 +106,7 @@ class VisionApporteurModal extends Component
                     'prenom' => $app->prenom,
                     'telephone' => $app->telephone,
                     'source' => 'Apporteur',
-                    'taux_commission' => (float)($app->taux_commission ?? 10.00),
+                    'taux_commission' => $app->taux_commission !== null ? (float)$app->taux_commission : $defaultRate,
                 ]);
             }
         }

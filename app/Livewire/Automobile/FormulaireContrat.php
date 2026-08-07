@@ -148,6 +148,7 @@ class FormulaireContrat extends Component
             : collect();
 
         $results = collect();
+        $defaultRate = (float) \App\Models\Setting::get('default_apporteur_commission_rate', 0.00);
 
         foreach ($clients as $client) {
             $key = $client->email ?: $client->telephone;
@@ -159,8 +160,8 @@ class FormulaireContrat extends Component
                 'prenom' => $client->prenom,
                 'code' => $client->formatted_reference,
                 'telephone' => $client->telephone,
-                'source' => 'Client',
-                'taux_commission' => $appRec ? (float)$appRec->taux_commission : 10.00,
+                'source' => $appRec ? 'Apporteur' : 'Client',
+                'taux_commission' => ($appRec && $appRec->taux_commission !== null) ? (float)$appRec->taux_commission : $defaultRate,
             ]);
         }
 
@@ -173,7 +174,7 @@ class FormulaireContrat extends Component
                     'code' => $app->code_apporteur ?? ('APP-' . $app->id),
                     'telephone' => $app->telephone,
                     'source' => 'Apporteur',
-                    'taux_commission' => (float)($app->taux_commission ?? 10.00),
+                    'taux_commission' => $app->taux_commission !== null ? (float)$app->taux_commission : $defaultRate,
                 ]);
             }
         }
@@ -181,7 +182,7 @@ class FormulaireContrat extends Component
         return $results;
     }    public $auto_synced_client = true;
 
-    public function selectApporteurFromSearch($id = null, $nom = null, $prenom = null, $taux = 10.00)
+    public function selectApporteurFromSearch($id = null, $nom = null, $prenom = null, $taux = 0.00)
     {
         if ($id || $nom) {
             $this->apporteur_id = is_numeric($id) ? (int)$id : null;
@@ -344,7 +345,7 @@ class FormulaireContrat extends Component
             $clientId = is_numeric($payload['client_id'] ?? null) ? (int)$payload['client_id'] : $apporteurId;
             $nom = is_string($payload['nom'] ?? '') ? $payload['nom'] : '';
             $prenom = is_string($payload['prenom'] ?? '') ? $payload['prenom'] : '';
-            $taux = is_numeric($payload['taux'] ?? 10) ? (float)$payload['taux'] : 10.00;
+            $taux = is_numeric($payload['taux'] ?? null) ? (float)$payload['taux'] : (float)\App\Models\Setting::get('default_apporteur_commission_rate', 0.00);
 
             $this->apporteur_id = $apporteurId;
             $this->nom_apporteur = trim($nom . ' ' . $prenom);

@@ -53,10 +53,10 @@
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-500 font-mono">{{ $app->telephone ?? '-' }}</td>
                             <td class="px-4 py-3 text-xs font-bold text-emerald-600 font-mono">
-                                {{ number_format($app->taux_commission ?? 10, 2) }}%
+                                {{ number_format($app->taux_commission ?? 0, 2) }}%
                             </td>
                             <td class="px-4 py-3 text-right">
-                                <button wire:click="selectApporteur({{ $app->id }}, '{{ addslashes($app->nom) }}', '{{ addslashes($app->prenom) }}', {{ $app->taux_commission }}, {{ $app->client_id ?? 'null' }})" 
+                                <button wire:click="selectApporteur({{ $app->id }}, '{{ addslashes($app->nom) }}', '{{ addslashes($app->prenom) }}', {{ $app->taux_commission ?? 0 }}, {{ $app->client_id ?? 'null' }})" 
                                         class="inline-flex items-center justify-center px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg transition duration-150 shadow-sm">
                                     Sélectionner
                                 </button>
