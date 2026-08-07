@@ -293,8 +293,61 @@ class ListeContrats extends Component
             return;
         }
 
-        $reglement->delete();
-        $this->dispatch('swal:success', ['message' => 'Règlement supprimé avec succès.']);
+        $contratId = $reglement->contrat_id;
+        $amount = (float)$reglement->montant;
+        $method = strtolower($reglement->mode_reglement ?? 'especes');
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($reglement, $contratId, $amount, $method) {
+            // 1. Delete corresponding FinancialLedger entry if present
+            \App\Models\FinancialLedger::where('contract_id', $contratId)
+                ->where('amount', $amount)
+                ->whereDate('entry_date', $reglement->date_reglement ?? now())
+                ->delete();
+
+            // 2. Delete corresponding Payment if present
+            if (\Illuminate\Support\Facades\Schema::hasTable('payments')) {
+                \App\Models\Payment::where('contract_id', $contratId)
+                    ->where('amount', $amount)
+                    ->delete();
+            }
+
+            // 3. Delete corresponding Cheque if cheque payment
+            if ($method === 'cheque' && \Illuminate\Support\Facades\Schema::hasTable('cheques')) {
+                \App\Models\Cheque::where('contract_id', $contratId)
+                    ->where('amount', $amount)
+                    ->delete();
+            }
+
+            // 4. Delete the Reglement record itself
+            $reglement->delete();
+
+            // 5. Recalculate CashRegister current & expected balance mathematically
+            $caisse = \App\Models\CashRegister::first();
+            if ($caisse) {
+                $totalCashCredit = (float) \App\Models\FinancialLedger::where('payment_method', 'cash')
+                    ->where('entry_type', 'credit')
+                    ->whereIn('status', ['completed', 'posted', 'approved'])
+                    ->sum('amount');
+
+                $totalCashDebit = (float) \App\Models\FinancialLedger::where('payment_method', 'cash')
+                    ->where('entry_type', 'debit')
+                    ->whereIn('status', ['completed', 'posted', 'approved'])
+                    ->sum('amount');
+
+                $netCash = $totalCashCredit - $totalCashDebit;
+                $caisse->update([
+                    'current_balance' => $netCash,
+                    'expected_balance' => $netCash,
+                ]);
+            }
+        });
+
+        // 6. Refresh modal state for current contract so paid totals, remaining balance & history reload live
+        if ($contratId && method_exists($this, 'selectContrat')) {
+            $this->selectContrat($contratId);
+        }
+
+        $this->dispatch('swal:success', ['message' => 'Règlement supprimé et solde caisse/dashboard recalculés avec succès.']);
     }
 
     public function getWhatsappUrl($contrat)
