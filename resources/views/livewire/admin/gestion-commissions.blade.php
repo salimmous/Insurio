@@ -105,12 +105,12 @@
                                     {{ $com->periode }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="font-semibold">{{ $com->employe->nom_complet }}</div>
-                                    <div class="text-xs text-gray-500">{{ $com->employe->poste }}</div>
+                                    <div class="font-semibold">{{ $com->employe?->nom_complet ?? 'N/A' }}</div>
+                                    <div class="text-xs text-gray-500">{{ $com->employe?->poste ?? '-' }}</div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="font-semibold text-gray-700">#{{ $com->contrat->numero_contrat }}</div>
-                                    <div class="text-xs text-gray-500">Client: {{ $com->contrat->client->nom_complet }}</div>
+                                    <div class="font-semibold text-gray-700">#{{ $com->contrat?->numero_contrat ?? $com->contrat?->contract_number ?? 'N/A' }}</div>
+                                    <div class="text-xs text-gray-500">Client: {{ $com->contrat?->client?->nom_complet ?? $com->contrat?->souscripteur ?? '-' }}</div>
                                 </td>
                                 <td class="px-6 py-4 font-mono text-gray-600">
                                     {{ number_format($com->base_calcul, 2) }} DH
