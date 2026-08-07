@@ -62,6 +62,8 @@ Route::middleware(['auth:platform', 'central'])->group(function () {
     Route::get('/super-admin/module/{moduleName}', [PlatformDashboardController::class, 'showModule'])->name('platform.module');
 });
 
+
+
 // Load Breeze auth routes on central domain ONLY in testing environment to make scaffolded tests pass
 if (app()->environment('testing')) {
     require __DIR__.'/auth.php';

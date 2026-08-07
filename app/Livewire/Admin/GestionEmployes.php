@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Admin;
 
+// Insurio Employee Management Component - Live Synchronized
+
 use Livewire\Component;
 use App\Models\Employe;
 use App\Models\Succursale;

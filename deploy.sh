@@ -24,8 +24,8 @@ ssh sc7mosa1422@sc7mosa1422.universe.wf << 'EOF'
   
   cd sc7mosa1422.universe.wf
 
-  # Remove any cached configuration and package files from server
-  rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php bootstrap/cache/routes.php
+  # Remove all cached configuration, package, service, and routes-v7.php files from server
+  rm -f bootstrap/cache/*.php
   
   if [ -f "composer.json" ]; then
     echo "📦 Installing Composer dependencies (no-scripts)..."
