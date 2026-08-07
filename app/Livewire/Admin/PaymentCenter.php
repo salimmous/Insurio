@@ -812,9 +812,14 @@ class PaymentCenter extends Component
         $pendingChequesSum = $chequesEnAttenteSum + $chequesVersesSum;
         $pendingChequesCount = $chequesEnAttenteCount + $chequesVersesCount;
 
-        // Compute running balance for all ledger entries in chronological order (Avant / Après)
-        $allChronologicalLedgers = FinancialLedger::orderBy('id', 'asc')->get();
-        $runningBalance = 0.0;
+        // Compute running balance for ledger entries in strict chronological date order (entry_date ASC, id ASC)
+        $allChronologicalLedgers = FinancialLedger::whereIn('status', ['completed', 'posted', 'approved'])
+            ->orderBy('entry_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $caisseOpening = (float) CashRegister::sum('opening_balance');
+        $runningBalance = $caisseOpening;
         $ledgerBalances = [];
 
         foreach ($allChronologicalLedgers as $item) {
@@ -831,6 +836,16 @@ class PaymentCenter extends Component
                 'before' => $before,
                 'after' => $after,
             ];
+        }
+
+        // Sync actual computed cash balance with CashRegister
+        $cashBalance = $runningBalance;
+        $caisse = CashRegister::first();
+        if ($caisse) {
+            $caisse->update([
+                'current_balance' => $cashBalance,
+                'expected_balance' => $cashBalance,
+            ]);
         }
 
         return view('livewire.admin.payment-center', [
