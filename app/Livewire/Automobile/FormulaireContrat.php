@@ -409,7 +409,7 @@ class FormulaireContrat extends Component
     // Computed properties for the blade view
     public function getPrimeNetteProperty()
     {
-        return (float)$this->prime_rc +
+        $sum = (float)$this->prime_rc +
                (float)$this->def_rec +
                (float)$this->tierce +
                (float)$this->collision +
@@ -417,6 +417,8 @@ class FormulaireContrat extends Component
                (float)$this->incendie +
                (float)$this->bris_glace +
                (float)$this->individuel;
+
+        return $sum > 0 ? $sum : (float)($this->prime_nette ?? 0);
     }
 
     public function updated($propertyName)

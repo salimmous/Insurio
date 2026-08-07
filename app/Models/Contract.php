@@ -159,8 +159,8 @@ class Contract extends Model
             }
 
             // Keep Auto calculations running if details is Auto or if auto columns are populated
-            if ($contract->details_type === 'App\\Models\\AutoContractDetail' || $contract->prime_rc > 0) {
-                $contract->prime_nette = (float)$contract->prime_rc +
+            if ($contract->details_type === 'App\\Models\\AutoContractDetail' || $contract->prime_rc > 0 || $contract->prime_nette > 0) {
+                $calcPrimeNette = (float)$contract->prime_rc +
                                         (float)$contract->def_rec +
                                         (float)$contract->tierce +
                                         (float)$contract->collision +
@@ -169,12 +169,21 @@ class Contract extends Model
                                         (float)$contract->bris_glace +
                                         (float)$contract->individuel;
 
-                $contract->premium_amount = $contract->prime_nette +
+                if ($calcPrimeNette > 0) {
+                    $contract->prime_nette = $calcPrimeNette;
+                }
+
+                $contract->premium_amount = (float)$contract->prime_nette +
                                          (float)$contract->taxe_auto +
+                                         (float)$contract->accessoire_auto_cie +
                                          (float)$contract->timbre +
                                          (float)$contract->montant_pta +
                                          (float)$contract->montant_taxe_pta +
                                          (float)$contract->accessoires;
+
+                if ($contract->premium_amount > 0) {
+                    $contract->prime_totale = $contract->premium_amount;
+                }
             }
 
             // Sync compatibility columns before saving to satisfy NOT NULL constraints
@@ -202,10 +211,10 @@ class Contract extends Model
                 $contract->end_date = $contract->date_echeance;
             }
 
-            if ($contract->premium_amount) {
-                $contract->prime_totale = $contract->premium_amount;
-            } elseif ($contract->prime_totale) {
+            if ($contract->prime_totale) {
                 $contract->premium_amount = $contract->prime_totale;
+            } elseif ($contract->premium_amount) {
+                $contract->prime_totale = $contract->premium_amount;
             }
 
             if ($contract->insurance_company_id) {
