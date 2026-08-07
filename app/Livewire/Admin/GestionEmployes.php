@@ -98,23 +98,7 @@ class GestionEmployes extends Component
 
     public function loadData()
     {
-        $query = Employe::with(['succursale', 'user']);
-
-        if ($this->searchQuery) {
-            $query->where(function($q) {
-                $q->where('nom', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhere('prenom', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhere('cin', 'like', '%' . $this->searchQuery . '%');
-            });
-        }
-
-        if ($this->filterStatut) {
-            $query->where('statut', $this->filterStatut);
-        }
-
-        $this->employes = $query->get();
-        $this->succursales = Succursale::all();
+        // Data loading is managed directly in render() for optimal Livewire 3 state management
     }
 
     public function openCreateModal()
@@ -582,15 +566,32 @@ class GestionEmployes extends Component
         $this->cin = '';
         $this->telephone = '';
         $this->email = '';
-        $this->succursale_id = optional($this->succursales->first())->id;
-        $this->poste = 'Agent commercial';
+        $this->succursale_id = Succursale::first()?->id;
+        $this->poste = 'Administrateur';
         $this->taux_commission_defaut = 0.00;
         $this->statut = 'invitation_pending';
     }
 
     public function render()
     {
-        return view('livewire.admin.gestion-employes')
-            ->layout('layouts.app');
+        $query = Employe::with(['succursale', 'user']);
+
+        if (!empty($this->searchQuery)) {
+            $query->where(function($q) {
+                $q->where('nom', 'like', '%' . $this->searchQuery . '%')
+                  ->orWhere('prenom', 'like', '%' . $this->searchQuery . '%')
+                  ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
+                  ->orWhere('cin', 'like', '%' . $this->searchQuery . '%');
+            });
+        }
+
+        if (!empty($this->filterStatut)) {
+            $query->where('statut', $this->filterStatut);
+        }
+
+        return view('livewire.admin.gestion-employes', [
+            'employes' => $query->get(),
+            'succursales' => Succursale::all(),
+        ])->layout('layouts.app');
     }
 }
