@@ -88,9 +88,24 @@ class ListeContrats extends Component
             $this->selectedContratId = $targetId;
             $contrat = ContratAuto::findOrFail($targetId);
             $newContrat = app(\App\Services\ContractWorkflowService::class)->renouveler($contrat);
+            $contrat->update(['statut' => 'renouvele']);
             
-            session()->flash('message', 'Contrat renouvelé avec succès (Nouveau Contrat: ' . $newContrat->numero_contrat . ')');
+            session()->flash('message', 'Renouvellement confirmé avec succès ! (Nouveau Contrat généré: ' . $newContrat->numero_contrat . ')');
+            $this->dispatch('swal:success', ['message' => 'Renouvellement confirmé avec succès.']);
             return redirect()->route('automobile.edit', $newContrat->id);
+        }
+    }
+
+    public function rejeterRenouvellement($id = null)
+    {
+        $targetId = $id ?? $this->selectedContratId;
+        if ($targetId) {
+            $this->selectedContratId = $targetId;
+            $contrat = ContratAuto::findOrFail($targetId);
+            $contrat->update(['statut' => 'resilie']);
+            
+            session()->flash('message', 'Le renouvellement du contrat N° ' . $contrat->numero_contrat . ' a été marqué comme Rejeté / Non renouvelé.');
+            $this->dispatch('swal:success', ['message' => 'Renouvellement marqué comme Rejeté.']);
         }
     }
 

@@ -149,6 +149,7 @@
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Avenant</th>
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Attest</th>
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Matricule</th>
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">Marque & Modèle</th>
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Date d'effet</th>
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Expiration</th>
                             <th class="px-2.5 py-2.5 text-right whitespace-nowrap">Prime Total</th>
@@ -173,7 +174,15 @@
                             <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->police }}</td>
                             <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->avenant ?? '-' }}</td>
                             <td class="px-2.5 py-2 whitespace-nowrap">{{ $contrat->attestation ?? '-' }}</td>
-                            <td class="px-2.5 py-2 whitespace-nowrap text-slate-800">{{ $contrat->matricule }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-slate-900 font-bold font-mono">{{ $contrat->matricule ?? ($contrat->vehicule->matricule ?? '-') }}</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap font-sans text-slate-700 font-semibold">
+                                @php
+                                    $marqueStr = $contrat->vehicule ? trim(($contrat->vehicule->marque ?? '') . ' ' . ($contrat->vehicule->modele ?? '')) : trim(($contrat->marque ?? '') . ' ' . ($contrat->modele ?? ''));
+                                @endphp
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-800 border border-slate-200 font-bold">
+                                    {{ !empty(trim($marqueStr)) ? $marqueStr : '-' }}
+                                </span>
+                            </td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-slate-600">{{ $contrat->date_effet->format('d/m/Y') }}</td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-slate-600">
                                 @php
@@ -187,7 +196,11 @@
                                     {{ $contrat->date_echeance->format('d/m/Y') }}
                                 @endif
                             </td>
-                            <td class="px-2.5 py-2 whitespace-nowrap text-right text-slate-900 font-bold font-mono">{{ number_format($contrat->prime_totale, 2) }} DH</td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-right font-mono">
+                                <span class="inline-block text-emerald-700 font-black text-[12px] bg-emerald-50/90 px-2 py-0.5 rounded-md border border-emerald-200 shadow-2xs">
+                                    {{ number_format($contrat->prime_totale, 2) }} DH
+                                </span>
+                            </td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                 @if($contrat->statut_reglement === 'solde')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Soldé</span>
@@ -201,8 +214,32 @@
                             <td class="px-2.5 py-2 whitespace-nowrap text-center">
                                 <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-blue-50 text-blue-700 border border-blue-200/60' }}">
                                     {{ $contrat->type_affaire }}
-                              <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
+                                </span>
+                            </td>
+                            <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                 <div class="inline-flex items-center gap-1.5">
+                                    @if($isRenouvellements)
+                                        <!-- Confirmer Renewal Button -->
+                                        <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" 
+                                                title="Confirmer & Générer le renouvellement" 
+                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold shadow-sm transition-all">
+                                            <svg width="14" height="14" style="width:14px;height:14px;" class="w-3.5 h-3.5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                                            </svg>
+                                            <span>Confirmer</span>
+                                        </button>
+
+                                        <!-- Rejeter Renewal Button -->
+                                        <button wire:click.stop="rejeterRenouvellement({{ $contrat->id }})" 
+                                                title="Rejeter / Refuser le renouvellement" 
+                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-[11px] font-bold shadow-2xs transition-all">
+                                            <svg width="14" height="14" style="width:14px;height:14px;" class="w-3.5 h-3.5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            <span>Rejeter</span>
+                                        </button>
+                                    @endif
+
                                     <!-- Teal + Règlement Button -->
                                     <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[11px] font-bold shadow-sm transition-colors mr-0.5">
                                         + Règlement
@@ -258,9 +295,17 @@
                             </span>
                         </div>
                         <div class="flex justify-between text-xs text-slate-600">
-                            <div>Matricule: <span class="font-mono font-bold">{{ $contrat->matricule }}</span></div>
-                            <div class="font-mono font-bold text-slate-900">{{ number_format($contrat->prime_totale, 2) }} DH</div>
+                            <div>Matricule: <span class="font-mono font-bold text-slate-900">{{ $contrat->matricule ?? ($contrat->vehicule->matricule ?? '-') }}</span></div>
+                            <div class="font-mono font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">{{ number_format($contrat->prime_totale, 2) }} DH</div>
                         </div>
+                        @php
+                            $mStr = $contrat->vehicule ? trim(($contrat->vehicule->marque ?? '') . ' ' . ($contrat->vehicule->modele ?? '')) : trim(($contrat->marque ?? '') . ' ' . ($contrat->modele ?? ''));
+                        @endphp
+                        @if(!empty(trim($mStr)))
+                            <div class="text-xs text-slate-500 font-sans">
+                                Véhicule: <span class="font-semibold text-slate-700">{{ $mStr }}</span>
+                            </div>
+                        @endif
                         <div class="flex justify-between text-[10px] text-slate-400 font-mono">
                             <div>Effet: {{ $contrat->date_effet->format('d/m/Y') }}</div>
                             <div>
@@ -279,10 +324,20 @@
                         </div>
 
                         <!-- Mobile Action Buttons Row -->
-                        <div class="flex items-center justify-between pt-2 mt-1 border-t border-slate-100">
-                            <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1 bg-teal-600 text-white rounded-lg text-xs font-bold shadow-sm">
-                                + Règlement
-                            </button>
+                        <div class="flex flex-wrap items-center justify-between pt-2 mt-1 border-t border-slate-100 gap-2">
+                            <div class="flex items-center gap-1.5">
+                                @if($isRenouvellements)
+                                    <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm">
+                                        ✓ Confirmer
+                                    </button>
+                                    <button wire:click.stop="rejeterRenouvellement({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold">
+                                        ✗ Rejeter
+                                    </button>
+                                @endif
+                                <button wire:click.stop="openReglementsModal({{ $contrat->id }})" class="inline-flex items-center px-2.5 py-1 bg-teal-600 text-white rounded-lg text-xs font-bold shadow-sm">
+                                    + Règlement
+                                </button>
+                            </div>
                             <div class="flex items-center gap-1.5">
                                 <a href="{{ route('automobile.pdf', ['contratId' => $contrat->id, 'type' => 'quittance']) }}" target="_blank" wire:click.stop title="Quittance PDF" class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold shadow-2xs">
                                     <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
