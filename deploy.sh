@@ -48,6 +48,7 @@ ssh sc7mosa1422@sc7mosa1422.universe.wf << 'EOF'
     php artisan config:clear
     php artisan view:clear
     php artisan route:clear
+    php artisan permission:cache-reset 2>/dev/null || true
     php artisan optimize:clear
   fi
 
