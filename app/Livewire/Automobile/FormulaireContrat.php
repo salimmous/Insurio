@@ -292,7 +292,8 @@ class FormulaireContrat extends Component
             $this->commission_pta = (float)$contrat->commission_pta;
             $this->tps_pta = (float)$contrat->tps_pta;
             $this->accessoires = (float)$contrat->accessoires;
-            $this->prime_totale = (float)($contrat->prime_totale ?? $contrat->premium_amount ?? 0);
+            $calculatedPrime = round($this->primeNette + $this->totalTaxe, 2);
+            $this->prime_totale = $calculatedPrime > 0 ? $calculatedPrime : (float)($contrat->prime_totale ?? $contrat->premium_amount ?? 0);
 
             if ($contrat->client) {
                 $this->souscripteur = trim($contrat->client->nom . ' ' . $contrat->client->prenom);
@@ -473,6 +474,9 @@ class FormulaireContrat extends Component
 
     public function save()
     {
+        $this->prime_nette = round($this->primeNette, 2);
+        $this->prime_totale = round($this->primeNette + $this->totalTaxe, 2);
+
         if (empty($this->numero_contrat)) {
             $this->numero_contrat = 'REF-' . date('Y') . '-' . str_pad($this->contratId ?? rand(1, 9999), 4, '0', STR_PAD_LEFT);
         }
