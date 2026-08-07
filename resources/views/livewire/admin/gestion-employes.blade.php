@@ -137,7 +137,8 @@
                                 @php
                                     $user = $emp->user;
                                     $isActivated = $user && !$user->first_login && $user->activated_at;
-                                    $isExpired = $user && ($user->first_login || !$user->activated_at) && $user->activation_token_expires_at && $user->activation_token_expires_at->isPast();
+                                    $expiresAt = $user && $user->activation_token_expires_at ? \Carbon\Carbon::parse($user->activation_token_expires_at) : null;
+                                    $isExpired = $user && ($user->first_login || !$user->activated_at) && $expiresAt && $expiresAt->isPast();
                                     $isPending = $user && ($user->first_login || !$user->activated_at) && !$isExpired;
                                 @endphp
 
