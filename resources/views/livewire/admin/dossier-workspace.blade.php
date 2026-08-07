@@ -366,7 +366,7 @@
                                 <div class="bg-slate-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center">
                                     <span class="text-xs font-semibold text-gray-600">Total Enregistré pour le Client :</span>
                                     <span class="text-sm font-extrabold text-slate-800">
-                                        {{ $dossier->client->solde_impaye ?? 0 }} DH (Impayé Global)
+                                        {{ $dossier->client?->solde_impaye ?? 0 }} DH (Impayé Global)
                                     </span>
                                 </div>
                                 <div class="py-8 text-center text-xs text-gray-450 italic">Aucun règlement direct lié à cet incident.</div>

@@ -338,7 +338,7 @@
             Opérations
         </div>
 
-        <!-- Tâches Kanban -->
+        <!-- Tâches -->
         <a href="{{ Route::has('admin.tasks') ? route('admin.tasks') : '#' }}" 
            class="h-[48px] min-h-[48px] flex items-center text-[15px] font-semibold rounded-xl transition-all duration-200 relative group px-[18px] {{ request()->routeIs('admin.tasks*') ? 'bg-[#1E293B] text-white border-l-4 border-teal-400 shadow-md font-bold' : 'text-slate-300 hover:bg-[#1E293B]/70 hover:text-white' }}"
            :class="sidebarCollapsed ? 'justify-center px-0' : 'px-[18px]'">
@@ -347,9 +347,9 @@
                 <rect width="18" height="18" x="3" y="3" rx="2" />
                 <path d="M8 7v7M12 7v4M16 7v9" />
             </svg>
-            <span class="ml-[14px] truncate" x-show="!sidebarCollapsed">Tâches Kanban</span>
+            <span class="ml-[14px] truncate" x-show="!sidebarCollapsed">Tâches</span>
             <div x-show="sidebarCollapsed" class="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-2xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-slate-700">
-                Tâches Kanban
+                Tâches
             </div>
         </a>
 
