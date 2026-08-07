@@ -1,4 +1,5 @@
 #!/bin/bash
+# Auto-deploy & Git push triggered at 2026-08-07 14:23
 # Check if expect wrapper exists and is executable
 if [ -f "./run_deploy.exp" ] && [ -z "$DEPLOY_RUNNING" ]; then
     export DEPLOY_RUNNING=1
