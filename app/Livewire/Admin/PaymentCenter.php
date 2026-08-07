@@ -34,7 +34,7 @@ class PaymentCenter extends Component
     public $filterMethod = '';
     public $filterCategory = '';
     public $filterBranch = '';
-    public $filterDatePreset = 'all'; // default to all (Historique complet)
+    public $filterDatePreset = 'today'; // default to Today (Aujourd'hui)
     public $filterDate = '';
     public $filterDateStart = '';
     public $filterDateEnd = '';
@@ -72,12 +72,14 @@ class PaymentCenter extends Component
     protected $queryString = [
         'search' => ['except' => ''],
         'activeTab' => ['except' => 'caisses'],
+        'filterDatePreset' => ['except' => 'today'],
         'filterEntryType' => ['except' => ''],
         'filterMethod' => ['except' => ''],
     ];
 
     public function mount()
     {
+        $this->filterDatePreset = 'today';
         $this->cheque_due_date = now()->format('Y-m-d');
         $this->ensureInitialBankAndCashSetup();
         $this->syncProductionToLedger();
@@ -176,6 +178,67 @@ class PaymentCenter extends Component
                 ]));
             }
         }
+
+        $this->syncMissingExpensesToLedger();
+    }
+
+    private function syncMissingExpensesToLedger()
+    {
+        $expenses = \App\Models\AgencyExpense::all();
+        $caisse = \App\Models\CashRegister::first();
+
+        foreach ($expenses as $exp) {
+            $existing = \App\Models\FinancialLedger::where('category', 'charge')
+                ->where('amount', $exp->amount)
+                ->whereDate('entry_date', $exp->date_charge)
+                ->first();
+
+            if (!$existing) {
+                $trxId = 'CHG-' . date('Ymd', strtotime($exp->date_charge ?? 'now')) . '-' . str_pad($exp->id, 5, '0', STR_PAD_LEFT);
+                $recId = 'REC-CHG-' . date('Ymd', strtotime($exp->date_charge ?? 'now')) . '-' . str_pad($exp->id, 5, '0', STR_PAD_LEFT);
+
+                \App\Models\FinancialLedger::create([
+                    'uuid' => (string) \Illuminate\Support\Str::uuid(),
+                    'transaction_id' => $trxId,
+                    'entry_date' => $exp->date_charge ?? now(),
+                    'category' => 'charge',
+                    'entry_type' => 'debit',
+                    'amount' => $exp->amount,
+                    'currency' => 'DH',
+                    'payment_method' => 'cash',
+                    'status' => 'completed',
+                    'receipt_number' => $recId,
+                    'qr_code_hash' => md5($trxId . '|' . $exp->amount),
+                    'notes' => 'Charge Agence: ' . $exp->title . ($exp->description ? ' - ' . $exp->description : ''),
+                    'user_id' => auth()->id() ?? 1,
+                    'branch_id' => $exp->succursale_id ?: null,
+                    'cash_register_id' => $caisse?->id,
+                    'metadata' => [
+                        'agency_expense_id' => $exp->id,
+                        'category_type' => $exp->category,
+                    ],
+                ]);
+            }
+        }
+
+        // Recalculate Cash Register balance
+        if ($caisse) {
+            $totalCashCredit = (float) \App\Models\FinancialLedger::where('payment_method', 'cash')
+                ->where('entry_type', 'credit')
+                ->whereIn('status', ['completed', 'posted', 'approved'])
+                ->sum('amount');
+
+            $totalCashDebit = (float) \App\Models\FinancialLedger::where('payment_method', 'cash')
+                ->where('entry_type', 'debit')
+                ->whereIn('status', ['completed', 'posted', 'approved'])
+                ->sum('amount');
+
+            $netCash = $totalCashCredit - $totalCashDebit;
+            $caisse->update([
+                'current_balance' => $netCash,
+                'expected_balance' => $netCash,
+            ]);
+        }
     }
 
     public function updatingSearch()
@@ -197,11 +260,28 @@ class PaymentCenter extends Component
         $this->filterEntryType = '';
         $this->filterMethod = '';
         $this->filterCategory = '';
-        $this->filterDatePreset = 'all';
+        $this->filterDatePreset = 'today';
         $this->filterDate = '';
         $this->filterDateStart = '';
         $this->filterDateEnd = '';
         $this->resetPage();
+    }
+
+    public $selectedLedger = null;
+    public $showDetailModal = false;
+
+    public function viewTransactionDetails($id)
+    {
+        $this->selectedLedger = FinancialLedger::with(['client', 'contract', 'user', 'cheque'])->find($id);
+        if ($this->selectedLedger) {
+            $this->showDetailModal = true;
+        }
+    }
+
+    public function closeDetailModal()
+    {
+        $this->selectedLedger = null;
+        $this->showDetailModal = false;
     }
 
     public function openCreateModal()
@@ -732,6 +812,27 @@ class PaymentCenter extends Component
         $pendingChequesSum = $chequesEnAttenteSum + $chequesVersesSum;
         $pendingChequesCount = $chequesEnAttenteCount + $chequesVersesCount;
 
+        // Compute running balance for all ledger entries in chronological order (Avant / Après)
+        $allChronologicalLedgers = FinancialLedger::orderBy('id', 'asc')->get();
+        $runningBalance = 0.0;
+        $ledgerBalances = [];
+
+        foreach ($allChronologicalLedgers as $item) {
+            $before = $runningBalance;
+            $amt = (float)$item->amount;
+            if ($item->entry_type === 'credit') {
+                $runningBalance += $amt;
+            } else {
+                $runningBalance -= $amt;
+            }
+            $after = $runningBalance;
+
+            $ledgerBalances[$item->id] = [
+                'before' => $before,
+                'after' => $after,
+            ];
+        }
+
         return view('livewire.admin.payment-center', [
             'filterDate' => $this->filterDate,
             'filterDatePreset' => $this->filterDatePreset,
@@ -754,6 +855,7 @@ class PaymentCenter extends Component
             'chequesVersesCount' => $chequesVersesCount,
             'chequesEncaissesSum' => $chequesEncaissesSum,
             'chequesEncaissesCount' => $chequesEncaissesCount,
+            'ledgerBalances' => $ledgerBalances,
             'cheques' => Cheque::with('client')->whereNotIn('status', ['collected', 'validated', 'returned', 'rejected', 'cancelled', 'archived'])->latest('due_date')->get(),
             'clients' => Client::orderBy('last_name')->take(50)->get(),
         ])->layout('layouts.app');

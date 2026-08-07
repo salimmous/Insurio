@@ -20,7 +20,7 @@
     </div>
 
     <!-- High-Density Financial KPI Banner -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
             <div class="space-y-1">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -70,19 +70,6 @@
             <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            </div>
-        </div>
-
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
-            <div class="space-y-1">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Chèques Versés / Déposés</span>
-                <span class="text-xl font-black text-blue-600">{{ number_format($chequesVersesSum, 2) }} DH</span>
-                <span class="text-[10px] text-slate-400 block">{{ $chequesVersesCount }} chèque(s) en banque</span>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
                 </svg>
             </div>
         </div>
@@ -250,7 +237,10 @@
                             @foreach($day['transactions'] as $item)
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="px-6 py-3.5 whitespace-nowrap">
-                                        <span class="font-mono font-bold text-indigo-600 block text-sm">{{ $item->transaction_id }}</span>
+                                        <button type="button" wire:click="viewTransactionDetails({{ $item->id }})" class="font-mono font-bold text-indigo-600 hover:text-indigo-800 hover:underline block text-sm inline-flex items-center gap-1">
+                                            <span>{{ $item->transaction_id }}</span>
+                                            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        </button>
                                         <span class="text-[10px] text-slate-400 font-mono">{{ $item->entry_date ? $item->entry_date->format('H:i') : '-' }}</span>
                                     </td>
                                     <td class="px-6 py-3.5">
@@ -274,9 +264,18 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap font-mono font-black text-sm">
                                         @if($item->entry_type === 'credit')
-                                            <span class="text-emerald-600">+{{ number_format($item->amount, 2) }} DH</span>
+                                            <span class="text-emerald-600 block">+{{ number_format($item->amount, 2) }} DH</span>
                                         @else
-                                            <span class="text-rose-600">-{{ number_format($item->amount, 2) }} DH</span>
+                                            <span class="text-rose-600 block">-{{ number_format($item->amount, 2) }} DH</span>
+                                        @endif
+
+                                        @if(isset($ledgerBalances[$item->id]))
+                                            <div class="text-[10px] font-medium text-slate-500 mt-1 flex items-center gap-1 font-sans">
+                                                <span class="text-slate-400">Solde:</span>
+                                                <span class="text-slate-700 font-bold font-mono" title="Solde Avant Opération">{{ number_format($ledgerBalances[$item->id]['before'], 2) }}</span>
+                                                <span class="text-slate-400 font-bold">➔</span>
+                                                <span class="font-bold font-mono {{ $ledgerBalances[$item->id]['after'] < 0 ? 'text-rose-600' : 'text-emerald-600' }}" title="Solde Après Opération">{{ number_format($ledgerBalances[$item->id]['after'], 2) }} DH</span>
+                                            </div>
                                         @endif
                                     </td>
                                     <td class="px-6 py-3.5 whitespace-nowrap">
@@ -324,6 +323,44 @@
                 </div>
 
                 <form wire:submit.prevent="createLedgerEntry" class="space-y-4 text-xs font-medium">
+                    <!-- Live Real-Time Balance Impact Preview (Solde Avant -> Déduction -> Solde Après) -->
+                    @php 
+                        $deductionAmount = (float)($amount ?? 0);
+                        $afterBalance = $cashBalance - $deductionAmount;
+                    @endphp
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2 shadow-xs">
+                        <div class="flex justify-between items-center text-[11px] font-extrabold text-slate-600 uppercase tracking-wider">
+                            <span class="flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                <span>Aperçu de l'Impact sur Solde Caisse</span>
+                            </span>
+                            <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">Calcul en temps réel</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <!-- Solde Avant -->
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
+                                <span class="text-[10px] font-extrabold text-slate-400 block uppercase">Solde Avant</span>
+                                <span class="text-xs font-black text-slate-800 font-mono">{{ number_format($cashBalance, 2) }} DH</span>
+                            </div>
+                            <!-- Montant Déduit -->
+                            <div class="bg-rose-50 p-2.5 rounded-xl border border-rose-200 shadow-xs">
+                                <span class="text-[10px] font-extrabold text-rose-500 block uppercase">Montant Déduit (-)</span>
+                                <span class="text-xs font-black text-rose-600 font-mono">- {{ number_format($deductionAmount, 2) }} DH</span>
+                            </div>
+                            <!-- Solde Après -->
+                            <div class="p-2.5 rounded-xl border shadow-xs {{ $afterBalance < 0 ? 'bg-rose-100/80 border-rose-400' : 'bg-emerald-50 border-emerald-300' }}">
+                                <span class="text-[10px] font-extrabold {{ $afterBalance < 0 ? 'text-rose-700' : 'text-emerald-700' }} block uppercase">Solde Après</span>
+                                <span class="text-xs font-black {{ $afterBalance < 0 ? 'text-rose-800' : 'text-emerald-800' }} font-mono">{{ number_format($afterBalance, 2) }} DH</span>
+                            </div>
+                        </div>
+                        @if($afterBalance < 0)
+                            <div class="text-[10px] font-bold text-rose-600 flex items-center justify-center gap-1 pt-0.5">
+                                <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <span>Attention: Le montant saisi dépasse le solde d'espèces disponible en caisse!</span>
+                            </div>
+                        @endif
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Sens de l'Opération</label>
@@ -335,54 +372,23 @@
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Montant (DH) *</label>
-                            <input type="number" step="0.01" wire:model.live="amount" class="w-full border border-slate-300 rounded-xl p-2.5 font-mono font-bold text-sm">
+                            <input type="number" step="0.01" wire:model.live="amount" placeholder="0.00" class="w-full border border-slate-300 rounded-xl p-2.5 font-mono font-bold text-base text-slate-900 bg-white shadow-xs focus:ring-2 focus:ring-indigo-500 placeholder-slate-400">
                         </div>
 
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Mode de Paiement *</label>
-                            <select wire:model.live="payment_method" class="w-full border border-slate-300 rounded-xl p-2.5 font-bold">
+                            <select wire:model.live="payment_method" class="w-full border border-slate-300 rounded-xl p-2.5 font-bold text-slate-900 bg-white shadow-xs">
                                 <option value="cash">Espèces (Caisse Agence)</option>
-                                <option value="cheque">Chèque Marocain</option>
-                                <option value="transfer">Virement Bancaire</option>
-                                <option value="card">Carte Bancaire / TPE</option>
                             </select>
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Catégorie Comptable *</label>
-                            <select wire:model="category" class="w-full border border-slate-300 rounded-xl p-2.5">
+                            <select wire:model="category" class="w-full border border-slate-300 rounded-xl p-2.5 font-medium text-slate-900 bg-white shadow-xs">
+                                <option value="charge">Charge & Dépense d'Exploitation</option>
                                 <option value="encaissement_prime">Encaissement Prime Assurance</option>
                                 <option value="reglement_sinistre">Règlement Sinistre Client</option>
                                 <option value="commission">Commission Compagnie</option>
-                                <option value="charge">Charge & Dépense d'Exploitation</option>
                                 <option value="virement">Virement Bancaire Interne</option>
-                            </select>
-                        </div>
-
-                        @if($payment_method === 'cheque')
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-1">N° de Chèque *</label>
-                                <input type="text" wire:model="cheque_number" placeholder="ex: 8849201" class="w-full border border-slate-300 rounded-xl p-2.5 font-mono">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-1">Banque Émettrice *</label>
-                                <select wire:model="bank_name" class="w-full border border-slate-300 rounded-xl p-2.5">
-                                    <option value="Attijariwafa Bank">Attijariwafa Bank</option>
-                                    <option value="Banque Populaire (BCP)">Banque Populaire (BCP)</option>
-                                    <option value="BMCE Bank of Africa">BMCE Bank of Africa</option>
-                                    <option value="CIH Bank">CIH Bank</option>
-                                    <option value="Société Générale (SGMB)">Société Générale (SGMB)</option>
-                                    <option value="Crédit du Maroc (CDM)">Crédit du Maroc (CDM)</option>
-                                </select>
-                            </div>
-                        @endif
-
-                        <div class="md:col-span-2">
-                            <label class="block font-bold text-slate-700 mb-1">Rattacher au Client (Optionnel)</label>
-                            <select wire:model="client_id" class="w-full border border-slate-300 rounded-xl p-2.5">
-                                <option value="">-- Aucun Client (Opération Générale) --</option>
-                                @foreach($clients as $cl)
-                                    <option value="{{ $cl->id }}">{{ $cl->formatted_reference }} - {{ $cl->first_name }} {{ $cl->last_name }} (CIN: {{ $cl->cin ?? '-' }})</option>
-                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -480,6 +486,103 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    @endif
+
+    <!-- Transaction Full Details Modal (Popup) -->
+    @if($showDetailModal && $selectedLedger)
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase text-indigo-600 tracking-wider block">Fiche Audit Transaction</span>
+                        <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                            <span>{{ $selectedLedger->transaction_id }}</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $selectedLedger->entry_type === 'credit' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                                {{ $selectedLedger->entry_type === 'credit' ? 'Encaissement (+)' : 'Dépense / Sortie (-)' }}
+                            </span>
+                        </h3>
+                    </div>
+                    <button wire:click="closeDetailModal" class="text-slate-400 hover:text-slate-600 font-bold text-lg p-1">✕</button>
+                </div>
+
+                <!-- Financial Impact Summary Card -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                    <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block">
+                        Historique du Solde Caisse (Impact Financier)
+                    </span>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
+                            <span class="text-[10px] font-extrabold text-slate-400 block uppercase">Solde Avant</span>
+                            <span class="text-xs font-black text-slate-800 font-mono">
+                                {{ number_format($ledgerBalances[$selectedLedger->id]['before'] ?? 0, 2) }} DH
+                            </span>
+                        </div>
+                        <div class="p-2.5 rounded-xl border shadow-xs {{ $selectedLedger->entry_type === 'credit' ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200' }}">
+                            <span class="text-[10px] font-extrabold {{ $selectedLedger->entry_type === 'credit' ? 'text-emerald-600' : 'text-rose-600' }} block uppercase">Montant</span>
+                            <span class="text-xs font-black {{ $selectedLedger->entry_type === 'credit' ? 'text-emerald-700' : 'text-rose-700' }} font-mono">
+                                {{ $selectedLedger->entry_type === 'credit' ? '+' : '-' }}{{ number_format($selectedLedger->amount, 2) }} DH
+                            </span>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
+                            <span class="text-[10px] font-extrabold text-slate-400 block uppercase">Solde Après</span>
+                            <span class="text-xs font-black {{ ($ledgerBalances[$selectedLedger->id]['after'] ?? 0) < 0 ? 'text-rose-600' : 'text-emerald-700' }} font-mono">
+                                {{ number_format($ledgerBalances[$selectedLedger->id]['after'] ?? 0, 2) }} DH
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Details Grid -->
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Date & Heure</span>
+                        <span class="font-mono font-bold text-slate-800 block">{{ $selectedLedger->entry_date ? $selectedLedger->entry_date->format('d/m/Y H:i') : '-' }}</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Mode de Paiement</span>
+                        <span class="font-mono font-bold text-slate-800 uppercase block">{{ $selectedLedger->payment_method }}</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Catégorie Comptable</span>
+                        <span class="font-bold text-slate-800 capitalize block">{{ str_replace('_', ' ', $selectedLedger->category ?: 'Opération') }}</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">N° Reçu Officiel</span>
+                        <span class="font-mono font-bold text-indigo-600 block">{{ $selectedLedger->receipt_number ?: 'N/A' }}</span>
+                    </div>
+
+                    <div class="col-span-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Bénéficiaire / Client</span>
+                        @if($selectedLedger->client)
+                            <div class="font-bold text-slate-900">{{ $selectedLedger->client->first_name }} {{ $selectedLedger->client->last_name }}</div>
+                            <span class="text-[10px] text-slate-500 font-mono block">CIN: {{ $selectedLedger->client->cin ?? '-' }}</span>
+                        @else
+                            <span class="text-slate-600 font-medium block">Opération Générale Agence / Caisse</span>
+                        @endif
+                    </div>
+
+                    @if($selectedLedger->notes)
+                        <div class="col-span-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <span class="text-[10px] font-bold text-slate-400 block uppercase">Motif / Remarques</span>
+                            <p class="text-slate-700 text-xs font-normal mt-0.5">{{ $selectedLedger->notes }}</p>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="flex justify-between items-center pt-3 border-t">
+                    <a href="{{ url('/admin/payments-center/' . $selectedLedger->id . '/receipt') }}" target="_blank" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl font-bold text-xs inline-flex items-center gap-1.5 transition">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H9v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                        <span>Imprimer Reçu PDF</span>
+                    </a>
+                    <button type="button" wire:click="closeDetailModal" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-xs">
+                        Fermer
+                    </button>
+                </div>
             </div>
         </div>
     @endif
