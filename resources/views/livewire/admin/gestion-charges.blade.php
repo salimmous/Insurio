@@ -93,20 +93,20 @@
     </div>
 
     <!-- Filters & Live Search Bar -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Live Search -->
-        <div class="flex-1 w-full">
-            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1">Recherche Rapide</label>
+        <div class="w-full">
+            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Recherche Rapide</label>
             <div class="relative">
-                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher par libellé, note..." class="w-full bg-slate-50 border border-slate-300 focus:bg-white focus:border-indigo-600 rounded-xl pl-9 pr-3 py-2 text-xs font-bold text-slate-900 outline-none transition-all placeholder-slate-400">
-                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher par libellé, note..." class="w-full bg-slate-50 border border-slate-300 focus:bg-white focus:border-indigo-600 rounded-xl pl-9 pr-3 py-2.5 text-xs font-bold text-slate-900 outline-none transition-all placeholder-slate-400">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
         </div>
 
         <!-- Filter Category -->
-        <div class="w-full md:w-56">
-            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1">Catégorie</label>
-            <select wire:model.live="filterCategory" class="w-full bg-slate-50 border border-slate-300 focus:bg-white focus:border-indigo-600 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 outline-none transition-all">
+        <div class="w-full">
+            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Catégorie</label>
+            <select wire:model.live="filterCategory" class="w-full bg-slate-50 border border-slate-300 focus:bg-white focus:border-indigo-600 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 outline-none transition-all">
                 <option value="">Toutes les catégories</option>
                 <option value="loyer">Loyer</option>
                 <option value="electricite">Électricité</option>
@@ -117,9 +117,9 @@
         </div>
 
         <!-- Filter Succursale -->
-        <div class="w-full md:w-56">
-            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1">Succursale / Bureau</label>
-            <select wire:model.live="filterSuccursale" class="w-full bg-slate-50 border border-slate-300 focus:bg-white focus:border-indigo-600 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 outline-none transition-all">
+        <div class="w-full">
+            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Succursale / Bureau</label>
+            <select wire:model.live="filterSuccursale" class="w-full bg-slate-50 border border-slate-300 focus:bg-white focus:border-indigo-600 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 outline-none transition-all">
                 <option value="">Toutes les succursales</option>
                 @foreach($succursales as $suc)
                     <option value="{{ $suc->id }}">{{ $suc->nom }} ({{ $suc->ville }})</option>
