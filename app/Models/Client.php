@@ -54,10 +54,24 @@ class Client extends Model
 
     protected static function booted()
     {
-        static::creating(function ($client) {
+        static::saving(function ($client) {
             if (empty($client->reference)) {
                 $nextId = (static::max('id') ?? 0) + 1;
-                $client->reference = 'CL-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+                $prefix = ($client->client_type === 'company' || $client->type === 'entreprise') ? 'ENT-' : 'CL-';
+                $client->reference = $prefix . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+            }
+
+            // Convert empty string fields to NULL to prevent SQL 1062 duplicate key error on unique indexes (like email, cin)
+            $nullableFields = [
+                'email', 'cin', 'phone', 'passport', 'whatsapp_number', 
+                'num_permis', 'gerant', 'date_of_birth', 'profession', 
+                'address', 'city', 'notes', 'type_incident', 'entreprise_id'
+            ];
+
+            foreach ($nullableFields as $field) {
+                if (isset($client->attributes[$field]) && is_string($client->attributes[$field]) && trim($client->attributes[$field]) === '') {
+                    $client->attributes[$field] = null;
+                }
             }
         });
     }

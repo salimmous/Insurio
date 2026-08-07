@@ -155,30 +155,30 @@ class GestionClients extends Component
 
         $data = [
             'uuid' => $this->clientId ? Client::findOrFail($this->clientId)->uuid : (string) Str::uuid(),
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'whatsapp_number' => $this->whatsapp_number,
-            'cin' => $this->cin,
-            'passport' => $this->passport,
+            'first_name' => trim($this->first_name),
+            'last_name' => trim($this->last_name),
+            'email' => !empty(trim($this->email ?? '')) ? trim($this->email) : null,
+            'phone' => !empty(trim($this->phone ?? '')) ? trim($this->phone) : null,
+            'whatsapp_number' => !empty(trim($this->whatsapp_number ?? '')) ? trim($this->whatsapp_number) : null,
+            'cin' => !empty(trim($this->cin ?? '')) ? trim($this->cin) : null,
+            'passport' => !empty(trim($this->passport ?? '')) ? trim($this->passport) : null,
             'date_of_birth' => $this->date_of_birth ?: null,
-            'profession' => $this->profession,
-            'address' => $this->address,
-            'city' => $this->city,
-            'notes' => $this->notes,
-            'solvabilite' => $this->solvabilite,
-            'incident' => $this->incident,
+            'profession' => !empty(trim($this->profession ?? '')) ? trim($this->profession) : null,
+            'address' => !empty(trim($this->address ?? '')) ? trim($this->address) : null,
+            'city' => !empty(trim($this->city ?? '')) ? trim($this->city) : null,
+            'notes' => !empty(trim($this->notes ?? '')) ? trim($this->notes) : null,
+            'solvabilite' => $this->solvabilite ?: 'solvable',
+            'incident' => (bool)$this->incident,
             'entreprise_id' => $this->entreprise_id ?: null,
             'client_type' => 'individual',
         ];
 
         if (Schema::hasColumn('clients', 'reference')) {
-            $data['reference'] = $this->reference ?: 'CL-' . str_pad(($this->clientId ?? ((Client::max('id') ?? 0) + 1)), 5, '0', STR_PAD_LEFT);
+            $data['reference'] = !empty(trim($this->reference ?? '')) ? trim($this->reference) : 'CL-' . str_pad(($this->clientId ?? ((Client::max('id') ?? 0) + 1)), 5, '0', STR_PAD_LEFT);
         }
 
         if (Schema::hasColumn('clients', 'type_incident')) {
-            $data['type_incident'] = $this->type_incident;
+            $data['type_incident'] = !empty(trim($this->type_incident ?? '')) ? trim($this->type_incident) : null;
         }
 
         Client::updateOrCreate(

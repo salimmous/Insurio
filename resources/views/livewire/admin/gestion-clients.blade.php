@@ -178,42 +178,42 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                             <label class="block font-bold text-gray-700 mb-1">Référence Client (Auto)</label>
-                            <input type="text" wire:model="reference" placeholder="Auto-généré ex: CL-00001" class="w-full border border-gray-300 rounded-lg p-2.5 font-mono bg-gray-50">
+                            <input type="text" wire:model="reference" placeholder="Auto-généré ex: CL-00001" class="w-full border border-gray-300 rounded-lg p-2.5 font-mono bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
 
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Prénom *</label>
-                            <input type="text" wire:model="first_name" placeholder="Prénom" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="text" wire:model="first_name" placeholder="Prénom" class="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             @error('first_name') <span class="text-red-500">{{ $message }}</span> @enderror
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Nom *</label>
-                            <input type="text" wire:model="last_name" placeholder="Nom" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="text" wire:model="last_name" placeholder="Nom" class="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             @error('last_name') <span class="text-red-500">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">CIN / Carte Nationale</label>
-                            <input type="text" wire:model="cin" placeholder="ex: AB123456" class="w-full border border-gray-300 rounded-lg p-2.5 font-mono">
+                            <input type="text" wire:model="cin" placeholder="ex: AB123456" class="w-full border border-gray-300 rounded-lg p-2.5 font-mono bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Téléphone</label>
-                            <input type="text" wire:model="phone" placeholder="ex: 0661234567" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="text" wire:model="phone" placeholder="ex: 0661234567" class="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
 
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">WhatsApp Direct</label>
-                            <input type="text" wire:model="whatsapp_number" placeholder="ex: 0661234567" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="text" wire:model="whatsapp_number" placeholder="ex: 0661234567" class="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Adresse E-mail</label>
-                            <input type="email" wire:model="email" placeholder="client@domaine.ma" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="email" wire:model="email" placeholder="client@domaine.ma" class="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
 
                     <div>
                         <label class="block font-bold text-gray-700 mb-1">Adresse Complète</label>
-                        <textarea wire:model="address" rows="2" placeholder="Adresse physique du client" class="w-full border border-gray-300 rounded-lg p-2.5"></textarea>
+                        <textarea wire:model="address" rows="2" placeholder="Adresse physique du client" class="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4 border-t">

@@ -219,12 +219,12 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Référence Entreprise</label>
-                                    <input type="text" wire:model="reference" placeholder="Auto (Ex: ENT-00001)" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
+                                    <input type="text" wire:model="reference" placeholder="Auto (Ex: ENT-00001)" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono">
                                     @error('reference') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Raison Sociale / Nom</label>
-                                    <input type="text" wire:model="nom" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    <input type="text" wire:model="nom" placeholder="Raison Sociale" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                     @error('nom') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                             </div>
@@ -232,12 +232,12 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">ICE / RC</label>
-                                    <input type="text" wire:model="cin" placeholder="Ex: 001524389000045" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
+                                    <input type="text" wire:model="cin" placeholder="Ex: 001524389000045" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono">
                                     @error('cin') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Gérant / Représentant</label>
-                                    <input type="text" wire:model="gerant" placeholder="Ex: Mohamed Alami" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    <input type="text" wire:model="gerant" placeholder="Ex: Mohamed Alami" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                     @error('gerant') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                             </div>
@@ -245,25 +245,25 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Téléphone</label>
-                                    <input type="text" wire:model="phone" placeholder="Ex: 0661234567" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
+                                    <input type="text" wire:model="phone" placeholder="Ex: 0661234567" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono">
                                     @error('phone') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-span-1">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">N° Permis</label>
-                                    <input type="text" wire:model="num_permis" placeholder="Ex: 12/345678" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono">
+                                    <input type="text" wire:model="num_permis" placeholder="Ex: 12/345678" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono">
                                     @error('num_permis') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">E-mail</label>
-                                <input type="email" wire:model="email" placeholder="contact@entreprise.ma" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="email" wire:model="email" placeholder="contact@entreprise.ma" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Adresse complète</label>
-                                <textarea wire:model="address" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                                <textarea wire:model="address" rows="2" placeholder="Adresse physique de l'entreprise" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                                 @error('address') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                             </div>
 

@@ -116,18 +116,18 @@ class GestionEntreprises extends Component
             ['id' => $this->clientId],
             [
                 'uuid' => $this->clientId ? Client::findOrFail($this->clientId)->uuid : (string) Str::uuid(),
-                'reference' => !empty($this->reference) ? $this->reference : null,
-                'last_name' => $this->nom,
+                'reference' => !empty(trim($this->reference ?? '')) ? trim($this->reference) : null,
+                'last_name' => trim($this->nom),
                 'first_name' => '', // Companies have no first_name
-                'company_name' => $this->nom,
-                'gerant' => $this->gerant,
-                'email' => $this->email,
-                'phone' => $this->phone,
-                'cin' => $this->cin,
-                'num_permis' => $this->num_permis,
-                'address' => $this->address,
+                'company_name' => trim($this->nom),
+                'gerant' => !empty(trim($this->gerant ?? '')) ? trim($this->gerant) : null,
+                'email' => !empty(trim($this->email ?? '')) ? trim($this->email) : null,
+                'phone' => !empty(trim($this->phone ?? '')) ? trim($this->phone) : null,
+                'cin' => !empty(trim($this->cin ?? '')) ? trim($this->cin) : null,
+                'num_permis' => !empty(trim($this->num_permis ?? '')) ? trim($this->num_permis) : null,
+                'address' => !empty(trim($this->address ?? '')) ? trim($this->address) : null,
                 'solvabilite' => $this->solvabilite ?? 'solvable',
-                'incident' => $this->incident ?? false,
+                'incident' => (bool)($this->incident ?? false),
                 'client_type' => 'company',
             ]
         );
