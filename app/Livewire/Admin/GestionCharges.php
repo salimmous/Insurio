@@ -106,9 +106,6 @@ class GestionCharges extends Component
         }
     }
 
-    // Filters
-    public $filterCategory = '';
-    public $filterSuccursale = '';
     public $search = '';
 
     public function updatedSearch()
