@@ -28,6 +28,12 @@ return new class extends Migration
         if (Schema::hasTable('commissions_employes')) {
             DB::table('commissions_employes')->truncate();
         }
+        if (Schema::hasTable('dossiers')) {
+            DB::table('dossiers')->truncate();
+        }
+        if (Schema::hasTable('sinistres')) {
+            DB::table('sinistres')->truncate();
+        }
         if (Schema::hasTable('contrats_auto')) {
             DB::table('contrats_auto')->truncate();
         }

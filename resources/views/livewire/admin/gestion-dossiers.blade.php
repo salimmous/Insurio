@@ -163,8 +163,8 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-bold text-gray-900">{{ $d->client->nom_complet }}</div>
-                                    <div class="text-xs text-gray-400">{{ $d->client->phone }}</div>
+                                    <div class="text-sm font-bold text-gray-900">{{ $d->client?->nom_complet ?? 'Client Non Spécifié' }}</div>
+                                    <div class="text-xs text-gray-400">{{ $d->client?->phone ?? '-' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($d->contract)
