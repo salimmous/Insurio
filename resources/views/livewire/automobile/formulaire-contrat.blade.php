@@ -250,7 +250,7 @@
                     </div>
                     <div class="py-1">
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Taxes & Accessoires</span>
-                        <div class="text-2xl font-bold text-slate-200 mt-1 font-mono">{{ number_format($this->totalTaxe + (float)$this->accessoire_auto_cie + (float)$this->timbre, 2) }} DH</div>
+                        <div class="text-2xl font-bold text-slate-200 mt-1 font-mono">{{ number_format($this->totalTaxe, 2) }} DH</div>
                         <span class="text-[10px] text-slate-400 block mt-0.5">Taxes & Frais</span>
                     </div>
                     <div class="py-1">

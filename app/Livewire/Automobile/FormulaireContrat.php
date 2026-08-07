@@ -418,23 +418,28 @@ class FormulaireContrat extends Component
                (float)$this->individuel;
     }
 
+    public function updated($propertyName)
+    {
+        if (in_array($propertyName, [
+            'prime_rc', 'def_rec', 'tierce', 'collision', 'vol', 'incendie', 'bris_glace', 'individuel',
+            'taxe_auto', 'accessoire_auto_cie', 'timbre', 'montant_pta', 'montant_taxe_pta', 'accessoires'
+        ])) {
+            $this->prime_totale = round($this->primeNette + $this->totalTaxe, 2);
+        }
+    }
+
     public function getTotalTaxeProperty()
     {
-        return (float)$this->taxe_auto + (float)$this->montant_taxe_pta;
+        return (float)$this->taxe_auto +
+               (float)$this->accessoire_auto_cie +
+               (float)$this->timbre +
+               (float)$this->montant_taxe_pta +
+               (float)$this->accessoires;
     }
 
     public function getPrimeTotaleProperty()
     {
-        if ((float)$this->prime_totale > 0) {
-            return (float)$this->prime_totale;
-        }
-        return $this->prime_nette +
-               (float)$this->taxe_auto +
-               (float)$this->accessoire_auto_cie +
-               (float)$this->timbre +
-               (float)$this->montant_pta +
-               (float)$this->montant_taxe_pta +
-               (float)$this->accessoires;
+        return round($this->primeNette + $this->totalTaxe, 2);
     }
 
     public function getTotalCommissionProperty()
