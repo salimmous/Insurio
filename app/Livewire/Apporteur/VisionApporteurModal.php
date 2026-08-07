@@ -47,70 +47,33 @@ class VisionApporteurModal extends Component
     public function render()
     {
         $query = trim($this->search);
-
-        if (empty($query)) {
-            $clients = Client::latest()->limit(10)->get();
-            $apporteurs = Apporteur::latest()->limit(10)->get();
-        } else {
-            $clients = Client::where('last_name', 'like', '%' . $query . '%')
-                ->orWhere('first_name', 'like', '%' . $query . '%')
-                ->orWhere('email', 'like', '%' . $query . '%')
-                ->orWhere('phone', 'like', '%' . $query . '%')
-                ->orWhere('cin', 'like', '%' . $query . '%')
-                ->limit(10)
-                ->get();
-
-            $apporteurs = Apporteur::where('nom', 'like', '%' . $query . '%')
-                ->orWhere('prenom', 'like', '%' . $query . '%')
-                ->orWhere('email', 'like', '%' . $query . '%')
-                ->orWhere('code_apporteur', 'like', '%' . $query . '%')
-                ->limit(10)
-                ->get();
-        }
-
-        $emails = $clients->pluck('email')->filter()->toArray();
-        $phones = $clients->pluck('phone')->filter()->toArray();
-
-        $appMap = !empty($emails) || !empty($phones)
-            ? Apporteur::whereIn('email', $emails)->orWhereIn('telephone', $phones)->get()->keyBy(function ($item) {
-                return $item->email ?: $item->telephone;
-            })
-            : collect();
-
-        $combined = collect();
         $defaultRate = (float) Setting::get('default_apporteur_commission_rate', 0.00);
 
-        foreach ($clients as $client) {
-            $key = $client->email ?: $client->telephone;
-            $appRec = $appMap->get($key);
-
-            $combined->push((object) [
-                'id' => $appRec ? $appRec->id : $client->id,
-                'client_id' => $client->id,
-                'code' => $client->formatted_reference,
-                'nom' => $client->nom,
-                'prenom' => $client->prenom,
-                'telephone' => $client->telephone,
-                'source' => $appRec ? 'Apporteur' : 'Client',
-                'taux_commission' => ($appRec && $appRec->taux_commission !== null) ? (float)$appRec->taux_commission : $defaultRate,
-            ]);
+        if (empty($query)) {
+            $apporteursList = Apporteur::latest()->limit(15)->get();
+        } else {
+            $apporteursList = Apporteur::where('nom', 'like', '%' . $query . '%')
+                ->orWhere('prenom', 'like', '%' . $query . '%')
+                ->orWhere('email', 'like', '%' . $query . '%')
+                ->orWhere('telephone', 'like', '%' . $query . '%')
+                ->orWhere('code_apporteur', 'like', '%' . $query . '%')
+                ->limit(20)
+                ->get();
         }
 
-        foreach ($apporteurs as $app) {
-            if (!$combined->contains('id', $app->id)) {
-                $combined->push((object) [
-                    'id' => $app->id,
-                    'client_id' => null,
-                    'code' => $app->code_apporteur ?? 'APP-' . $app->id,
-                    'nom' => $app->nom,
-                    'prenom' => $app->prenom,
-                    'telephone' => $app->telephone,
-                    'source' => 'Apporteur',
-                    'taux_commission' => $app->taux_commission !== null ? (float)$app->taux_commission : $defaultRate,
-                ]);
-            }
-        }
+        $apporteurs = $apporteursList->map(function ($app) use ($defaultRate) {
+            return (object) [
+                'id' => $app->id,
+                'client_id' => null,
+                'code' => $app->code_apporteur ?? 'APP-' . str_pad($app->id, 5, '0', STR_PAD_LEFT),
+                'nom' => $app->nom,
+                'prenom' => $app->prenom,
+                'telephone' => $app->telephone,
+                'source' => 'Apporteur',
+                'taux_commission' => $app->taux_commission !== null ? (float)$app->taux_commission : $defaultRate,
+            ];
+        });
 
-        return view('livewire.apporteur.vision-apporteur-modal', ['apporteurs' => $combined]);
+        return view('livewire.apporteur.vision-apporteur-modal', ['apporteurs' => $apporteurs]);
     }
 }

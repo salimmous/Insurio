@@ -131,16 +131,31 @@
 
                 <!-- Véhicule -->
                 <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
-                    <h2 class="text-lg font-semibold text-teal-600 border-b border-slate-100 pb-2 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h2m-6 0a1 1 0 001-1v-3a1 1 0 00-1-1H9m12 0h-3M12 9h4"/></svg>
-                        3. Spécifications Véhicule
+                    <h2 class="text-lg font-semibold text-teal-600 border-b border-slate-100 pb-2 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h2m-6 0a1 1 0 001-1v-3a1 1 0 00-1-1H9m12 0h-3M12 9h4"/></svg>
+                            3. Spécifications Véhicule
+                        </span>
+                        <span class="text-xs font-mono bg-teal-50 text-teal-700 px-2 py-0.5 rounded border border-teal-200 font-bold">
+                            {{ $matricule ? $matricule : 'Non renseigné' }}
+                        </span>
                     </h2>
                     
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Matricule -->
+                        <div class="col-span-1 sm:col-span-2 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5 flex items-center justify-between">
+                                <span>Matricule / Immatriculation</span>
+                                <span class="text-xs text-rose-500 font-bold">* Obligatoire</span>
+                            </label>
+                            <input type="text" wire:model="matricule" placeholder="ex: 12345-A-6 ou 12345-أ-6" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-mono font-bold text-base uppercase shadow-2xs outline-none transition-all placeholder-slate-400">
+                        </div>
+
+                        <!-- Usage -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Usage</label>
-                            <select wire:model="usage" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                                <option value="">Sélectionner...</option>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Usage</label>
+                            <select wire:model="usage" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-medium outline-none shadow-2xs transition-all">
+                                <option value="">Sélectionner usage...</option>
                                 <option value="A">A - Promenade & Affaires</option>
                                 <option value="B">B - Commerce</option>
                                 <option value="C">C - Transport public</option>
@@ -149,35 +164,68 @@
                             </select>
                         </div>
 
+                        <!-- Marque véhicule -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Marque véhicule</label>
-                            <select wire:model.live="marque" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all">
-                                <option value="">— Sélectionner marque —</option>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Marque véhicule</label>
+                            <input type="text" list="marques-catalog" wire:model.live="marque" placeholder="Saisir ou choisir marque..." class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-sans font-semibold outline-none shadow-2xs transition-all">
+                            <datalist id="marques-catalog">
                                 @foreach($this->getMarquesDisponibles() as $m)
-                                    <option value="{{ $m }}">{{ $m }}</option>
+                                    <option value="{{ $m }}">
                                 @endforeach
-                            </select>
+                            </datalist>
                         </div>
 
+                        <!-- Modèle -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Modèle</label>
-                            <select wire:model="modele" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all {{ !$marque ? 'opacity-50 cursor-not-allowed' : '' }}" {{ !$marque ? 'disabled' : '' }}>
-                                <option value="">— Sélectionner modèle —</option>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Modèle</label>
+                            <input type="text" list="modeles-catalog" wire:model="modele" placeholder="Saisir ou choisir modèle..." class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-sans font-semibold outline-none shadow-2xs transition-all">
+                            <datalist id="modeles-catalog">
                                 @foreach($this->getModelesDisponibles() as $mod)
-                                    <option value="{{ $mod }}">{{ $mod }}</option>
+                                    <option value="{{ $mod }}">
                                 @endforeach
+                            </datalist>
+                        </div>
+
+                        <!-- Carburant -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Motorisation / Carburant</label>
+                            <select wire:model="carburant" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-medium outline-none shadow-2xs transition-all">
+                                <option value="">Sélectionner...</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Essence">Essence</option>
+                                <option value="Hybride">Hybride</option>
+                                <option value="Electrique">Électrique</option>
                             </select>
                         </div>
 
+                        <!-- Puissance Fiscale -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-500 mb-2">Sous CLASSE</label>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Puissance Fiscale (CV)</label>
+                            <input type="number" wire:model="puissance_fiscale" placeholder="ex: 6" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-mono outline-none shadow-2xs transition-all">
+                        </div>
+
+                        <!-- Année -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Année de mise en circulation</label>
+                            <input type="number" wire:model="annee" placeholder="ex: 2022" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-mono outline-none shadow-2xs transition-all">
+                        </div>
+
+                        <!-- Valeur Véhicule -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Valeur du véhicule (DH)</label>
+                            <input type="number" step="0.01" wire:model="valeur_vehicule" placeholder="ex: 150000" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-mono outline-none shadow-2xs transition-all">
+                        </div>
+
+                        <!-- Sous CLASSE -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Sous CLASSE</label>
                             <div class="flex items-center gap-4 py-2">
-                                <label class="inline-flex items-center text-slate-700">
-                                    <input type="radio" wire:model="sous_classe" value="Definitive" class="text-teal-600 bg-slate-50 border-slate-200 focus:ring-teal-500">
+                                <label class="inline-flex items-center text-slate-800 font-medium cursor-pointer">
+                                    <input type="radio" wire:model="sous_classe" value="Definitive" class="text-teal-600 bg-white border-slate-300 focus:ring-teal-500">
                                     <span class="ms-2">Définitive</span>
                                 </label>
-                                <label class="inline-flex items-center text-slate-700">
-                                    <input type="radio" wire:model="sous_classe" value="Provisoire" class="text-teal-600 bg-slate-50 border-slate-200 focus:ring-teal-500">
+                                <label class="inline-flex items-center text-slate-800 font-medium cursor-pointer">
+                                    <input type="radio" wire:model="sous_classe" value="Provisoire" class="text-teal-600 bg-white border-slate-300 focus:ring-teal-500">
                                     <span class="ms-2">Provisoire</span>
                                 </label>
                             </div>

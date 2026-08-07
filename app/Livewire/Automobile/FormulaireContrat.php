@@ -102,14 +102,19 @@ class FormulaireContrat extends Component
     {
         if (!$this->marque) return [];
         
-        $marque = \App\Models\VehiculeMarque::where('nom', $this->marque)->first();
+        $marque = \App\Models\VehiculeMarque::where('nom', 'like', $this->marque)->first();
         if ($marque) {
             $dbModeles = \App\Models\VehiculeModele::where('marque_id', $marque->id)->where('is_active', true)->orderBy('nom')->pluck('nom')->toArray();
             if (!empty($dbModeles)) return $dbModeles;
         }
 
         $vehicules = config('vehicules_maroc', []);
-        return $vehicules[$this->marque]['modeles'] ?? [];
+        foreach ($vehicules as $brand => $data) {
+            if (strcasecmp($brand, $this->marque) === 0) {
+                return $data['modeles'] ?? [];
+            }
+        }
+        return [];
     }
 
     public $searchApporteur = '';
@@ -342,7 +347,6 @@ class FormulaireContrat extends Component
     {
         if (is_array($payload)) {
             $apporteurId = is_numeric($payload['id'] ?? null) ? (int)$payload['id'] : null;
-            $clientId = is_numeric($payload['client_id'] ?? null) ? (int)$payload['client_id'] : $apporteurId;
             $nom = is_string($payload['nom'] ?? '') ? $payload['nom'] : '';
             $prenom = is_string($payload['prenom'] ?? '') ? $payload['prenom'] : '';
             $taux = is_numeric($payload['taux'] ?? null) ? (float)$payload['taux'] : (float)\App\Models\Setting::get('default_apporteur_commission_rate', 0.00);
@@ -350,12 +354,6 @@ class FormulaireContrat extends Component
             $this->apporteur_id = $apporteurId;
             $this->nom_apporteur = trim($nom . ' ' . $prenom);
             $this->searchApporteur = $this->nom_apporteur;
-
-            // Always auto-fill Client (Souscripteur) with the selected Apporteur's info
-            if (!empty($this->nom_apporteur)) {
-                $this->client_id = $clientId;
-                $this->souscripteur = $this->nom_apporteur;
-            }
 
             if ((float)$this->prime_rc > 0 && $taux) {
                 $this->commission_auto = round((float)$this->prime_rc * ((float)$taux / 100), 2);
@@ -369,9 +367,6 @@ class FormulaireContrat extends Component
             if ($apporteur) {
                 $this->nom_apporteur = trim($apporteur->nom . ' ' . $apporteur->prenom);
                 $this->searchApporteur = $this->nom_apporteur;
-
-                $this->client_id = (int)$payload;
-                $this->souscripteur = $this->nom_apporteur;
 
                 if ($apporteur->taux_commission && (float)$this->prime_rc > 0) {
                     $this->commission_auto = round((float)$this->prime_rc * ((float)$apporteur->taux_commission / 100), 2);
@@ -490,11 +485,11 @@ class FormulaireContrat extends Component
 
         // Find or create vehicle dynamically by matricule
         if (!empty($this->matricule)) {
-            $vehicule = \App\Models\Vehicule::firstOrCreate(
+            $vehicule = \App\Models\Vehicule::updateOrCreate(
                 ['matricule' => $this->matricule],
                 [
                     'marque' => $this->marque ?? 'Inconnu',
-                    'modele' => $this->marque ?? 'Inconnu',
+                    'modele' => $this->modele ?? 'Inconnu',
                     'puissance_fiscale' => $this->puissance_fiscale,
                     'type_carburant' => $this->carburant,
                     'date_mise_circulation' => $this->date_mise_circulation ? Carbon::parse($this->date_mise_circulation) : null,
@@ -503,7 +498,7 @@ class FormulaireContrat extends Component
         } else {
             $vehicule = \App\Models\Vehicule::firstOrCreate(
                 ['matricule' => 'SANS-MATRICULE'],
-                ['marque' => 'Autre', 'modele' => 'Autre']
+                ['marque' => $this->marque ?? 'Autre', 'modele' => $this->modele ?? 'Autre']
             );
         }
 
