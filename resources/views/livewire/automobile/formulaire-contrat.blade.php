@@ -186,36 +186,6 @@
                             </datalist>
                         </div>
 
-                        <!-- Carburant -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Motorisation / Carburant</label>
-                            <select wire:model="carburant" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-medium outline-none shadow-2xs transition-all">
-                                <option value="">Sélectionner...</option>
-                                <option value="Diesel">Diesel</option>
-                                <option value="Essence">Essence</option>
-                                <option value="Hybride">Hybride</option>
-                                <option value="Electrique">Électrique</option>
-                            </select>
-                        </div>
-
-                        <!-- Puissance Fiscale -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Puissance Fiscale (CV)</label>
-                            <input type="number" wire:model="puissance_fiscale" placeholder="ex: 6" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-mono outline-none shadow-2xs transition-all">
-                        </div>
-
-                        <!-- Année -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Année de mise en circulation</label>
-                            <input type="number" wire:model="annee" placeholder="ex: 2022" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-mono outline-none shadow-2xs transition-all">
-                        </div>
-
-                        <!-- Valeur Véhicule -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1.5">Valeur du véhicule (DH)</label>
-                            <input type="number" step="0.01" wire:model="valeur_vehicule" placeholder="ex: 150000" class="w-full bg-white border border-slate-300 focus:border-teal-600 focus:ring-teal-600 rounded-xl px-4 py-2.5 text-slate-900 font-mono outline-none shadow-2xs transition-all">
-                        </div>
-
                         <!-- Sous CLASSE -->
                         <div>
                             <label class="block text-sm font-medium text-slate-600 mb-1.5">Sous CLASSE</label>
