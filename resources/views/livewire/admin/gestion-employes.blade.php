@@ -623,11 +623,7 @@
                             <x-input-label for="poste" value="Poste / Rôle Système *" />
                             <select wire:model="poste" id="poste" required 
                                     class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-slate-100 outline-none">
-                                <option value="Agent commercial">Agent commercial</option>
-                                <option value="Responsable succursale">Responsable succursale</option>
-                                <option value="Comptable">Comptable</option>
-                                <option value="Administrateur">Administrateur Agence</option>
-                                <option value="Consultation">Consultation uniquement</option>
+                                <option value="Administrateur">Administrateur</option>
                             </select>
                             <x-input-error :messages="$errors->get('poste')" class="mt-1" />
                         </div>
