@@ -220,10 +220,10 @@
                                 <div class="inline-flex items-center gap-1.5">
                                     @if($isRenouvellements)
                                          @if($contrat->type_affaire === 'RN' || ($contrat->historiqueRenouvellements && $contrat->historiqueRenouvellements->count() > 0))
-                                             <span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg text-[10px] font-black shadow-2xs">
+                                             <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[11px] font-extrabold shadow-2xs">
                                                  ✓ Renouvelé
                                              </span>
-                                         @endif
+                                         @else
                                         <!-- Confirmer Renewal Button -->
                                         <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" 
                                                 title="Confirmer & Générer le renouvellement" 
@@ -243,7 +243,7 @@
                                             </svg>
                                             <span>Rejeter</span>
                                         </button>
-
+                                        @endif
                                         <!-- WhatsApp Relance Button -->
                                         @php
                                             $rawPhone = $contrat->client->telephone ?? ($contrat->client->phone ?? '');
