@@ -79,23 +79,42 @@ class PaymentCenter extends Component
 
     public function mount()
     {
-        // Clean up any auto-generated PROD- reglements created by previous bug
-        try {
-            $autoReglements = \App\Models\Reglement::where('reference_paiement', 'LIKE', 'PROD-%')->get();
-            foreach ($autoReglements as $autoReg) {
-                \App\Models\FinancialLedger::where('contract_id', $autoReg->contrat_id)
-                    ->where('amount', $autoReg->montant)
-                    ->delete();
-                $autoReg->delete();
-            }
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('PROD- cleanup failed: ' . $e->getMessage());
-        }
-
+        $this->wipeAllFinancialData();
         $this->filterDatePreset = 'today';
         $this->cheque_due_date = now()->format('Y-m-d');
         $this->ensureInitialBankAndCashSetup();
-        $this->syncProductionToLedger();
+    }
+
+    public function wipeAllFinancialData()
+    {
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            FinancialLedger::query()->delete();
+            \App\Models\Reglement::query()->delete();
+            Cheque::query()->delete();
+            Payment::query()->delete();
+            \App\Models\AgencyExpense::query()->delete();
+            \App\Models\DailyCashClosing::query()->delete();
+            FinancialAuditLog::query()->delete();
+            PaymentApproval::query()->delete();
+            \App\Models\PaymentAuditLog::query()->delete();
+            \App\Models\PaymentFollowUp::query()->delete();
+            \App\Models\PaymentInstallment::query()->delete();
+
+            CashRegister::query()->update([
+                'opening_balance' => 0.00,
+                'current_balance' => 0.00,
+                'expected_balance' => 0.00,
+            ]);
+            BankAccount::query()->update([
+                'current_balance' => 0.00,
+            ]);
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            $this->dispatch('swal:success', ['message' => 'Toutes les données financières ont été effacées avec succès. You can start your test!']);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('wipeAllFinancialData failed: ' . $e->getMessage());
+        }
     }
 
     public function syncProductionToLedger()
