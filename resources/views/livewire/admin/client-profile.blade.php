@@ -70,7 +70,7 @@
                         Règlements ({{ $payments->count() }})
                     </button>
                     <button wire:click="$set('activeTab', 'renouvellements')" class="px-4 py-3.5 text-sm font-semibold border-b-2 transition-all {{ $activeTab === 'renouvellements' ? 'border-amber-600 text-amber-700 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
-                        Renouvellements ({{ $historiqueRenouvellements->count() }})
+                        Renouvellements ({{ isset($historiqueRenouvellements) ? $historiqueRenouvellements->count() : 0 }})
                     </button>
                     <button wire:click="$set('activeTab', 'timeline')" class="px-4 py-3.5 text-sm font-semibold border-b-2 transition-all {{ $activeTab === 'timeline' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
                         Timeline & Contacts

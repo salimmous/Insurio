@@ -186,15 +186,14 @@ class ClientProfile extends Component
 
     public function render()
     {
-        $contracts = $this->client->contrats()->with(['compagnie', 'product', 'reglements'])->latest()->get();
+        $contracts = $this->client ? $this->client->contrats()->with(['compagnie', 'product', 'reglements'])->latest()->get() : collect();
         $contractIds = $contracts->pluck('id');
-        $historiqueRenouvellements = \App\Models\HistoriqueRenouvellement::whereIn('contrat_id', $contractIds)
-            ->with('contrat')
-            ->latest()
-            ->get();
-        $documents = Document::where('client_id', $this->client->id)->latest()->get();
-        $payments = \App\Models\Payment::where('client_id', $this->client->id)->with('contrat.compagnie')->latest()->get();
-        $timeline = Communication::where('client_id', $this->client->id)->with('user')->latest()->get();
+        $historiqueRenouvellements = count($contractIds) > 0
+            ? \App\Models\HistoriqueRenouvellement::whereIn('contrat_id', $contractIds)->with('contrat.compagnie')->latest()->get()
+            : collect();
+        $documents = $this->client ? Document::where('client_id', $this->client->id)->latest()->get() : collect();
+        $payments = $this->client ? \App\Models\Payment::where('client_id', $this->client->id)->with('contrat.compagnie')->latest()->get() : collect();
+        $timeline = $this->client ? Communication::where('client_id', $this->client->id)->with('user')->latest()->get() : collect();
 
         return view('livewire.admin.client-profile', compact('contracts', 'historiqueRenouvellements', 'documents', 'payments', 'timeline'))
             ->layout('layouts.app');
