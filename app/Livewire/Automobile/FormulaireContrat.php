@@ -529,6 +529,13 @@ class FormulaireContrat extends Component
             );
         }
 
+        $validApporteurId = null;
+        if (!empty($this->apporteur_id) && class_exists(\App\Models\Apporteur::class)) {
+            if (\App\Models\Apporteur::where('id', $this->apporteur_id)->exists()) {
+                $validApporteurId = (int)$this->apporteur_id;
+            }
+        }
+
         $data = [
             'numero_contrat' => $this->numero_contrat,
             'terme' => $this->terme,
@@ -541,7 +548,7 @@ class FormulaireContrat extends Component
             'quittance' => $this->quittance,
             'client_id' => $this->client_id,
             'souscripteur' => $this->souscripteur,
-            'apporteur_id' => $this->apporteur_id,
+            'apporteur_id' => $validApporteurId,
             'branche_code' => $this->branche_code,
             'branche_libelle' => $this->branche_libelle,
             'branch_id' => $this->branch_id,
@@ -608,6 +615,13 @@ class FormulaireContrat extends Component
             'date_mise_circulation' => $this->date_mise_circulation ? Carbon::parse($this->date_mise_circulation) : null,
         ];
 
+        $validApporteurId = null;
+        if (!empty($this->apporteur_id) && class_exists(\App\Models\Apporteur::class)) {
+            if (\App\Models\Apporteur::where('id', $this->apporteur_id)->exists()) {
+                $validApporteurId = (int)$this->apporteur_id;
+            }
+        }
+
         $coreData = [
             'numero_contrat' => $this->numero_contrat,
             'terme' => $this->terme,
@@ -619,7 +633,7 @@ class FormulaireContrat extends Component
             'quittance' => $this->quittance,
             'client_id' => $this->client_id,
             'souscripteur' => $this->souscripteur,
-            'apporteur_id' => $this->apporteur_id,
+            'apporteur_id' => $validApporteurId,
             'branche_code' => $this->branche_code,
             'branche_libelle' => $this->branche_libelle,
             'branch_id' => $this->branch_id,
