@@ -55,6 +55,7 @@ class FormulaireContrat extends Component
     public $date_echeance;
     public $date_production;
     public $date_resiliation;
+    public $historiqueRenouvellementsList = [];
 
     // Primes
     public $prime_rc = 0;
@@ -312,6 +313,8 @@ class FormulaireContrat extends Component
                     $this->nbr_mois = $diff;
                 }
             }
+
+            $this->historiqueRenouvellementsList = $contrat->historiqueRenouvellements()->get();
         } else {
             $this->date_effet = Carbon::now()->format('Y-m-d');
             $this->date_production = Carbon::now()->format('Y-m-d');

@@ -287,6 +287,15 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                         </svg>
                                     </a>
+
+                                    <!-- History Dates Button -->
+                                    <button wire:click.stop="openHistoryModal({{ $contrat->id }})" 
+                                            title="Historique des Dates / Renouvellements" 
+                                            class="p-1.5 rounded-lg text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 transition-all shadow-2xs">
+                                        <svg width="14" height="14" style="width:14px;height:14px;min-width:14px;min-height:14px;" class="w-3.5 h-3.5 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -709,6 +718,80 @@
             <button wire:click="clearSelection" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition-all cursor-pointer">
                 Désélectionner tout
             </button>
+        </div>
+    </div>
+    @endif
+
+    <!-- History of Renewal Dates Modal -->
+    @if($showHistoryModal && $historyContrat)
+    <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 space-y-6 border border-slate-100 relative">
+            <button wire:click="closeHistoryModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 rounded-xl text-lg font-bold">
+                ✕
+            </button>
+
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-xl border border-amber-200">
+                    <svg width="24" height="24" class="w-6 h-6 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-slate-800">Historique des Renouvellements & Dates</h3>
+                    <p class="text-xs text-slate-500 font-sans">
+                        Contrat N° <span class="font-bold text-slate-700">{{ $historyContrat->numero_contrat }}</span> — Client: <span class="font-bold text-slate-700">{{ $historyContrat->souscripteur }}</span> ({{ $historyContrat->matricule ?? 'Sans Matricule' }})
+                    </p>
+                </div>
+            </div>
+
+            <!-- Timeline of dates -->
+            <div class="space-y-4 pt-2">
+                <!-- Current Period Card -->
+                <div class="p-4 bg-emerald-50/60 border border-emerald-200/80 rounded-xl space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Période Actuelle en Cours</span>
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold bg-emerald-600 text-white rounded-md">ACTIF</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm font-mono text-slate-800 font-bold pt-1">
+                        <div>Effet: <span class="text-emerald-700">{{ $historyContrat->date_effet ? $historyContrat->date_effet->format('d/m/Y') : '-' }}</span></div>
+                        <div>➔</div>
+                        <div>Échéance: <span class="text-emerald-700">{{ $historyContrat->date_echeance ? $historyContrat->date_echeance->format('d/m/Y') : '-' }}</span></div>
+                    </div>
+                    <div class="text-xs text-slate-600 font-sans pt-1">
+                        Prime Totale: <span class="font-bold font-mono text-emerald-700">{{ number_format($historyContrat->prime_totale, 2) }} DH</span>
+                    </div>
+                </div>
+
+                <!-- Past Renewals List -->
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 pt-2">Périodes Précédentes ({{\count($historyContrat->historiqueRenouvellements)}})</h4>
+
+                <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    @forelse($historyContrat->historiqueRenouvellements as $h)
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
+                        <div class="flex justify-between items-center text-slate-500 font-sans">
+                            <span>Renouvelé le <strong class="text-slate-700">{{ $h->created_at ? $h->created_at->format('d/m/Y H:i') : '-' }}</strong></span>
+                            <span class="font-mono font-bold text-slate-700">{{ number_format($h->prime_totale, 2) }} DH</span>
+                        </div>
+                        <div class="flex items-center justify-between font-mono text-slate-800 font-semibold pt-0.5">
+                            <div>Ancienne Période: {{ $h->anc_date_effet ? $h->anc_date_effet->format('d/m/Y') : '-' }} ➔ {{ $h->anc_date_echeance ? $h->anc_date_echeance->format('d/m/Y') : '-' }}</div>
+                        </div>
+                        <div class="text-[11px] font-mono text-teal-700 font-bold">
+                            Nouvelle Période: {{ $h->nouv_date_effet ? $h->nouv_date_effet->format('d/m/Y') : '-' }} ➔ {{ $h->nouv_date_echeance ? $h->nouv_date_echeance->format('d/m/Y') : '-' }}
+                        </div>
+                    </div>
+                    @empty
+                    <div class="p-4 text-center text-slate-400 text-xs italic bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                        Aucun historique de renouvellement antérieur enregistré pour ce contrat.
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2 border-t border-slate-100">
+                <button wire:click="closeHistoryModal" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all">
+                    Fermer
+                </button>
+            </div>
         </div>
     </div>
     @endif

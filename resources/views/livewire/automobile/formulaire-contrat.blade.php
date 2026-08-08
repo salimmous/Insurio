@@ -87,6 +87,28 @@
                         <input wire:model="date_production" type="date" class="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl px-4 py-2.5 text-slate-800 outline-none transition-all font-mono">
                     </div>
                 </div>
+
+                @if(!empty($historiqueRenouvellementsList) && count($historiqueRenouvellementsList) > 0)
+                <div class="mt-4 p-4 bg-amber-50/60 border border-amber-200/80 rounded-xl space-y-2">
+                    <div class="flex items-center gap-2 text-xs font-bold text-amber-800 uppercase tracking-wider">
+                        <svg width="16" height="16" class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Historique des Renouvellements & Dates Précédentes ({{ count($historiqueRenouvellementsList) }})</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
+                        @foreach($historiqueRenouvellementsList as $h)
+                        <div class="p-2.5 bg-white border border-amber-200/60 rounded-lg text-xs font-mono flex justify-between items-center shadow-2xs">
+                            <div>
+                                <span class="text-slate-500 block text-[10px] font-sans">Renouvelé le {{ $h->created_at ? $h->created_at->format('d/m/Y H:i') : '-' }}</span>
+                                <span class="font-bold text-slate-800">{{ $h->anc_date_effet ? $h->anc_date_effet->format('d/m/Y') : '-' }} ➔ {{ $h->anc_date_echeance ? $h->anc_date_echeance->format('d/m/Y') : '-' }}</span>
+                            </div>
+                            <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded border border-emerald-200">{{ number_format($h->prime_totale, 2) }} DH</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
 
             <!-- SECTION 2: Client, Apporteur & Véhicule -->

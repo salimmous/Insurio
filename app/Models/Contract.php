@@ -377,6 +377,11 @@ class Contract extends Model
         return $this->hasMany(Renewal::class, 'contract_id');
     }
 
+    public function historiqueRenouvellements(): HasMany
+    {
+        return $this->hasMany(HistoriqueRenouvellement::class, 'contrat_id')->orderBy('created_at', 'desc');
+    }
+
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class, 'contract_id');

@@ -81,19 +81,32 @@ class ListeContrats extends Component
         }
     }
 
+    public bool $showHistoryModal = false;
+    public ?ContratAuto $historyContrat = null;
+
     public function renouvelerContrat($id = null)
     {
         $targetId = $id ?? $this->selectedContratId;
         if ($targetId) {
             $this->selectedContratId = $targetId;
             $contrat = ContratAuto::findOrFail($targetId);
-            $newContrat = app(\App\Services\ContractWorkflowService::class)->renouveler($contrat);
-            $contrat->update(['statut' => 'renouvele']);
+            app(\App\Services\ContractWorkflowService::class)->renouveler($contrat);
             
-            session()->flash('message', 'Renouvellement confirmé avec succès ! (Nouveau Contrat généré: ' . $newContrat->numero_contrat . ')');
-            $this->dispatch('swal:success', ['message' => 'Renouvellement confirmé avec succès.']);
-            return redirect()->route('automobile.edit', $newContrat->id);
+            session()->flash('message', 'Le contrat N° ' . $contrat->numero_contrat . ' a été renouvelé avec succès ! (Période: ' . $contrat->date_effet->format('d/m/Y') . ' au ' . $contrat->date_echeance->format('d/m/Y') . ')');
+            $this->dispatch('swal:success', ['message' => 'Renouvellement effectué pour le contrat N° ' . $contrat->numero_contrat]);
         }
+    }
+
+    public function openHistoryModal($id)
+    {
+        $this->historyContrat = ContratAuto::with(['client', 'historiqueRenouvellements'])->find($id);
+        $this->showHistoryModal = true;
+    }
+
+    public function closeHistoryModal()
+    {
+        $this->showHistoryModal = false;
+        $this->historyContrat = null;
     }
 
     public function rejeterRenouvellement($id = null)

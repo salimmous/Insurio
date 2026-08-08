@@ -13,29 +13,40 @@ class ContractWorkflowService
      */
     public function renouveler(ContratAuto $contrat): ContratAuto
     {
-        $newContrat = $contrat->replicate();
-        
-        // Increment dates by the duration of the contract (nbr_mois)
-        $months = $contrat->nbr_mois ?? 12;
-        $newContrat->date_effet = $contrat->date_echeance->copy();
-        $newContrat->date_echeance = $contrat->date_echeance->copy()->addMonths($months);
-        $newContrat->date_production = Carbon::now();
-        $newContrat->date_resiliation = null;
-        
-        // Generate new contract reference
-        $newContrat->numero_contrat = $contrat->numero_contrat . '-RN';
-        // Make sure it is unique
-        $suffix = 1;
-        while (ContratAuto::where('numero_contrat', $newContrat->numero_contrat)->exists()) {
-            $newContrat->numero_contrat = $contrat->numero_contrat . '-RN' . $suffix;
-            $suffix++;
+        $oldEffet = $contrat->date_effet ? $contrat->date_effet->copy() : null;
+        $oldEcheance = $contrat->date_echeance ? $contrat->date_echeance->copy() : null;
+
+        $months = (int)($contrat->nbr_mois ?? 12);
+        if ($months <= 0) {
+            $months = 12;
         }
 
-        $newContrat->type_affaire = 'RN';
-        $newContrat->statut = 'actif';
-        $newContrat->save();
+        $newEffet = $contrat->date_echeance ? $contrat->date_echeance->copy() : Carbon::now();
+        $newEcheance = $newEffet->copy()->addMonths($months);
 
-        return $newContrat;
+        // Record renewal entry in HistoriqueRenouvellement
+        if (class_exists(\App\Models\HistoriqueRenouvellement::class)) {
+            \App\Models\HistoriqueRenouvellement::create([
+                'contrat_id' => $contrat->id,
+                'anc_date_effet' => $oldEffet,
+                'anc_date_echeance' => $oldEcheance,
+                'nouv_date_effet' => $newEffet,
+                'nouv_date_echeance' => $newEcheance,
+                'prime_totale' => $contrat->prime_totale ?? $contrat->premium_amount,
+            ]);
+        }
+
+        // Update existing contract directly (no duplicate record)
+        $contrat->date_effet = $newEffet;
+        $contrat->date_echeance = $newEcheance;
+        $contrat->date_production = Carbon::now();
+        $contrat->date_resiliation = null;
+        $contrat->type_affaire = 'RN';
+        $contrat->statut = 'actif';
+        $contrat->statut_reglement = 'non_paye';
+        $contrat->save();
+
+        return $contrat;
     }
 
     /**
