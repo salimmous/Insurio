@@ -203,9 +203,11 @@
                             </td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                 @if($contrat->statut_reglement === 'solde')
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-2xs">Oui</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Soldé</span>
+                                @elseif($contrat->statut_reglement === 'partiel')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Partiel</span>
                                 @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-black bg-rose-100 text-rose-800 border border-rose-300 shadow-2xs">Non</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">Non payé</span>
                                 @endif
                             </td>
                             <td class="px-2.5 py-2 whitespace-nowrap font-sans text-slate-800">{{ $contrat->compagnie->nom }}</td>
