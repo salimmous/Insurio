@@ -105,26 +105,51 @@ class VisionApporteurModal extends Component
         $clientsQuery = Client::query();
         if (!empty($query)) {
             $clientsQuery->where(function ($q) use ($query) {
-                $q->where('nom', 'like', '%' . $query . '%')
-                  ->orWhere('prenom', 'like', '%' . $query . '%')
-                  ->orWhere('email', 'like', '%' . $query . '%')
-                  ->orWhere('telephone', 'like', '%' . $query . '%')
-                  ->orWhere('phone', 'like', '%' . $query . '%')
-                  ->orWhere('code_client', 'like', '%' . $query . '%')
-                  ->orWhere('reference', 'like', '%' . $query . '%');
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'nom')) {
+                    $q->where('nom', 'like', '%' . $query . '%');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'prenom')) {
+                    $q->orWhere('prenom', 'like', '%' . $query . '%');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'first_name')) {
+                    $q->orWhere('first_name', 'like', '%' . $query . '%');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'last_name')) {
+                    $q->orWhere('last_name', 'like', '%' . $query . '%');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'email')) {
+                    $q->orWhere('email', 'like', '%' . $query . '%');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'telephone')) {
+                    $q->orWhere('telephone', 'like', '%' . $query . '%');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'phone')) {
+                    $q->orWhere('phone', 'like', '%' . $query . '%');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'reference')) {
+                    $q->orWhere('reference', 'like', '%' . $query . '%');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('clients', 'cin')) {
+                    $q->orWhere('cin', 'like', '%' . $query . '%');
+                }
             });
         }
 
         $clientsList = $clientsQuery->latest()->limit(30)->get();
 
         $apporteurs = $clientsList->map(function ($c) use ($defaultRate) {
+            $nom = $c->nom ?? $c->last_name ?? $c->company_name ?? '';
+            $prenom = $c->prenom ?? $c->first_name ?? '';
+            $code = $c->reference ?? ('CL-' . str_pad($c->id, 5, '0', STR_PAD_LEFT));
+            $phone = $c->telephone ?? $c->phone ?? '-';
+
             return (object) [
                 'id' => $c->id,
                 'client_id' => $c->id,
-                'code' => $c->code_client ?? $c->reference ?? ('CL-' . str_pad($c->id, 5, '0', STR_PAD_LEFT)),
-                'nom' => $c->nom,
-                'prenom' => $c->prenom ?? '',
-                'telephone' => $c->telephone ?? $c->phone ?? '-',
+                'code' => $code,
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'telephone' => $phone,
                 'source' => 'Client',
                 'taux_commission' => $defaultRate,
             ];
