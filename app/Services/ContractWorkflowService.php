@@ -43,7 +43,6 @@ class ContractWorkflowService
         $contrat->date_resiliation = null;
         $contrat->type_affaire = 'RN';
         $contrat->statut = 'actif';
-        $contrat->statut_reglement = 'non_paye';
         $contrat->save();
 
         return $contrat;
