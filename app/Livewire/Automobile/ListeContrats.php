@@ -50,18 +50,39 @@ class ListeContrats extends Component
 
     public function boot()
     {
-        $referer = request()->header('referer', '');
-        if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || str_contains($referer, 'renouvellements') || request()->has('renouvellements')) {
+        // 1. If explicitly on automobile route/path, force false (Production Assurance)
+        if (request()->routeIs('automobile*') || request()->is('*automobile*') || request()->path() === 'automobile') {
+            $this->isRenouvellements = false;
+            $this->isRenouvellementMode = false;
+            return;
+        }
+
+        // 2. If explicitly on renouvellements route/path, force true
+        if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || request()->has('renouvellements')) {
             $this->isRenouvellements = true;
             $this->isRenouvellementMode = true;
             $this->dateField = 'date_echeance';
+            return;
+        }
+
+        // 3. Fallback for Livewire AJAX updates (/livewire/update)
+        $referer = request()->header('referer', '');
+        if (str_contains($referer, 'renouvellements') && !str_contains($referer, 'automobile')) {
+            $this->isRenouvellements = true;
+            $this->isRenouvellementMode = true;
+            $this->dateField = 'date_echeance';
+        } else {
+            $this->isRenouvellements = false;
+            $this->isRenouvellementMode = false;
         }
     }
 
     public function mount()
     {
-        $referer = request()->header('referer', '');
-        if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || str_contains($referer, 'renouvellements') || request()->has('renouvellements')) {
+        if (request()->routeIs('automobile*') || request()->is('*automobile*') || request()->path() === 'automobile') {
+            $this->isRenouvellements = false;
+            $this->isRenouvellementMode = false;
+        } elseif (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || request()->has('renouvellements')) {
             $this->isRenouvellements = true;
             $this->isRenouvellementMode = true;
             $this->dateField = 'date_echeance';
