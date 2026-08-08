@@ -17,6 +17,7 @@ class ListeContrats extends Component
 
     // Route state persistence across Livewire AJAX requests
     public $isRenouvellements = false;
+    public $isRenouvellementMode = false;
 
     // Date Filtering
     public $dateField = 'date_effet'; // date_effet, date_echeance, date_production
@@ -51,6 +52,7 @@ class ListeContrats extends Component
     {
         if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || request()->has('renouvellements')) {
             $this->isRenouvellements = true;
+            $this->isRenouvellementMode = true;
             $this->dateField = 'date_echeance';
             $this->filterStatut = '';
         }
@@ -724,6 +726,7 @@ class ListeContrats extends Component
         return view('livewire.automobile.liste-contrats', [
             'contrats' => $contrats,
             'compagnies' => $compagnies,
+            'isRenouvellementMode' => $this->isRenouvellementMode || $this->isRenouvellements,
             'selectedContrat' => $this->getSelectedContrat(),
             'countExpiring1Day' => $countExpiring1Day,
             'countExpiring7Days' => $countExpiring7Days,

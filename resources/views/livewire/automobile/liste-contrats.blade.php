@@ -276,7 +276,7 @@
                                         </a>
                                     @endif
 
-                                    @if(!$isRenouvellementMode)
+                                    @if(empty($isRenouvellementMode) && empty($isRenouvellements))
                                     <!-- Modifier -->
                                     <a href="{{ route('automobile.edit', $contrat->id) }}" 
                                        title="Modifier"
