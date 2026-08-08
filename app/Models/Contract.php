@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property \Illuminate\Support\Carbon|null $start_date
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class Contract extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'contracts';
 
     protected $fillable = [

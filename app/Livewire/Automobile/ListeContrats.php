@@ -596,21 +596,19 @@ class ListeContrats extends Component
 
     public function deleteContrat($id)
     {
-        $contrat = ContratAuto::findOrFail($id);
+        $contrat = ContratAuto::withCount('reglements')->findOrFail($id);
         $num = $contrat->numero_contrat;
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($contrat) {
-            \App\Models\Reglement::where('contrat_id', $contrat->id)->delete();
-            if (\Illuminate\Support\Facades\Schema::hasTable('financial_ledgers')) {
-                \App\Models\FinancialLedger::where('contract_id', $contrat->id)->delete();
-            }
-            if (\Illuminate\Support\Facades\Schema::hasTable('historique_renouvellements')) {
-                \App\Models\HistoriqueRenouvellement::where('contrat_id', $contrat->id)->delete();
-            }
-            $contrat->delete();
-        });
+        // Rule 1: Do not delete if payments exist
+        if ($contrat->reglements_count > 0) {
+            $this->dispatch('swal:error', ['message' => "Impossible de supprimer le contrat N° {$num} car des règlements y sont enregistrés."]);
+            return;
+        }
 
-        $this->dispatch('swal:success', ['message' => "Le contrat N° {$num} a été supprimé avec succès."]);
+        // Rule 2: Soft delete contract (moves to trash)
+        $contrat->delete();
+
+        $this->dispatch('swal:success', ['message' => "Le contrat N° {$num} a été placé dans la corbeille (Trash)."]);
     }
 
     public function bulkDelete()
@@ -620,21 +618,24 @@ class ListeContrats extends Component
             return;
         }
 
-        $count = count($this->selectedContrats);
+        // Check if any selected contracts have payments
+        $contratsWithPayments = ContratAuto::whereIn('id', $this->selectedContrats)
+            ->whereHas('reglements')
+            ->pluck('numero_contrat')
+            ->toArray();
 
-        \Illuminate\Support\Facades\DB::transaction(function () {
-            \App\Models\Reglement::whereIn('contrat_id', $this->selectedContrats)->delete();
-            if (\Illuminate\Support\Facades\Schema::hasTable('financial_ledgers')) {
-                \App\Models\FinancialLedger::whereIn('contract_id', $this->selectedContrats)->delete();
-            }
-            if (\Illuminate\Support\Facades\Schema::hasTable('historique_renouvellements')) {
-                \App\Models\HistoriqueRenouvellement::whereIn('contrat_id', $this->selectedContrats)->delete();
-            }
-            ContratAuto::whereIn('id', $this->selectedContrats)->delete();
-        });
+        if (!empty($contratsWithPayments)) {
+            $nums = implode(', ', $contratsWithPayments);
+            $this->dispatch('swal:error', ['message' => "Impossible de supprimer : le(s) contrat(s) {$nums} contienne(nt) des règlements."]);
+            return;
+        }
+
+        // Soft delete all selected contracts (moves to trash)
+        $count = count($this->selectedContrats);
+        ContratAuto::whereIn('id', $this->selectedContrats)->delete();
 
         $this->clearSelection();
-        $this->dispatch('swal:success', ['message' => "{$count} contrat(s) supprimé(s) avec succès."]);
+        $this->dispatch('swal:success', ['message' => "{$count} contrat(s) placé(s) dans la corbeille (Trash) avec succès."]);
     }
 
     public function render()
