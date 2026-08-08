@@ -48,9 +48,19 @@ class ListeContrats extends Component
         'dateTo' => ['except' => ''],
     ];
 
+    public function boot()
+    {
+        $referer = request()->header('referer', '');
+        if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || str_contains($referer, 'renouvellements') || request()->has('renouvellements')) {
+            $this->isRenouvellements = true;
+            $this->isRenouvellementMode = true;
+        }
+    }
+
     public function mount()
     {
-        if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || request()->has('renouvellements')) {
+        $referer = request()->header('referer', '');
+        if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || str_contains($referer, 'renouvellements') || request()->has('renouvellements')) {
             $this->isRenouvellements = true;
             $this->isRenouvellementMode = true;
             $this->dateField = 'date_echeance';
