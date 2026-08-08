@@ -54,6 +54,7 @@ class ListeContrats extends Component
         if (request()->routeIs('admin.renouvellements') || request()->is('*renouvellements*') || str_contains($referer, 'renouvellements') || request()->has('renouvellements')) {
             $this->isRenouvellements = true;
             $this->isRenouvellementMode = true;
+            $this->dateField = 'date_echeance';
         }
     }
 
@@ -766,6 +767,10 @@ class ListeContrats extends Component
 
     protected function applyDateFilter($query)
     {
+        if ($this->isRenouvellements || $this->isRenouvellementMode) {
+            $this->dateField = 'date_echeance';
+        }
+
         if (empty($this->dateFrom) && empty($this->dateTo)) {
             // Default behavior for Renouvellements page: filter contracts expiring within 30 days OR already renewed
             if ($this->isRenouvellements || $this->isRenouvellementMode) {
@@ -825,13 +830,15 @@ class ListeContrats extends Component
                 $q->orWhereHas('historiqueRenouvellements', function ($hQuery) use ($dateFrom, $dateTo) {
                     if ($dateFrom && $dateTo) {
                         $hQuery->whereBetween('anc_date_echeance', [$dateFrom, $dateTo])
-                               ->orWhereBetween('created_at', [$dateFrom, $dateTo])
-                               ->orWhereBetween('anc_date_effet', [$dateFrom, $dateTo]);
+                               ->orWhereBetween('nouv_date_echeance', [$dateFrom, $dateTo])
+                               ->orWhereBetween('created_at', [$dateFrom, $dateTo]);
                     } elseif ($dateFrom) {
                         $hQuery->where('anc_date_echeance', '>=', $dateFrom)
+                               ->orWhere('nouv_date_echeance', '>=', $dateFrom)
                                ->orWhere('created_at', '>=', $dateFrom);
                     } elseif ($dateTo) {
                         $hQuery->where('anc_date_echeance', '<=', $dateTo)
+                               ->orWhere('nouv_date_echeance', '<=', $dateTo)
                                ->orWhere('created_at', '<=', $dateTo);
                     }
                 });
