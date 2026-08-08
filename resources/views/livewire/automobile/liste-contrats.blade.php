@@ -225,7 +225,7 @@
                                     @if($isRenouvellements)
                                          @if($contrat->type_affaire === 'RN' || ($contrat->historiqueRenouvellements && $contrat->historiqueRenouvellements->count() > 0))
                                              <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[11px] font-extrabold shadow-2xs">
-                                                 ✓ Renouvelé
+                                                 ✓ Confirmé
                                              </span>
                                          @else
                                         <!-- Confirmer Renewal Button -->
@@ -381,12 +381,18 @@
                         <div class="flex flex-wrap items-center justify-between pt-2 mt-1 border-t border-slate-100 gap-2">
                             <div class="flex items-center gap-1.5">
                                 @if($isRenouvellements)
-                                    <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm">
-                                        ✓ Confirmer
-                                    </button>
-                                    <button wire:click.stop="rejeterRenouvellement({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold">
-                                        ✗ Rejeter
-                                    </button>
+                                    @if($contrat->type_affaire === 'RN' || ($contrat->historiqueRenouvellements && $contrat->historiqueRenouvellements->count() > 0))
+                                        <span class="inline-flex items-center px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-extrabold shadow-2xs">
+                                            ✓ Confirmé
+                                        </span>
+                                    @else
+                                        <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm">
+                                            ✓ Confirmer
+                                        </button>
+                                        <button wire:click.stop="rejeterRenouvellement({{ $contrat->id }})" class="inline-flex items-center px-2 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold">
+                                            ✗ Rejeter
+                                        </button>
+                                    @endif
                                     @php
                                         $rawPhone = $contrat->client->telephone ?? ($contrat->client->phone ?? '');
                                         $phoneNum = preg_replace('/[^0-9]/', '', $rawPhone);
