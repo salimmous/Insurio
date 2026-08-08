@@ -5,7 +5,6 @@ namespace App\Livewire\Apporteur;
 use Livewire\Component;
 use App\Models\Apporteur;
 use App\Models\Client;
-
 use App\Models\Setting;
 
 class VisionApporteurModal extends Component
@@ -47,32 +46,65 @@ class VisionApporteurModal extends Component
     public function render()
     {
         $query = trim($this->search);
-        $defaultRate = (float) Setting::get('default_apporteur_commission_rate', 0.00);
+        $defaultRate = (float) Setting::get('default_apporteur_commission_rate', 12.50);
 
-        if (empty($query)) {
-            $apporteursList = Apporteur::latest()->limit(15)->get();
-        } else {
-            $apporteursList = Apporteur::where('nom', 'like', '%' . $query . '%')
-                ->orWhere('prenom', 'like', '%' . $query . '%')
-                ->orWhere('email', 'like', '%' . $query . '%')
-                ->orWhere('telephone', 'like', '%' . $query . '%')
-                ->orWhere('code_apporteur', 'like', '%' . $query . '%')
-                ->limit(20)
-                ->get();
+        // Fetch from Clients table as primary source for Apporteur d'Affaires
+        $clientsQuery = Client::query();
+        if (!empty($query)) {
+            $clientsQuery->where(function ($q) use ($query) {
+                $q->where('nom', 'like', '%' . $query . '%')
+                  ->orWhere('prenom', 'like', '%' . $query . '%')
+                  ->orWhere('email', 'like', '%' . $query . '%')
+                  ->orWhere('telephone', 'like', '%' . $query . '%')
+                  ->orWhere('phone', 'like', '%' . $query . '%')
+                  ->orWhere('code_client', 'like', '%' . $query . '%')
+                  ->orWhere('reference', 'like', '%' . $query . '%');
+            });
         }
 
-        $apporteurs = $apporteursList->map(function ($app) use ($defaultRate) {
+        $clientsList = $clientsQuery->latest()->limit(25)->get();
+
+        $apporteurs = $clientsList->map(function ($c) use ($defaultRate) {
             return (object) [
-                'id' => $app->id,
-                'client_id' => null,
-                'code' => $app->code_apporteur ?? 'APP-' . str_pad($app->id, 5, '0', STR_PAD_LEFT),
-                'nom' => $app->nom,
-                'prenom' => $app->prenom,
-                'telephone' => $app->telephone,
-                'source' => 'Apporteur',
-                'taux_commission' => $app->taux_commission !== null ? (float)$app->taux_commission : $defaultRate,
+                'id' => $c->id,
+                'client_id' => $c->id,
+                'code' => $c->code_client ?? $c->reference ?? ('CL-' . str_pad($c->id, 5, '0', STR_PAD_LEFT)),
+                'nom' => $c->nom,
+                'prenom' => $c->prenom ?? '',
+                'telephone' => $c->telephone ?? $c->phone ?? '-',
+                'source' => 'Client',
+                'taux_commission' => $defaultRate,
             ];
         });
+
+        // Merge dedicated Apporteur table records if any exist
+        if (\Illuminate\Support\Facades\Schema::hasTable('apporteurs')) {
+            $apporteursQuery = Apporteur::query();
+            if (!empty($query)) {
+                $apporteursQuery->where(function ($q) use ($query) {
+                    $q->where('nom', 'like', '%' . $query . '%')
+                      ->orWhere('prenom', 'like', '%' . $query . '%')
+                      ->orWhere('email', 'like', '%' . $query . '%')
+                      ->orWhere('telephone', 'like', '%' . $query . '%')
+                      ->orWhere('code_apporteur', 'like', '%' . $query . '%');
+                });
+            }
+            $dedicatedApporteurs = $apporteursQuery->latest()->limit(10)->get();
+            $dedicatedMapped = $dedicatedApporteurs->map(function ($app) use ($defaultRate) {
+                return (object) [
+                    'id' => $app->id,
+                    'client_id' => null,
+                    'code' => $app->code_apporteur ?? ('APP-' . str_pad($app->id, 5, '0', STR_PAD_LEFT)),
+                    'nom' => $app->nom,
+                    'prenom' => $app->prenom ?? '',
+                    'telephone' => $app->telephone ?? '-',
+                    'source' => 'Apporteur',
+                    'taux_commission' => $app->taux_commission !== null ? (float)$app->taux_commission : $defaultRate,
+                ];
+            });
+
+            $apporteurs = $apporteurs->concat($dedicatedMapped);
+        }
 
         return view('livewire.apporteur.vision-apporteur-modal', ['apporteurs' => $apporteurs]);
     }
