@@ -767,14 +767,15 @@ class ListeContrats extends Component
     protected function applyDateFilter($query)
     {
         if (empty($this->dateFrom) && empty($this->dateTo)) {
-            // Default behavior for Renouvellements page: filter contracts expiring within 30 days
-            if ($this->isRenouvellements) {
+            // Default behavior for Renouvellements page: filter contracts expiring within 30 days OR already renewed
+            if ($this->isRenouvellements || $this->isRenouvellementMode) {
                 $maxEcheance = now()->addDays(30)->endOfDay()->toDateTimeString();
                 $query->where(function ($q) use ($maxEcheance) {
                     $q->where('end_date', '<=', $maxEcheance);
                     if (\Illuminate\Support\Facades\Schema::hasColumn('contracts', 'date_echeance')) {
                         $q->orWhere('date_echeance', '<=', $maxEcheance);
                     }
+                    $q->orWhereHas('historiqueRenouvellements');
                 });
             }
             return;
@@ -816,6 +817,22 @@ class ListeContrats extends Component
                         $sub->where($fallbackCol, '>=', $dateFrom);
                     } elseif ($dateTo) {
                         $sub->where($fallbackCol, '<=', $dateTo);
+                    }
+                });
+            }
+
+            if ($this->isRenouvellements || $this->isRenouvellementMode) {
+                $q->orWhereHas('historiqueRenouvellements', function ($hQuery) use ($dateFrom, $dateTo) {
+                    if ($dateFrom && $dateTo) {
+                        $hQuery->whereBetween('anc_date_echeance', [$dateFrom, $dateTo])
+                               ->orWhereBetween('created_at', [$dateFrom, $dateTo])
+                               ->orWhereBetween('anc_date_effet', [$dateFrom, $dateTo]);
+                    } elseif ($dateFrom) {
+                        $hQuery->where('anc_date_echeance', '>=', $dateFrom)
+                               ->orWhere('created_at', '>=', $dateFrom);
+                    } elseif ($dateTo) {
+                        $hQuery->where('anc_date_echeance', '<=', $dateTo)
+                               ->orWhere('created_at', '<=', $dateTo);
                     }
                 });
             }

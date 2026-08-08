@@ -219,6 +219,11 @@
                             <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                 <div class="inline-flex items-center gap-1.5">
                                     @if($isRenouvellements)
+                                         @if($contrat->type_affaire === 'RN' || ($contrat->historiqueRenouvellements && $contrat->historiqueRenouvellements->count() > 0))
+                                             <span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg text-[10px] font-black shadow-2xs">
+                                                 ✓ Renouvelé
+                                             </span>
+                                         @endif
                                         <!-- Confirmer Renewal Button -->
                                         <button wire:click.stop="renouvelerContrat({{ $contrat->id }})" 
                                                 title="Confirmer & Générer le renouvellement" 
