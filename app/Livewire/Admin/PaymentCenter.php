@@ -79,6 +79,19 @@ class PaymentCenter extends Component
 
     public function mount()
     {
+        // Clean up any auto-generated PROD- reglements created by previous bug
+        try {
+            $autoReglements = \App\Models\Reglement::where('reference_paiement', 'LIKE', 'PROD-%')->get();
+            foreach ($autoReglements as $autoReg) {
+                \App\Models\FinancialLedger::where('contract_id', $autoReg->contrat_id)
+                    ->where('amount', $autoReg->montant)
+                    ->delete();
+                $autoReg->delete();
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('PROD- cleanup failed: ' . $e->getMessage());
+        }
+
         $this->filterDatePreset = 'today';
         $this->cheque_due_date = now()->format('Y-m-d');
         $this->ensureInitialBankAndCashSetup();
@@ -88,7 +101,7 @@ class PaymentCenter extends Component
     public function syncProductionToLedger()
     {
         try {
-            // 1. Sync every Reglement to FinancialLedger if not present
+            // 1. Sync existing Reglement to FinancialLedger if not present
             $reglements = \App\Models\Reglement::with('contrat')->get();
             foreach ($reglements as $reglement) {
                 $method = match(strtolower($reglement->mode_reglement ?? 'especes')) {
@@ -121,27 +134,6 @@ class PaymentCenter extends Component
                         'user_id' => auth()->id() ?? 1,
                         'client_id' => $reglement->contrat?->client_id,
                         'contract_id' => $reglement->contrat_id,
-                    ]);
-                }
-            }
-
-            // 2. Sync any contract with prime_totale > 0 that has no reglement
-            $contracts = \App\Models\ContratAuto::withoutGlobalScopes()->get();
-            foreach ($contracts as $contrat) {
-                if (!$contrat->prime_totale || $contrat->prime_totale <= 0) {
-                    continue;
-                }
-
-                $hasLedger = \App\Models\FinancialLedger::where('contract_id', $contrat->id)->exists();
-                $hasReglement = \App\Models\Reglement::where('contrat_id', $contrat->id)->exists();
-
-                if (!$hasLedger && !$hasReglement) {
-                    \App\Models\Reglement::create([
-                        'contrat_id' => $contrat->id,
-                        'montant' => $contrat->prime_totale,
-                        'date_reglement' => $contrat->date_production ?? $contrat->date_effet ?? now(),
-                        'mode_reglement' => 'especes',
-                        'reference_paiement' => 'PROD-' . ($contrat->numero_contrat ?? $contrat->id),
                     ]);
                 }
             }
