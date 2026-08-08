@@ -153,7 +153,9 @@
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Date d'effet</th>
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Expiration</th>
                             <th class="px-2.5 py-2.5 text-right whitespace-nowrap">Prime Total</th>
+                            @if(!$isRenouvellements)
                             <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Statut Règlement</th>
+                            @endif
                             <th class="px-2.5 py-2.5 whitespace-nowrap">Compagnie</th>
                             <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Type</th>
                             <th class="px-2.5 py-2.5 text-center whitespace-nowrap">Actions</th>
@@ -201,6 +203,7 @@
                                     {{ number_format($contrat->prime_totale, 2) }} DH
                                 </span>
                             </td>
+                            @if(!$isRenouvellements)
                             <td class="px-2.5 py-2 whitespace-nowrap text-center font-sans">
                                 @if($contrat->statut_reglement === 'solde')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Soldé</span>
@@ -210,6 +213,7 @@
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">Non payé</span>
                                 @endif
                             </td>
+                            @endif
                             <td class="px-2.5 py-2 whitespace-nowrap font-sans text-slate-800">{{ $contrat->compagnie->nom }}</td>
                             <td class="px-2.5 py-2 whitespace-nowrap text-center">
                                 <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold {{ $contrat->type_affaire === 'AN' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-blue-50 text-blue-700 border border-blue-200/60' }}">
