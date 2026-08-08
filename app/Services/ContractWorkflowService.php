@@ -24,8 +24,8 @@ class ContractWorkflowService
         $newEffet = $contrat->date_echeance ? $contrat->date_echeance->copy() : Carbon::now();
         $newEcheance = $newEffet->copy()->addMonths($months);
 
-        // Record renewal entry in HistoriqueRenouvellement
-        if (class_exists(\App\Models\HistoriqueRenouvellement::class)) {
+        // Record renewal entry in HistoriqueRenouvellement if table exists
+        if (\Illuminate\Support\Facades\Schema::hasTable('historique_renouvellements') && class_exists(\App\Models\HistoriqueRenouvellement::class)) {
             \App\Models\HistoriqueRenouvellement::create([
                 'contrat_id' => $contrat->id,
                 'anc_date_effet' => $oldEffet,
