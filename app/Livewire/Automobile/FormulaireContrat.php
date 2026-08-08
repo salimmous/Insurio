@@ -343,8 +343,14 @@ class FormulaireContrat extends Component
     {
         $this->client_id = $clientId;
         $client = Client::findOrFail($clientId);
-        $this->souscripteur = $client->nom . ' ' . $client->prenom;
+        $this->souscripteur = trim($client->nom . ' ' . $client->prenom);
         $this->auto_synced_client = false; // Manual selection overrode auto sync
+
+        if (empty($this->apporteur_id)) {
+            $this->apporteur_id = $clientId;
+            $this->nom_apporteur = $this->souscripteur;
+            $this->searchApporteur = $this->souscripteur;
+        }
     }
 
     public function handleApporteurSelected($payload = null)
@@ -353,14 +359,21 @@ class FormulaireContrat extends Component
             $apporteurId = is_numeric($payload['id'] ?? null) ? (int)$payload['id'] : null;
             $nom = is_string($payload['nom'] ?? '') ? $payload['nom'] : '';
             $prenom = is_string($payload['prenom'] ?? '') ? $payload['prenom'] : '';
-            $taux = is_numeric($payload['taux'] ?? null) ? (float)$payload['taux'] : (float)\App\Models\Setting::get('default_apporteur_commission_rate', 0.00);
+            $taux = is_numeric($payload['taux'] ?? null) ? (float)$payload['taux'] : 0.00;
 
             $this->apporteur_id = $apporteurId;
             $this->nom_apporteur = trim($nom . ' ' . $prenom);
             $this->searchApporteur = $this->nom_apporteur;
 
-            if ((float)$this->prime_rc > 0 && $taux) {
-                $this->commission_auto = round((float)$this->prime_rc * ((float)$taux / 100), 2);
+            // Automatically fill Client (Souscripteur) if not already set or update it
+            if ($apporteurId && empty($this->client_id)) {
+                $this->handleClientSelected($apporteurId);
+            }
+
+            if ((float)$this->prime_rc > 0 && $taux > 0) {
+                $this->commission_auto = round((float)$this->prime_rc * ($taux / 100), 2);
+            } else {
+                $this->commission_auto = 0;
             }
             return;
         }
@@ -372,9 +385,8 @@ class FormulaireContrat extends Component
                 $this->nom_apporteur = trim($client->nom . ' ' . $client->prenom);
                 $this->searchApporteur = $this->nom_apporteur;
 
-                $taux = (float)\App\Models\Setting::get('default_apporteur_commission_rate', 12.50);
-                if ((float)$this->prime_rc > 0 && $taux) {
-                    $this->commission_auto = round((float)$this->prime_rc * ((float)$taux / 100), 2);
+                if (empty($this->client_id)) {
+                    $this->handleClientSelected($client->id);
                 }
                 return;
             }
