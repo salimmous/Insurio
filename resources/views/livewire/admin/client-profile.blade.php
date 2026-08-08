@@ -69,6 +69,9 @@
                     <button wire:click="$set('activeTab', 'payments')" class="px-4 py-3.5 text-sm font-semibold border-b-2 transition-all {{ $activeTab === 'payments' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
                         Règlements ({{ $payments->count() }})
                     </button>
+                    <button wire:click="$set('activeTab', 'renouvellements')" class="px-4 py-3.5 text-sm font-semibold border-b-2 transition-all {{ $activeTab === 'renouvellements' ? 'border-amber-600 text-amber-700 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+                        Renouvellements ({{ $historiqueRenouvellements->count() }})
+                    </button>
                     <button wire:click="$set('activeTab', 'timeline')" class="px-4 py-3.5 text-sm font-semibold border-b-2 transition-all {{ $activeTab === 'timeline' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
                         Timeline & Contacts
                     </button>
@@ -281,7 +284,61 @@
                         </div>
                     @endif
 
-                    <!-- Timeline & Communications Tab -->
+                    <!-- Historique Renouvellements Tab -->
+                    @if($activeTab === 'renouvellements')
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                                    <svg width="18" height="18" class="w-4.5 h-4.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Historique des Renouvellements & Dates Précédentes ({{ $historiqueRenouvellements->count() }})</span>
+                                </h3>
+                            </div>
+
+                            @if($historiqueRenouvellements->count() > 0)
+                                <div class="overflow-x-auto border border-amber-200/60 rounded-xl shadow-2xs">
+                                    <table class="min-w-full divide-y divide-slate-100 text-left text-sm">
+                                        <thead class="text-slate-500 font-semibold text-xs uppercase bg-amber-50/50">
+                                            <tr>
+                                                <th class="px-4 py-3">Contrat / Réf</th>
+                                                <th class="px-4 py-3">Ancienne Période</th>
+                                                <th class="px-4 py-3">Nouvelle Période</th>
+                                                <th class="px-4 py-3">Prime Totale</th>
+                                                <th class="px-4 py-3">Date Renouvellement</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-150 text-slate-700 font-mono">
+                                            @foreach($historiqueRenouvellements as $h)
+                                                <tr class="hover:bg-amber-50/30 transition-colors">
+                                                    <td class="px-4 py-3 font-sans">
+                                                        <span class="font-bold text-slate-800 block font-mono">{{ $h->contrat->numero_contrat ?? ($h->contrat->contract_number ?? 'Contrat #'.$h->contrat_id) }}</span>
+                                                        <span class="text-xs text-slate-400 block">{{ $h->contrat->compagnie->nom ?? '-' }}</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 text-slate-600">
+                                                        {{ $h->anc_date_effet ? \Carbon\Carbon::parse($h->anc_date_effet)->format('d/m/Y') : '-' }} ➔ {{ $h->anc_date_echeance ? \Carbon\Carbon::parse($h->anc_date_echeance)->format('d/m/Y') : '-' }}
+                                                    </td>
+                                                    <td class="px-4 py-3 font-bold text-amber-900">
+                                                        {{ $h->nouv_date_effet ? \Carbon\Carbon::parse($h->nouv_date_effet)->format('d/m/Y') : '-' }} ➔ {{ $h->nouv_date_echeance ? \Carbon\Carbon::parse($h->nouv_date_echeance)->format('d/m/Y') : '-' }}
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">{{ number_format($h->prime_totale, 2) }} DH</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 text-xs text-slate-500 font-sans">
+                                                        {{ $h->created_at ? $h->created_at->format('d/m/Y H:i') : '-' }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-10 text-slate-400 font-sans bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                                    Aucun historique de renouvellement enregistré pour ce client.
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                     @if($activeTab === 'timeline')
                         <div class="space-y-6">
                             <!-- New Activity Form -->
