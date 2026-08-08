@@ -594,6 +594,49 @@ class ListeContrats extends Component
         ]);
     }
 
+    public function deleteContrat($id)
+    {
+        $contrat = ContratAuto::findOrFail($id);
+        $num = $contrat->numero_contrat;
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($contrat) {
+            \App\Models\Reglement::where('contrat_id', $contrat->id)->delete();
+            if (\Illuminate\Support\Facades\Schema::hasTable('financial_ledgers')) {
+                \App\Models\FinancialLedger::where('contract_id', $contrat->id)->delete();
+            }
+            if (\Illuminate\Support\Facades\Schema::hasTable('historique_renouvellements')) {
+                \App\Models\HistoriqueRenouvellement::where('contrat_id', $contrat->id)->delete();
+            }
+            $contrat->delete();
+        });
+
+        $this->dispatch('swal:success', ['message' => "Le contrat N° {$num} a été supprimé avec succès."]);
+    }
+
+    public function bulkDelete()
+    {
+        if (empty($this->selectedContrats)) {
+            $this->dispatch('swal:error', ['message' => 'Veuillez sélectionner au moins un contrat.']);
+            return;
+        }
+
+        $count = count($this->selectedContrats);
+
+        \Illuminate\Support\Facades\DB::transaction(function () {
+            \App\Models\Reglement::whereIn('contrat_id', $this->selectedContrats)->delete();
+            if (\Illuminate\Support\Facades\Schema::hasTable('financial_ledgers')) {
+                \App\Models\FinancialLedger::whereIn('contract_id', $this->selectedContrats)->delete();
+            }
+            if (\Illuminate\Support\Facades\Schema::hasTable('historique_renouvellements')) {
+                \App\Models\HistoriqueRenouvellement::whereIn('contrat_id', $this->selectedContrats)->delete();
+            }
+            ContratAuto::whereIn('id', $this->selectedContrats)->delete();
+        });
+
+        $this->clearSelection();
+        $this->dispatch('swal:success', ['message' => "{$count} contrat(s) supprimé(s) avec succès."]);
+    }
+
     public function render()
     {
         $countExpiring1Day = ContratAuto::where('statut', 'actif')
