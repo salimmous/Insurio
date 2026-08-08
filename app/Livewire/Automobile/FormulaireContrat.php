@@ -367,13 +367,14 @@ class FormulaireContrat extends Component
 
         if (is_numeric($payload)) {
             $this->apporteur_id = (int)$payload;
-            $apporteur = Apporteur::find((int)$payload);
-            if ($apporteur) {
-                $this->nom_apporteur = trim($apporteur->nom . ' ' . $apporteur->prenom);
+            $client = Client::find((int)$payload);
+            if ($client) {
+                $this->nom_apporteur = trim($client->nom . ' ' . $client->prenom);
                 $this->searchApporteur = $this->nom_apporteur;
 
-                if ($apporteur->taux_commission && (float)$this->prime_rc > 0) {
-                    $this->commission_auto = round((float)$this->prime_rc * ((float)$apporteur->taux_commission / 100), 2);
+                $taux = (float)\App\Models\Setting::get('default_apporteur_commission_rate', 12.50);
+                if ((float)$this->prime_rc > 0 && $taux) {
+                    $this->commission_auto = round((float)$this->prime_rc * ((float)$taux / 100), 2);
                 }
                 return;
             }
