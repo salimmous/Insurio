@@ -35,7 +35,6 @@
                             <th class="px-4 py-3">Code / Ref</th>
                             <th class="px-4 py-3">Nom & Prénom</th>
                             <th class="px-4 py-3">Téléphone</th>
-                            <th class="px-4 py-3">Taux Commission</th>
                             <th class="px-4 py-3 text-right">Action</th>
                         </tr>
                     </thead>
@@ -52,11 +51,8 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-500 font-mono">{{ $app->telephone ?? '-' }}</td>
-                            <td class="px-4 py-3 text-xs font-bold text-emerald-600 font-mono">
-                                {{ number_format($app->taux_commission ?? 0, 2) }}%
-                            </td>
                             <td class="px-4 py-3 text-right">
-                                <button wire:click="selectApporteur({{ $app->id }}, '{{ addslashes($app->nom) }}', '{{ addslashes($app->prenom) }}', {{ $app->taux_commission ?? 0 }}, {{ $app->client_id ?? 'null' }})" 
+                                <button wire:click="selectApporteur({{ $app->id }}, '{{ addslashes($app->nom) }}', '{{ addslashes($app->prenom) }}', 0, {{ $app->client_id ?? 'null' }})" 
                                         class="inline-flex items-center justify-center px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg transition duration-150 shadow-sm">
                                     Sélectionner
                                 </button>
@@ -64,8 +60,8 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">
-                                Aucun apporteur ou client trouvé.
+                            <td colspan="4" class="px-4 py-8 text-center text-gray-400 text-sm">
+                                Aucun client trouvé.
                             </td>
                         </tr>
                         @endforelse
